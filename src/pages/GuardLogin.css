@@ -1,0 +1,213 @@
+/* ─── Page layout ─── */
+.guard-login-page {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #e8e4d9;
+}
+
+/* ─── Top header bar ─── */
+.guard-login-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background-color: #dfd9c8;
+  border-bottom: 2px solid #c9c1aa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.guard-login-header-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.guard-login-header-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #4a7c5f;
+  letter-spacing: -0.3px;
+  flex: 1;
+}
+
+.guard-login-admin-link {
+  font-size: 0.85rem;
+  color: #6b8f7e;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1.5px solid #6b8f7e;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+.guard-login-admin-link:hover {
+  background: #6b8f7e;
+  color: #fff;
+}
+
+/* ─── Body centred area ─── */
+.guard-login-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 16px;
+}
+
+/* ─── Card ─── */
+.guard-login-card {
+  background-color: #6b8f7e;
+  border-radius: 24px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.20), 0 6px 18px rgba(0,0,0,0.1);
+  animation: glideUp 0.55s cubic-bezier(0.2,0.8,0.2,1);
+}
+
+@keyframes glideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Title ─── */
+.guard-login-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-align: center;
+  margin: 0 0 6px;
+  font-family: Georgia, serif;
+  letter-spacing: 0.2px;
+}
+
+/* ─── Fields ─── */
+.guard-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.guard-login-field label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e0ede6;
+  text-transform: none;
+  letter-spacing: 0.2px;
+}
+
+.guard-login-field input,
+.guard-login-field select {
+  background: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-family: var(--font-main, 'Inter', sans-serif);
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+/* Custom arrow for select */
+.guard-login-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.guard-login-field input:focus,
+.guard-login-field select:focus {
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.35), 0 4px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+/* ─── Error ─── */
+.guard-login-error {
+  font-size: 0.88rem;
+  color: #ffe0e0;
+  background: rgba(220,53,69,0.28);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+/* ─── Login button ─── */
+.guard-login-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.guard-login-btn {
+  background-color: #c9a227;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 10px 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(201,162,39,0.35);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+}
+
+.guard-login-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 150%; height: 150%;
+  background: rgba(255,255,255,0.2);
+  transform: translate(-50%,-50%) scale(0);
+  border-radius: 50%;
+  transition: transform 0.45s ease-out;
+}
+.guard-login-btn:active::after {
+  transform: translate(-50%,-50%) scale(1);
+  transition: 0s;
+}
+
+.guard-login-btn:hover:not(:disabled) {
+  background-color: #b8911c;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(201,162,39,0.5);
+}
+
+.guard-login-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ─── Hint text ─── */
+.guard-login-hint {
+  font-size: 0.8rem;
+  color: #777;
+  text-align: center;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+  .guard-login-card {
+    padding: 32px 24px;
+  }
+  .guard-login-title {
+    font-size: 1.7rem;
+  }
+}

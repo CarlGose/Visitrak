@@ -1,0 +1,271 @@
+.manage-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  background-color: var(--color-bg);
+}
+
+.manage-content {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.manage-content h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 24px;
+}
+
+.manage-card {
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.manage-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.manage-card-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+.add-btn {
+  background-color: #e3b05b;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-btn:hover {
+  background-color: #d19f4a;
+}
+
+.guards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guard-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.guard-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.guard-avatar {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-bg);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text);
+}
+
+.guard-avatar svg {
+  width: 24px;
+  height: 24px;
+}
+
+.guard-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.guard-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+}
+
+.guard-number {
+  font-size: 12px;
+  color: #555;
+  margin-top: 2px;
+}
+
+.guard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #555;
+}
+
+.edit-icon-btn {
+  color: #333;
+}
+
+.delete-icon-btn {
+  color: #d9534f;
+}
+
+.icon-btn:hover {
+  color: #000;
+}
+
+.delete-icon-btn:hover {
+  color: #c9302c;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 32px 40px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  color: #2e5944;
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-family: Georgia, serif;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.form-group input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #2e5944;
+}
+
+.photo-group {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.photo-upload-icon {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.upload-arrow {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.save-btn {
+  background-color: #e3b05b;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-btn:hover {
+  background-color: #d19f4a;
+}
+
+@media (max-width: 768px) {
+  .manage-content {
+    padding: 16px;
+  }
+  .manage-card {
+    padding: 20px;
+  }
+  .modal-content {
+    padding: 24px;
+    max-width: 90%;
+  }
+}
