@@ -1,0 +1,139 @@
+.ul-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Header */
+.ul-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #f2ebd9;
+  /* The cream/off-white background seen in the screenshot */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ul-brand-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ul-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  /* Add drop shadow to make it pop similarly to the image */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.ul-brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b5a45;
+  /* Darkish green for text */
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.ul-menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ul-menu-button svg {
+  width: 28px;
+  height: 28px;
+  color: #2a3a31;
+}
+
+/* Main Content */
+.ul-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+/* Card */
+.ul-card {
+  background-color: #7b8f84;
+  /* The grayish-green */
+  border-radius: 20px;
+  width: 100%;
+  max-width: 320px;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  margin-top: -60px;
+  /* shift slightly up */
+}
+
+.ul-welcome {
+  color: #ffffff;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  /* Serif font for Welcome */
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.ul-subtitle {
+  color: #1a1a1a;
+  font-size: 0.85rem;
+  margin: 0 0 40px 0;
+  text-align: center;
+}
+
+/* Button */
+.ul-visit-btn {
+  background-color: #3e5a48;
+  /* Darker green */
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 140px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ul-visit-btn:hover {
+  background-color: #334a3b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ul-visit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .ul-card {
+    max-width: 400px;
+    padding: 64px 48px;
+  }
+}
