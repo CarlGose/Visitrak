@@ -143,96 +143,71 @@ const UserForm = () => {
     });
 
     return (
-        <div className="form-page">
-            <div className="split-ticket-layout">
-                {/* Upper Block: QR */}
-                <div className="ticket-block-qr">
-                    <img src="/wuplogo.png" alt="University Logo" className="ticket-minimal-logo" />
-                    <div className="qr-wrapper-clean">
+        <div className="form-page qr-result-page">
+            <header className="gd-header vip-header-centered" style={{ backgroundColor: '#f5f2eb', borderBottom: '1px solid #ddd', width: '100%', position: 'absolute', top: 0, left: 0, padding: '12px 0' }}>
+                <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" style={{ margin: '0 auto', display: 'block', width: '44px', height: '44px' }} />
+            </header>
+
+            <div className="qr-pass-card">
+                <div className="qr-pass-header">
+                    <h2>Your QR Code</h2>
+                </div>
+
+                <div className="qr-pass-body">
+                    <div className="qr-code-box">
                         <QRCode
                             value={qrValue}
-                            size={256}
+                            size={220}
                             bgColor="#ffffff"
-                            fgColor="#1a1a2e"
+                            fgColor="#000000"
                             level="Q"
                         />
                     </div>
-                    <p className="ticket-instruction-label">Present to guard for Time In</p>
-                </div>
 
-                {/* Lower Block: Text Details */}
-                <div className="ticket-block-text">
-                    <div className="ticket-details-grid">
-                        <div className="ticket-grid-row">
-                            <div className="ticket-grid-label">
-                                <div className="ticket-icon-wrapper">
-                                    <svg className="ticket-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                </div>
-                                <span>Name:</span>
-                            </div>
-                            <div className="ticket-grid-value">{formData.name}</div>
+                    <div className="qr-instruction-alert">
+                        Present this QR code to the guard to scan<br/>for Time Out
+                    </div>
+
+                    <div className="qr-details-list">
+                        <div className="qr-detail-row">
+                            <span className="qr-detail-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </span>
+                            <span className="qr-detail-label">Name:</span>
+                            <span className="qr-detail-value">{formData.name}</span>
                         </div>
-
-                        <div className="ticket-grid-row">
-                            <div className="ticket-grid-label">
-                                <div className="ticket-icon-wrapper">
-                                    <svg className="ticket-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                </div>
-                                <span>Address:</span>
-                            </div>
-                            <div className="ticket-grid-value">{formData.address}</div>
+                        <div className="qr-detail-row">
+                            <span className="qr-detail-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            </span>
+                            <span className="qr-detail-label">Address:</span>
+                            <span className="qr-detail-value">{formData.address}</span>
                         </div>
-
-                        <div className="ticket-grid-row">
-                            <div className="ticket-grid-label">
-                                <div className="ticket-icon-wrapper">
-                                    <svg className="ticket-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                    </svg>
-                                </div>
-                                <span>Destination:</span>
-                            </div>
-                            <div className="ticket-grid-value">{formData.destination}</div>
+                        <div className="qr-detail-row">
+                            <span className="qr-detail-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                            </span>
+                            <span className="qr-detail-label">Destination:</span>
+                            <span className="qr-detail-value">{formData.destination}</span>
                         </div>
-
-                        <div className="ticket-grid-row">
-                            <div className="ticket-grid-label">
-                                <div className="ticket-icon-wrapper">
-                                    <svg className="ticket-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                    </svg>
-                                </div>
-                                <span>Purpose:</span>
-                            </div>
-                            <div className="ticket-grid-value">{formData.purpose}</div>
+                        <div className="qr-detail-row">
+                            <span className="qr-detail-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                            </span>
+                            <span className="qr-detail-label">Purpose:</span>
+                            <span className="qr-detail-value">{formData.purpose}</span>
                         </div>
-
-                        <div className="ticket-grid-row">
-                            <div className="ticket-grid-label">
-                                <div className="ticket-icon-wrapper">
-                                    <svg className="ticket-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    </svg>
-                                </div>
-                                <span>Date:</span>
-                            </div>
-                            <div className="ticket-grid-value">{displayDate}</div>
+                        <div className="qr-detail-row">
+                            <span className="qr-detail-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            </span>
+                            <span className="qr-detail-label">Date:</span>
+                            <span className="qr-detail-value">{displayDate}</span>
                         </div>
                     </div>
 
-                    <div className="ticket-footer">
-                        <button onClick={handleBack} className="btn-back">
+                    <div className="qr-pass-footer">
+                        <button onClick={handleBack} className="qr-finish-btn">
                             Finish
                         </button>
                     </div>
