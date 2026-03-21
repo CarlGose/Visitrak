@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -28,13 +30,14 @@
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 18px;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.18);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.18);
   --transition: all 0.2s ease;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   font-family: var(--font-main);
   background-color: var(--color-bg);
@@ -65,13 +68,16 @@ input {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f0ece0;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #b0a890;
   border-radius: 99px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #907f60;
 }

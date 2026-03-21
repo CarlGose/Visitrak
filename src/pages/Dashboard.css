@@ -46,14 +46,16 @@
 }
 
 .stat-card-row {
-    display: flex;
-    gap: 24px;
+  display: flex;
+  gap: 24px;
 }
 
 .stat-card {
+  flex: 1;
+  aspect-ratio: 4 / 3;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
   min-height: 120px;
   display: flex;
@@ -76,11 +78,11 @@
 }
 
 .stat-card.blue h3 {
-    color: #1976d2;
+  color: #1976d2;
 }
 
 .stat-card.yellow h3 {
-    color: #b7791f;
+  color: #b7791f;
 }
 
 
@@ -100,7 +102,7 @@
 }
 
 .dashboard-vip {
-    margin-top: 24px;
+  margin-top: 24px;
 }
 
 .table-container {
@@ -121,14 +123,16 @@
 }
 
 .vip-header {
-  background-color: #e6e0f8; /* Soft distinct purple */
+  background-color: #e6e0f8;
+  /* Soft distinct purple */
   text-align: center;
   font-size: 1.2rem;
   font-weight: 800;
 }
 
 .header-green .table-header {
-  background-color: #d1ebd8; /* Soft green */
+  background-color: #d1ebd8;
+  /* Soft green */
   font-size: 1.1rem;
 }
 
@@ -137,7 +141,8 @@
   border-collapse: collapse;
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
   padding: 16px;
   text-align: center;
   border-bottom: 1px solid var(--color-bg);
@@ -156,13 +161,17 @@
 
 .data-table th:not(:last-child),
 .data-table td:not(:last-child) {
-    border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
 }
 
 .dashboard-in-campus {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.dashboard-in-campus .table-container {
+  flex: 1;
 }
 
 .dashboard-logs-section {
@@ -184,35 +193,35 @@
 }
 
 .logs-title-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
 }
 
 .logs-date-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: flex;
-    flex-direction: column;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .logs-today {
-    font-size: 0.9rem;
-    color: #333;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .logs-date {
-    font-size: 1rem;
-    color: #555;
+  font-size: 1rem;
+  color: #555;
 }
 
 .logs-title-area h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
 }
 
 .view-all-btn {
@@ -232,43 +241,47 @@
 }
 
 .logs-table-container {
-    box-shadow: none;
-    border-radius: 4px;
+  box-shadow: none;
+  border-radius: 4px;
 }
 
 .logs-table th {
-    background-color: #b0baba;
-    color: #333;
+  background-color: #b0baba;
+  color: #333;
 }
 
 .logs-table td {
-    padding: 10px 16px;
+  padding: 10px 16px;
 }
 
 .time-out-active {
-    color: #4caf50 !important;
+  color: #4caf50 !important;
 }
 
 .stat-row-top {
-    display: flex;
-    gap: 24px;
+  display: flex;
+  gap: 24px;
 }
 
-.stat-row-top > div {
-    flex: 1;
+.stat-row-top>div {
+  flex: 1;
 }
+
 @media (max-width: 900px) {
   .dashboard-top-section {
     flex-direction: column;
   }
+
   .stat-row-top {
     flex-direction: column;
     gap: 16px;
   }
+
   .stat-card-row {
     flex-direction: column;
     gap: 16px;
   }
+
   .dashboard-logs-section {
     padding: 20px;
   }
@@ -278,15 +291,19 @@
   .dashboard-content {
     padding: 16px;
   }
+
   .stat-card {
     min-height: 100px;
   }
+
   .table-header {
     font-size: 1rem;
   }
+
   .table-container {
     overflow-x: auto;
   }
+
   .logs-title-area h2 {
     font-size: 1.2rem;
   }
