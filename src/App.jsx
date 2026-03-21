@@ -6,7 +6,6 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Logs from './pages/Logs';
 import Manage from './pages/Manage';
-import Header from './components/Header';
 import GuardLogin from './pages/GuardLogin';
 import GuardDashboard from './pages/GuardDashboard';
 import UsersPage from './pages/UsersPage';
@@ -18,12 +17,7 @@ function AdminRoute({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   if (user.role === 'guard') return <Navigate to="/guard/dashboard" replace />;
-  return (
-    <>
-      <Header />
-      {children}
-    </>
-  );
+  return children;
 }
 
 // Protect guard routes — must be logged in as guard

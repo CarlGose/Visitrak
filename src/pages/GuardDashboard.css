@@ -273,32 +273,43 @@
   width: 100%;
 }
 
-.gd-back-btn {
+.vip-page-override {
+  background-color: #ffffff;
+}
+
+.vip-header-centered {
+  justify-content: center;
+  background-color: #f5f2eb;
+  border-bottom: none;
+}
+.vip-header-centered .gd-header-brand {
+  display: none;
+}
+
+.gd-back-btn-icon {
   background: none;
   border: none;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #4a7c5f;
   cursor: pointer;
-  padding: 4px 0;
-  transition: color 0.2s;
+  padding: 0;
+  display: flex;
+  margin-left: -4px;
 }
-.gd-back-btn:hover { color: #2d5a40; }
 
 /* ─────────────────────────────
    VIP Form Card
 ───────────────────────────── */
 .vip-form-card {
-  background-color: #6b8f7e;
-  border-radius: 24px;
-  padding: 32px 28px;
+  background-color: #70867d;
+  border-radius: 20px;
+  padding: 40px 24px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+  max-width: 360px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
   animation: glideUp 0.5s cubic-bezier(0.2,0.8,0.2,1);
   display: flex;
   flex-direction: column;
   gap: 0;
+  margin: 0 auto;
 }
 
 @keyframes glideUp {
@@ -307,13 +318,13 @@
 }
 
 .vip-form-title {
-  font-size: 2rem;
-  font-weight: 900;
+  font-size: 2.2rem;
+  font-weight: 700;
   color: #ffffff;
   text-align: center;
-  margin: 0 0 20px;
-  font-family: Georgia, serif;
-  letter-spacing: 2px;
+  margin: 0 0 30px;
+  font-family: 'Times New Roman', Times, serif;
+  letter-spacing: 1px;
 }
 
 .vip-form {
@@ -329,23 +340,21 @@
 }
 
 .vip-field label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #dce8e3;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ffffff;
 }
 
-.req { color: #ffcdd2; }
+.req { color: #ff4d4f; }
 
 .vip-field input,
 .vip-field select {
   background: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 10px 12px;
-  font-size: 0.95rem;
-  color: #1a1a1a;
+  font-size: 1rem;
+  color: #333;
   font-family: var(--font-main, 'Inter', sans-serif);
   outline: none;
   transition: box-shadow 0.2s;
@@ -366,17 +375,17 @@
 }
 
 .vip-add-btn {
-  margin-top: 8px;
+  margin-top: 24px;
   align-self: center;
-  background-color: #c9a227;
+  background-color: #dcb353;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 48px;
-  font-size: 1.05rem;
-  font-weight: 700;
+  border-radius: 24px;
+  padding: 12px 48px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(201,162,39,0.35);
+  letter-spacing: 0.5px;
   transition: all 0.25s;
 }
 .vip-add-btn:hover {

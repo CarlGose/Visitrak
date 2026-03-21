@@ -5,7 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e8e4d9;
+  background-color: #f5f2eb;
+  font-family: 'Inter', sans-serif;
   position: relative;
   overflow: hidden;
   padding: 24px 16px;
@@ -75,7 +76,8 @@
 }
 
 .ps-brand-name {
-  font-size: 2.4rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.8rem;
   font-weight: 800;
   color: #1a1a1a;
   letter-spacing: -0.5px;
@@ -92,7 +94,8 @@
 
 /* ── Prompt text ── */
 .ps-prompt {
-  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
   color: #555;
   margin: -10px 0 0;
   font-weight: 500;
@@ -113,10 +116,10 @@
   padding: 20px 24px;
   background: #ffffff;
   border: none;
-  border-radius: 18px;
+  border-radius: 20px;
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 3px 14px rgba(0,0,0,0.09);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
   border-left: 5px solid var(--accent);
   transition: transform 0.22s cubic-bezier(0.2,0.8,0.2,1),
               box-shadow 0.22s ease,
@@ -143,8 +146,8 @@
 }
 
 .ps-card:hover {
-  transform: translateX(6px) translateY(-2px);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+  transform: translateX(6px) translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .ps-card:hover::before {
@@ -196,15 +199,16 @@
 }
 
 .ps-card-label {
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: #1a1a1a;
   line-height: 1.2;
 }
 
 .ps-card-desc {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.85rem;
+  color: #777;
   font-weight: 400;
   line-height: 1.4;
 }

@@ -135,30 +135,31 @@ export default function GuardDashboard() {
 ───────────────────────────────────── */
 function VipForm({ onBack, gate }) {
   const { user } = useAuth();
-  const [form, setForm] = useState({ name: '', plate: '', destination: '', purpose: '' });
+  const [form, setForm] = useState({ name: '', plate: '', destination: '', date: '' });
   const [submitted, setSubmitted] = useState(false);
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleAdd = (e) => {
     e.preventDefault();
-    if (!form.name || !form.destination || !form.purpose) return;
+    if (!form.name || !form.plate || !form.destination || !form.date) return;
     setSubmitted(true);
-    setTimeout(() => { setSubmitted(false); setForm({ name: '', plate: '', destination: '', purpose: '' }); }, 2000);
+    setTimeout(() => { setSubmitted(false); setForm({ name: '', plate: '', destination: '', date: '' }); }, 2000);
   };
 
   return (
-    <div className="gd-page">
-      <header className="gd-header">
-        <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
-        <span className="gd-header-brand">VisiTrack</span>
+    <div className="gd-page vip-page-override">
+      <header className="gd-header vip-header-centered">
+        <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" />
       </header>
-      <div className="gd-body">
+      <div className="gd-body vip-body-override">
         <div className="vip-back-row">
-          <button className="gd-back-btn" onClick={onBack}>← Back</button>
+          <button className="gd-back-btn-icon" onClick={onBack}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </button>
         </div>
         <div className="vip-form-card">
-          <h2 className="vip-form-title">V.I.P.</h2>
+          <h2 className="vip-form-title">VIP INFO</h2>
 
           {submitted && (
             <div className="vip-success">✓ Entry logged successfully!</div>
@@ -166,28 +167,25 @@ function VipForm({ onBack, gate }) {
 
           <form className="vip-form" onSubmit={handleAdd} noValidate>
             <div className="vip-field">
-              <label htmlFor="vip-name">NAME <span className="req">*</span></label>
-              <input id="vip-name" type="text" value={form.name} onChange={set('name')} required placeholder="Full name" />
+              <label htmlFor="vip-name">Name <span className="req">*</span></label>
+              <input id="vip-name" type="text" value={form.name} onChange={set('name')} required />
             </div>
             <div className="vip-field">
-              <label htmlFor="vip-plate">Car/Plate Number <span className="req">*</span></label>
-              <input id="vip-plate" type="text" value={form.plate} onChange={set('plate')} placeholder="e.g. ABC 1234 (optional)" />
+              <label htmlFor="vip-plate">Plate No. <span className="req">*</span></label>
+              <input id="vip-plate" type="text" value={form.plate} onChange={set('plate')} required />
             </div>
             <div className="vip-field">
               <label htmlFor="vip-dest">Destination <span className="req">*</span></label>
               <select id="vip-dest" value={form.destination} onChange={set('destination')} required>
-                <option value="">— Select —</option>
+                <option value=""></option>
                 {DESTINATIONS.map(d => <option key={d}>{d}</option>)}
               </select>
             </div>
             <div className="vip-field">
-              <label htmlFor="vip-purpose">PURPOSE <span className="req">*</span></label>
-              <select id="vip-purpose" value={form.purpose} onChange={set('purpose')} required>
-                <option value="">— Select —</option>
-                {PURPOSES.map(p => <option key={p}>{p}</option>)}
-              </select>
+              <label htmlFor="vip-date">Date <span className="req">*</span></label>
+              <input id="vip-date" type="date" value={form.date} onChange={set('date')} required />
             </div>
-            <button id="vip-add-btn" type="submit" className="vip-add-btn">Add</button>
+            <button id="vip-add-btn" type="submit" className="vip-add-btn">SUBMIT</button>
           </form>
         </div>
       </div>

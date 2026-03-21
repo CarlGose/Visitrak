@@ -16,8 +16,8 @@ const portals = [
         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
-    accent: '#4a7c5f',
-    accentLight: '#d1ebd8',
+    accent: '#5b8fb9',
+    accentLight: '#e6f0fa',
   },
   {
     id: 'guard',
@@ -29,22 +29,8 @@ const portals = [
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
     ),
-    accent: '#6b8f7e',
-    accentLight: '#d9ede4',
-  },
-  {
-    id: 'users',
-    label: 'Users',
-    description: 'View visitor records, active visitors, and campus statistics',
-    route: '/users',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
-    accent: '#c9a227',
-    accentLight: '#fdf3d7',
+    accent: '#9d7bb0',
+    accentLight: '#f0e6f5',
   },
   {
     id: 'user-landing',
@@ -59,8 +45,8 @@ const portals = [
         <line x1="23" y1="11" x2="17" y2="11" />
       </svg>
     ),
-    accent: '#7b8f84',
-    accentLight: '#e4ebe7',
+    accent: '#c28d5a',
+    accentLight: '#fcf0e3',
   },
 ];
 
