@@ -99,13 +99,14 @@ export default function Manage() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">{modalType === 'add' ? 'Register' : 'Edit'}</h2>
             
-            <div className="modal-form">
+            <form className="modal-form" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
               <div className="form-group">
                 <label>Name</label>
                 <input 
                   type="text" 
                   value={currentGuard?.name || ''} 
                   onChange={(e) => setCurrentGuard({...currentGuard, name: e.target.value})}
+                  required
                 />
               </div>
               
@@ -115,6 +116,7 @@ export default function Manage() {
                   type="text" 
                   value={currentGuard?.number || ''} 
                   onChange={(e) => setCurrentGuard({...currentGuard, number: e.target.value})}
+                  required
                 />
               </div>
               
@@ -124,6 +126,7 @@ export default function Manage() {
                   type="password" 
                   value={currentGuard?.password || ''} 
                   onChange={(e) => setCurrentGuard({...currentGuard, password: e.target.value})}
+                  required
                 />
               </div>
 
@@ -142,11 +145,11 @@ export default function Manage() {
               </div>
 
               <div className="modal-actions">
-                <button className="save-btn" onClick={handleSave}>
+                <button type="submit" className="save-btn">
                   {modalType === 'add' ? 'Create Account' : 'Edit'}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

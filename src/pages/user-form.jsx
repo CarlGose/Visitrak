@@ -52,13 +52,14 @@ const UserForm = () => {
             <div className="form-page">
                 <div className="form-wrapper">
                     <div className="form-header">
+                        <img src="/wuplogo.png" alt="VisiTrack Logo" className="form-header-logo" />
                         <h2 className="form-title">Visitor Registration</h2>
                         <p className="form-subtitle">Fill out the form below to generate your entry pass</p>
                     </div>
 
                     <form className="form-card" onSubmit={handleSubmit}>
                         <div className="form-field">
-                            <label htmlFor="name">Full Name</label>
+                            <label htmlFor="name">Full Name <span className="req">*</span></label>
                             <input
                                 type="text"
                                 id="name"
@@ -71,7 +72,7 @@ const UserForm = () => {
                         </div>
 
                         <div className="form-field">
-                            <label htmlFor="address">Address</label>
+                            <label htmlFor="address">Address <span className="req">*</span></label>
                             <input
                                 type="text"
                                 id="address"
@@ -84,7 +85,7 @@ const UserForm = () => {
                         </div>
 
                         <div className="form-field">
-                            <label htmlFor="destination">Destination</label>
+                            <label htmlFor="destination">Destination <span className="req">*</span></label>
                             <input
                                 type="text"
                                 id="destination"
@@ -97,7 +98,7 @@ const UserForm = () => {
                         </div>
 
                         <div className="form-field">
-                            <label htmlFor="purpose">Purpose of Visit</label>
+                            <label htmlFor="purpose">Purpose of Visit <span className="req">*</span></label>
                             <input
                                 type="text"
                                 id="purpose"
@@ -110,7 +111,7 @@ const UserForm = () => {
                         </div>
 
                         <div className="form-field">
-                            <label htmlFor="date">Date of Visit</label>
+                            <label htmlFor="date">Date of Visit <span className="req">*</span></label>
                             <input
                                 type="date"
                                 id="date"

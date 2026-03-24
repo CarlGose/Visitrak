@@ -38,7 +38,7 @@ export default function GuardLogin() {
       </header>
 
       <div className="guard-login-body">
-        <form className="guard-login-card" onSubmit={handleSubmit} noValidate>
+        <form className="guard-login-card" onSubmit={handleSubmit}>
           <h1 className="guard-login-title">Guard Login</h1>
 
           <div className="guard-login-field">

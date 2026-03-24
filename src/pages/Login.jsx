@@ -41,7 +41,7 @@ export default function Login() {
         <p className="login-sub">Sign in your admin account</p>
 
         {/* Card */}
-        <form className="login-card" onSubmit={handleSubmit} noValidate>
+        <form className="login-card" onSubmit={handleSubmit}>
           <div className="login-field">
             <label htmlFor="login-id">ID</label>
             <input
