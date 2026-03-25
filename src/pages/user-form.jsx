@@ -86,15 +86,21 @@ const UserForm = () => {
 
                         <div className="form-field">
                             <label htmlFor="destination">Destination <span className="req">*</span></label>
-                            <input
-                                type="text"
+                            <select
                                 id="destination"
                                 name="destination"
-                                placeholder="e.g. Registrar"
                                 value={formData.destination}
                                 onChange={handleChange}
                                 required
-                            />
+                            >
+                                <option value="" disabled>Select a destination...</option>
+                                <option value="OFFICE OF STUDENT AFFAIR">OFFICE OF STUDENT AFFAIR</option>
+                                <option value="DEAN'S OFFICE">DEAN'S OFFICE</option>
+                                <option value="PRESIDENTS OFFICE">PRESIDENTS OFFICE</option>
+                                <option value="ACCOUNTING">ACCOUNTING</option>
+                                <option value="REGISTRAR">REGISTRAR</option>
+                                <option value="FACULTY">FACULTY</option>
+                            </select>
                         </div>
 
                         <div className="form-field">
@@ -166,7 +172,7 @@ const UserForm = () => {
                     </div>
 
                     <div className="qr-instruction-alert">
-                        Present this QR code to the guard to scan<br/>for Time Out
+                        Present this QR code to the guard to scan<br />for Time Out
                     </div>
 
                     <div className="qr-details-list">
