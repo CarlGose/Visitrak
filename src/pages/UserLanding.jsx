@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './UserLanding.css';
 
 export default function UserLanding() {
@@ -8,10 +8,9 @@ export default function UserLanding() {
   return (
     <div className="ul-page">
       <header className="ul-header">
-        <div className="ul-brand-container">
-          <img src="/wuplogo.png" alt="University Logo" className="ul-logo" />
-          <h1 className="ul-brand-name">VisiTrack</h1>
-        </div>
+        <img src="/wuplogo.png" alt="University Logo" className="ul-logo" />
+        <h1 className="ul-brand-name">VisiTrack</h1>
+        <Link to="/" className="guard-login-admin-link">← Portal Selection</Link>
       </header>
 
       <main className="ul-main">

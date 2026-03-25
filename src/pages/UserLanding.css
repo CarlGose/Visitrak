@@ -10,18 +10,23 @@
 /* Header */
 .ul-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  background-color: #f2ebd9;
-  /* The cream/off-white background seen in the screenshot */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  gap: 10px;
+  padding: 12px 24px;
+  background-color: #dfd9c8;
+  border-bottom: 2px solid #c9c1aa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
-.ul-brand-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.guard-login-admin-link {
+  font-size: 0.85rem;
+  color: #6b8f7e;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1.5px solid #6b8f7e;
+  border-radius: 20px;
+  transition: all 0.2s;
 }
 
 .ul-logo {
@@ -34,11 +39,10 @@
 
 .ul-brand-name {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #3b5a45;
-  /* Darkish green for text */
-  margin: 0;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: #4a7c5f;
+  letter-spacing: -0.3px;
+  flex: 1;
 }
 
 .ul-menu-button {

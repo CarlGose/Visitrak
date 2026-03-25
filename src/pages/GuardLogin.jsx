@@ -30,7 +30,6 @@ export default function GuardLogin() {
 
   return (
     <div className="guard-login-page">
-      {/* Header bar identical to main app */}
       <header className="guard-login-header">
         <img src="/wuplogo.png" alt="VisiTrack Logo" className="guard-login-header-logo" />
         <span className="guard-login-header-brand">VisiTrack</span>

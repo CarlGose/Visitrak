@@ -30,6 +30,11 @@ export const vipVisitors = [
   { id: 2, date: '10-11-25',   name: 'Carl James Gose', destination: 'Registrar', timeIn: '1:30 pm'  },
 ];
 
+// VIP Queue (Expected VIPs/Cars)
+export const vipQueue = [
+  { id: 101, date: '10-20-2025', name: 'Mayor Cruz', plate: '', destination: 'President\'s Office', addedBy: 'Admin' }
+];
+
 // Currently in-campus (active)
 export const inCampus = [
   { id: 1, date: '10-11-2025', name: 'Angelo Cruz',     destination: 'Registrar', timeIn: '10:30 am' },
