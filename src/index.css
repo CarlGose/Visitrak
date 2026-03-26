@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
 *,
 *::before,
 *::after {
@@ -26,7 +28,7 @@
   --color-yellow-card: #f5e6b0;
   --color-green-card-border: #4a7c59;
   --color-active: #22a06b;
-  --font-main: 'Inter', sans-serif;
+  --font-main: 'Outfit', sans-serif;
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 18px;

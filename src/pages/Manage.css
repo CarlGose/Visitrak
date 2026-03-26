@@ -1,16 +1,19 @@
 .manage-page {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  width: 100%;
+  min-height: 100vh;
   background-color: var(--color-bg);
+  margin-left: 200px;
+  width: calc(100vw - 200px);
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .manage-content {
-  padding: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 24px 28px;
   width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .manage-content h1 {
@@ -269,3 +272,5 @@
     max-width: 90%;
   }
 }
+
+

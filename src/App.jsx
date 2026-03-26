@@ -8,9 +8,10 @@ import Logs from './pages/Logs';
 import Manage from './pages/Manage';
 import GuardLogin from './pages/GuardLogin';
 import GuardDashboard from './pages/GuardDashboard';
-import UsersPage from './pages/UsersPage';
 import UserForm from './pages/user-form';
 import UserLanding from './pages/UserLanding';
+import VipLogs from './pages/VipLogs';
+import VipQueue from './pages/VipQueue';
 
 // Protect admin routes — must be logged in as admin
 function AdminRoute({ children }) {
@@ -41,14 +42,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
           <Route path="/logs" element={<AdminRoute><Logs /></AdminRoute>} />
+          <Route path="/vip-logs" element={<AdminRoute><VipLogs /></AdminRoute>} />
+          <Route path="/vip-queue" element={<AdminRoute><VipQueue /></AdminRoute>} />
           <Route path="/manage" element={<AdminRoute><Manage /></AdminRoute>} />
 
           {/* ── Guard portal ── */}
           <Route path="/guard/login" element={<GuardLogin />} />
           <Route path="/guard/dashboard" element={<GuardRoute><GuardDashboard /></GuardRoute>} />
 
-          {/* ── Public users page ── */}
-          <Route path="/users" element={<UsersPage />} />
 
           {/* ── Registration Form ── */}
           <Route path="/fill-out" element={<UserForm />} />

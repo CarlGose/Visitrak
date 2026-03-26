@@ -29,24 +29,33 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-wrapper">
+
         {/* Branding */}
         <div className="login-brand">
-          <img src="/wuplogo.png" alt="University Seal" className="login-logo" />
+          <img src="/wuplogo.png" alt="VisiTrack Logo" className="login-logo" />
           <span className="login-brand-name">VisiTrack</span>
         </div>
         <p className="login-tagline">Handle visitors without worries</p>
 
-        {/* Heading */}
-        <h1 className="login-welcome">Welcome!</h1>
-        <p className="login-sub">Sign in your admin account</p>
-
         {/* Card */}
         <form className="login-card" onSubmit={handleSubmit}>
+
+          {/* Admin Badge */}
+          <span className="login-admin-badge">Admin Portal</span>
+
+          {/* Heading */}
+          <div className="login-card-heading">
+            <h1 className="login-welcome">Welcome back</h1>
+            <p className="login-sub">Sign in to your admin account</p>
+          </div>
+
+          {/* ID Field */}
           <div className="login-field">
-            <label htmlFor="login-id">ID</label>
+            <label htmlFor="login-id">Admin ID</label>
             <input
               id="login-id"
               type="text"
+              placeholder="Enter your admin ID"
               value={id}
               onChange={e => setId(e.target.value)}
               autoComplete="username"
@@ -54,11 +63,13 @@ export default function Login() {
             />
           </div>
 
+          {/* Password Field */}
           <div className="login-field">
             <label htmlFor="login-password">Password</label>
             <input
               id="login-password"
               type="password"
+              placeholder="Enter your password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               autoComplete="current-password"
@@ -66,6 +77,7 @@ export default function Login() {
             />
           </div>
 
+          {/* Remember Me */}
           <div className="login-remember">
             <input
               id="login-remember"
@@ -76,8 +88,10 @@ export default function Login() {
             <label htmlFor="login-remember">Remember me</label>
           </div>
 
+          {/* Error */}
           {error && <p className="login-error">{error}</p>}
 
+          {/* Submit */}
           <div className="login-actions">
             <button
               id="login-submit-btn"
@@ -85,8 +99,13 @@ export default function Login() {
               className="login-btn"
               disabled={loading}
             >
-              {loading ? 'Signing in…' : 'login'}
+              {loading ? 'Signing in…' : 'Sign In'}
             </button>
+          </div>
+
+          {/* Divider */}
+          <div className="login-divider">
+            <span /><p>or</p><span />
           </div>
         </form>
 
