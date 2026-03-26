@@ -64,6 +64,10 @@ export default function GuardDashboard() {
       <header className="gd-header">
         <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
         <span className="gd-header-brand">VisiTrack</span>
+        <button id="guard-logout-btn" className="gd-header-logout" onClick={handleLogout}>
+          <PowerIcon />
+          <span>Log out</span>
+        </button>
       </header>
 
       <div className="gd-body">
@@ -123,11 +127,7 @@ export default function GuardDashboard() {
           )}
         </div>
 
-        {/* Logout */}
-        <button id="guard-logout-btn" className="gd-logout" onClick={handleLogout}>
-          <PowerIcon />
-          <span>Log out</span>
-        </button>
+
       </div>
     </div>
   );

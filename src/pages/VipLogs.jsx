@@ -79,8 +79,6 @@ export default function VipLogs() {
                   <th>DATE</th>
                   <th>NAME</th>
                   <th>DESTINATION</th>
-                  <th>TIME-IN</th>
-                  <th>TIME-OUT</th>
                 </tr>
               </thead>
               <tbody>
@@ -90,15 +88,11 @@ export default function VipLogs() {
                       <td>{log.date}</td>
                       <td>{log.name}</td>
                       <td>{log.destination}</td>
-                      <td>{log.timeIn}</td>
-                      <td className={log.timeOut ? '' : 'time-out-active'}>
-                        {log.timeOut || 'Active'}
-                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan="3" style={{ textAlign: 'center' }}>No VIP logs found</td>
                   </tr>
                 )}
               </tbody>

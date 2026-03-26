@@ -9,20 +9,14 @@ export default function Dashboard() {
   const currentDate = '10-11-2025';
 
   const { totalVisitorsThisMonth, todaysVisitors, monthYear, todaysDateFormatted } = useMemo(() => {
-    // For simplicity, defining monthYear directly
     const monthYear = 'Oct 2025';
     const todaysDateFormatted = 'Oct 11, 2025';
-
-    // Mock count total visitors this month
-    const currentMonthVisitors = visitorLogs.filter(log => log.date.startsWith('10-'));
-    const totalVisitorsThisMonthCount = 350; // hardcoding to matched the mockup, or calculate
-
-    // Mock count today's visitors
+    const totalVisitorsThisMonthCount = 350;
     const todaysVisitorsCount = visitorLogs.filter(log => log.date === currentDate).length;
 
     return {
       totalVisitorsThisMonth: totalVisitorsThisMonthCount,
-      todaysVisitors: todaysVisitorsCount, // using hardcoded 24 to match mockup from mockData length
+      todaysVisitors: todaysVisitorsCount,
       monthYear,
       todaysDateFormatted
     };
@@ -43,6 +37,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* TOP SECTION: stat cards (left) + VIP Logs big table (right) */}
         <div className="dashboard-top-section">
           <div className="dashboard-stats">
             <div className="stat-card-row">
@@ -67,64 +62,35 @@ export default function Dashboard() {
                 <div className="stat-date">{todaysDateFormatted}</div>
               </div>
             </div>
-
-            <div className="dashboard-vip">
-              <div className="table-container">
-                <div className="table-header vip-header">Currently VIP In-Campus</div>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Name</th>
-                      <th>Destination</th>
-                      <th>Time-in</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vipVisitors.map((visitor, index) => (
-                      <tr key={`vip-${visitor.id || index}`}>
-                        <td>{visitor.date}</td>
-                        <td>{visitor.name}</td>
-                        <td>{visitor.destination}</td>
-                        <td>{visitor.timeIn}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
 
+          {/* VIP Logs — big table (top-right) */}
           <div className="dashboard-in-campus">
-             <div className="table-container header-green">
-              <div className="table-header">Currently In-Campus</div>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Name</th>
-                      <th>Destination</th>
-                      <th>Time-in</th>
+            <div className="table-container header-green">
+              <div className="table-header">VIP Logs</div>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Destination</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vipVisitors.map((log, index) => (
+                    <tr key={`vip-top-${log.id || index}`}>
+                      <td>{log.date}</td>
+                      <td>{log.name}</td>
+                      <td>{log.destination}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {inCampus.map((visitor, index) => (
-                      <tr key={`incampus-${visitor.id || index}`}>
-                        <td>{visitor.date}</td>
-                        <td>{visitor.name}</td>
-                        <td>{visitor.destination}</td>
-                        <td>{visitor.timeIn}</td>
-                      </tr>
-                    ))}
-                    {/* Fill empty rows for layout matching mockup */}
-                    <tr><td colSpan="4" style={{ height: '54px' }}></td></tr>
-                    <tr><td colSpan="4" style={{ height: '54px' }}></td></tr>
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
+        {/* BOTTOM SECTION: Visitor Logs (left) + Currently In-Campus (right, small) */}
         <div className="dashboard-logs-row">
           <div className="dashboard-logs-section">
             <div className="logs-header">
@@ -143,7 +109,7 @@ export default function Dashboard() {
                 </svg>
               </button>
             </div>
-            
+
             <div className="table-container logs-table-container">
               <div style={{ overflowX: 'auto' }}>
                 <table className="data-table logs-table">
@@ -174,6 +140,7 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Currently In-Campus — small section (bottom-right) */}
           <div className="dashboard-logs-section">
             <div className="logs-header">
               <div className="logs-title-area">
@@ -181,17 +148,10 @@ export default function Dashboard() {
                   <span className="logs-today">Today</span>
                   <span className="logs-date">{todaysDateFormatted}</span>
                 </div>
-                <h2>VIP Logs</h2>
+                <h2>Currently In-Campus</h2>
               </div>
-              <button className="view-all-btn" onClick={() => navigate('/vip-logs')}>
-                View All
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              </button>
             </div>
-            
+
             <div className="table-container logs-table-container">
               <div style={{ overflowX: 'auto' }}>
                 <table className="data-table logs-table">
@@ -201,19 +161,15 @@ export default function Dashboard() {
                       <th>NAME</th>
                       <th>DESTINATION</th>
                       <th>TIME-IN</th>
-                      <th>TIME-OUT</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {vipVisitors.map((log, index) => (
-                      <tr key={`vip-log-${log.id || index}`}>
-                        <td>{log.date}</td>
-                        <td>{log.name}</td>
-                        <td>{log.destination}</td>
-                        <td>{log.timeIn}</td>
-                        <td className={log.timeOut ? '' : 'time-out-active'}>
-                          {log.timeOut || 'Active'}
-                        </td>
+                    {inCampus.map((visitor, index) => (
+                      <tr key={`incampus-log-${visitor.id || index}`}>
+                        <td>{visitor.date}</td>
+                        <td>{visitor.name}</td>
+                        <td>{visitor.destination}</td>
+                        <td>{visitor.timeIn}</td>
                       </tr>
                     ))}
                   </tbody>
