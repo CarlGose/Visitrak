@@ -97,7 +97,10 @@ export default function PortalSelect() {
           ))}
         </div>
 
-        <p className="ps-footer">© {new Date().getFullYear()} VisiTrack — Palayan City</p>
+        <p className="ps-footer">© {new Date().getFullYear()} VisiTrack —A Smart QR-Powered Visitor Entry Pass and
+          Tracking System for Enhanced Safety and Efficiency in
+
+          Wesleyan University-Philippines </p>
       </div>
     </div>
   );

@@ -89,3 +89,11 @@ input {
   color: var(--color-active);
   font-weight: 600;
 }
+
+/* VisiTrack brand gradient (dark green → gold) */
+.brand-gradient {
+  background: linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

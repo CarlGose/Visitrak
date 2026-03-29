@@ -30,7 +30,10 @@
 .gd-header-brand {
   font-size: 1.45rem;
   font-weight: 800;
-  color: #4a7c5f;
+  background: linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.3px;
 }
 
@@ -86,12 +89,13 @@
 .gd-profile-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
   flex: 1;
 }
 
 .gd-profile-row {
-  font-size: 0.88rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
   color: #333;
   margin: 0;
 }
@@ -103,12 +107,13 @@
 
 .gd-gate-badge {
   display: inline-block;
-  margin-top: 4px;
-  padding: 2px 10px;
+  margin-top: 6px;
+  padding: 4px 12px;
   background-color: #4a7c5f;
   color: white;
   border-radius: 30px;
-  font-size: 0.78rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
   font-weight: 700;
   align-self: flex-start;
 }
@@ -125,54 +130,114 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background-color: #6b8f7e;
-  color: #ffffff;
+  gap: 18px;
+  padding: 20px 24px;
+  background: #ffffff;
+  color: #1a1a1a;
   border: none;
-  border-radius: 14px;
-  font-size: 1.15rem;
+  border-radius: 20px;
+  font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s;
+  text-align: left;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+  border-left: 5px solid #6b8f7e;
+  transition: transform 0.22s cubic-bezier(0.2,0.8,0.2,1),
+              box-shadow 0.22s ease,
+              background-color 0.22s ease;
+  position: relative;
+  overflow: hidden;
   text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+}
+
+.gd-menu-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(107, 143, 126, 0.1);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  border-radius: inherit;
 }
 
 .gd-menu-btn:hover {
-  background-color: #5a7a6b;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  transform: translateX(6px) translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.gd-menu-btn:hover::before {
+  opacity: 1;
 }
 
 .gd-menu-btn:active {
-  transform: translateY(0);
+  transform: translateX(3px) translateY(0);
 }
 
-.gd-menu-btn--disabled {
-  opacity: 0.55;
-  cursor: default;
+.gd-btn-label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
 }
-.gd-menu-btn--disabled:hover {
-  transform: none;
+
+/* Icon container */
+.gd-btn-icon-container {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background-color: rgba(107, 143, 126, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.22s ease;
+  color: #6b8f7e;
+}
+
+.gd-menu-btn:hover .gd-btn-icon-container {
   background-color: #6b8f7e;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  color: #ffffff;
+}
+
+.gd-btn-icon-container svg {
+  transition: color 0.22s ease;
+}
+
+/* Arrow inside button */
+.gd-btn-arrow {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #6b8f7e;
+  position: relative;
+  z-index: 1;
+  opacity: 0.5;
+  transform: translateX(-4px);
+  transition: opacity 0.22s, transform 0.22s;
+}
+
+.gd-menu-btn:hover .gd-btn-arrow {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .menu-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
-  border: 3px solid #fff;
-  font-size: 0.75rem;
+  border: 3px solid currentColor;
+  font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
   flex-shrink: 0;
+  color: inherit;
+  transition: border-color 0.22s ease;
 }
 
 /* ── Active visitors ── */
@@ -430,6 +495,71 @@
   gap: 8px;
 }
 
+.gl-filters {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.gl-search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #c9c1aa;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  background-color: #fff;
+  transition: box-shadow 0.2s;
+  outline: none;
+}
+.gl-search-input:focus {
+  box-shadow: 0 0 0 2px rgba(107, 143, 126, 0.4);
+}
+
+.gl-date-input {
+  width: 130px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #c9c1aa;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  background-color: #fff;
+  color: #555;
+  outline: none;
+}
+.gl-date-input:focus {
+  box-shadow: 0 0 0 2px rgba(107, 143, 126, 0.4);
+}
+
+.gl-toggle-container {
+  display: flex;
+  width: 100%;
+  background-color: #e2dfd4;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 8px;
+}
+
+.gl-toggle-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gl-toggle-btn.active {
+  background-color: #ffffff;
+  color: #4a7c5f;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
 .gl-row {
   background: #fff;
   border-radius: 10px;
@@ -497,5 +627,81 @@
   }
   .gd-visitor-right {
     max-width: 120px;
+  }
+}
+
+@media (min-width: 768px) {
+  .gd-body {
+    max-width: 1400px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 40px 6%;
+  }
+  .gd-title {
+    font-size: 2.2rem;
+    margin-bottom: 2px;
+  }
+  .gd-profile-card {
+    padding: 24px 32px;
+    gap: 24px;
+  }
+  .gd-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  .gd-profile-row {
+    font-size: 1.25rem;
+  }
+  .gd-gate-badge {
+    font-size: 1.1rem;
+    padding: 6px 16px;
+    margin-top: 8px;
+  }
+  
+  .gd-menu {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
+  .gd-menu-btn {
+    padding: 28px 32px;
+    font-size: 1.4rem;
+  }
+  .gd-btn-icon-container {
+    width: 64px;
+    height: 64px;
+  }
+  .gd-btn-icon-container svg {
+    width: 32px;
+    height: 32px;
+  }
+  .gd-btn-arrow {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Make an odd 5th button span both columns to balance the layout */
+  .gd-menu-btn:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .gl-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .gl-filters {
+    max-width: 800px;
+    margin: 0 auto 16px auto;
+  }
+  .gl-toggle-container {
+    max-width: 400px;
+    margin: 0 auto 16px auto;
+  }
+  .gl-title {
+    font-size: 1.4rem;
   }
 }

@@ -30,18 +30,15 @@ export default function Login() {
     <div className="login-page">
       <div className="login-wrapper">
 
-        {/* Branding */}
-        <div className="login-brand">
-          <img src="/wuplogo.png" alt="VisiTrack Logo" className="login-logo" />
-          <span className="login-brand-name">VisiTrack</span>
-        </div>
-        <p className="login-tagline">Handle visitors without worries</p>
-
         {/* Card */}
         <form className="login-card" onSubmit={handleSubmit}>
 
-          {/* Admin Badge */}
-          <span className="login-admin-badge">Admin Portal</span>
+          {/* Branding Inside Card */}
+          <div className="login-brand" style={{ marginBottom: '8px', justifyContent: 'center' }}>
+            <img src="/wuplogo.png" alt="VisiTrack Logo" className="login-logo" style={{ width: '56px', height: '56px' }} />
+            <span className="login-brand-name">VisiTrack</span>
+          </div>
+          <p className="login-tagline" style={{ textAlign: 'center', marginBottom: '32px' }}>Handle visitors without worries</p>
 
           {/* Heading */}
           <div className="login-card-heading">

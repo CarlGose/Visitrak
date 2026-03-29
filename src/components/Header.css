@@ -39,7 +39,10 @@
 .sidebar-brand {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary, #333);
+  background: linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .sidebar-nav {

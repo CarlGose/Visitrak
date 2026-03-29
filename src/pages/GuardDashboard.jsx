@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Scanner } from '@yudiel/react-qr-scanner';
-import { visitorLogs, vipQueue, DESTINATIONS, PURPOSES } from '../data/mockData';
+import { visitorLogs, vipVisitors, vipQueue, DESTINATIONS, PURPOSES } from '../data/mockData';
 import './GuardDashboard.css';
 
 // Icons
@@ -32,10 +32,22 @@ const QueueIcon = () => (
     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
   </svg>
 );
+const ActiveIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="10" r="3" />
+    <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" />
+  </svg>
+);
 const PowerIcon = () => (
   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
     <line x1="12" y1="2" x2="12" y2="12" />
+  </svg>
+);
+const ArrowRight = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+    <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
   </svg>
 );
 
@@ -57,6 +69,7 @@ export default function GuardDashboard() {
   if (activeSection === 'logs') return <GuardLogs onBack={() => setActiveSection(null)} />;
   if (activeSection === 'qr') return <QrScanner onBack={() => setActiveSection(null)} />;
   if (activeSection === 'vip_queue') return <VipQueueList onBack={() => setActiveSection(null)} />;
+  if (activeSection === 'active') return <ActiveVisitorsScreen onBack={() => setActiveSection(null)} />;
 
   return (
     <div className="gd-page">
@@ -92,41 +105,31 @@ export default function GuardDashboard() {
         {/* Menu buttons */}
         <div className="gd-menu">
           <button className="gd-menu-btn" id="gd-vip-btn" onClick={() => setActiveSection('vip')}>
-            <VipIcon /> <span>VIP/CAR</span>
+            <div className="gd-btn-icon-container"><VipIcon /></div>
+            <span className="gd-btn-label">VIP/CAR</span>
+            <div className="gd-btn-arrow"><ArrowRight /></div>
           </button>
           <button className="gd-menu-btn" id="gd-qr-btn" onClick={() => setActiveSection('qr')}>
-            <QrIcon /> <span>SCAN QR</span>
+            <div className="gd-btn-icon-container"><QrIcon /></div>
+            <span className="gd-btn-label">SCAN QR</span>
+            <div className="gd-btn-arrow"><ArrowRight /></div>
           </button>
           <button className="gd-menu-btn" id="gd-logs-btn" onClick={() => setActiveSection('logs')}>
-            <LogsIcon /> <span>VIEW LOGS</span>
+            <div className="gd-btn-icon-container"><LogsIcon /></div>
+            <span className="gd-btn-label">VIEW LOGS</span>
+            <div className="gd-btn-arrow"><ArrowRight /></div>
           </button>
           <button className="gd-menu-btn" id="gd-queue-btn" onClick={() => setActiveSection('vip_queue')}>
-            <QueueIcon /> <span>VIP QUEUES</span>
+            <div className="gd-btn-icon-container"><QueueIcon /></div>
+            <span className="gd-btn-label">VIP QUEUES</span>
+            <div className="gd-btn-arrow"><ArrowRight /></div>
+          </button>
+          <button className="gd-menu-btn" id="gd-active-btn" onClick={() => setActiveSection('active')}>
+            <div className="gd-btn-icon-container"><ActiveIcon /></div>
+            <span className="gd-btn-label">ACTIVE VISITORS</span>
+            <div className="gd-btn-arrow"><ArrowRight /></div>
           </button>
         </div>
-
-        {/* Active visitors */}
-        <div className="gd-active-section">
-          <h2 className="gd-active-title">Active</h2>
-          {activeVisitors.length === 0 ? (
-            <p className="gd-no-active">No active visitors</p>
-          ) : (
-            activeVisitors.map(v => (
-              <div key={v.id} className="gd-visitor-row">
-                <div className="gd-visitor-main">
-                  <p className="gd-visitor-name">{v.name}</p>
-                  <p className="gd-visitor-sub"><strong>Time in:</strong> {v.timeIn}</p>
-                  <p className="gd-visitor-sub gd-time-out">Time Out: —</p>
-                </div>
-                <div className="gd-visitor-right">
-                  <p className="gd-visitor-date">{v.date}</p>
-                  <p className="gd-visitor-dest">{v.destination} – {v.purpose}</p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
 
       </div>
     </div>
@@ -208,8 +211,35 @@ function VipForm({ onBack, gate }) {
    Guard Logs sub-screen
 ───────────────────────────────────── */
 function GuardLogs({ onBack }) {
+  const [showVip, setShowVip] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const logs = visitorLogs.slice(0, 12);
+
+  // Helper to convert mockData dates like '10-11-2025' or '10-9-2025' to 'YYYY-MM-DD'
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    let [m, d, y] = parts;
+    if (m.length === 1) m = '0' + m;
+    if (d.length === 1) d = '0' + d;
+    if (y.length === 2) y = '20' + y;
+    return `${y}-${m}-${d}`;
+  };
+
+  const baseLogs = showVip ? vipVisitors : visitorLogs;
+
+  const filteredLogs = baseLogs.filter(log => {
+    const term = searchTerm.toLowerCase();
+    const searchMatch = !term || (
+      log.name?.toLowerCase().includes(term) ||
+      log.destination?.toLowerCase().includes(term) ||
+      log.purpose?.toLowerCase().includes(term)
+    );
+    const dateMatch = !selectedDate || normalizeDate(log.date) === selectedDate;
+    return searchMatch && dateMatch;
+  });
 
   return (
     <div className="gd-page">
@@ -223,21 +253,57 @@ function GuardLogs({ onBack }) {
           <h2 className="gl-title">View Logs</h2>
           <span className="gl-date">{today}</span>
         </div>
+
+        <div className="gl-toggle-container">
+          <button
+            className={`gl-toggle-btn ${!showVip ? 'active' : ''}`}
+            onClick={() => setShowVip(false)}
+          >
+            Regular Logs
+          </button>
+          <button
+            className={`gl-toggle-btn ${showVip ? 'active' : ''}`}
+            onClick={() => setShowVip(true)}
+          >
+            VIP Logs
+          </button>
+        </div>
+
+        <div className="gl-filters">
+          <input
+            type="text"
+            className="gl-search-input"
+            placeholder="Search by name, destination..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <input
+            type="date"
+            className="gl-date-input"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
+
         <div className="gl-list">
-          {logs.map(v => (
-            <div key={v.id} className={`gl-row ${v.isActive ? 'gl-row--active' : ''}`}>
-              <div className="gl-left">
-                <p className="gl-name">{v.name}</p>
-                <p className="gl-sub"><strong>Time in:</strong> {v.timeIn}</p>
-                <p className="gl-sub gl-timeout">{v.timeOut ? `Time Out: ${v.timeOut}` : 'Time Out: —'}</p>
+          {filteredLogs.length === 0 ? (
+            <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No {showVip ? 'VIP' : 'visitor'} logs found</p>
+          ) : (
+            filteredLogs.map(v => (
+              <div key={v.id} className={`gl-row ${v.isActive ? 'gl-row--active' : ''}`} style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+                <div className="gl-left">
+                  <p className="gl-name">{v.name}</p>
+                  <p className="gl-sub"><strong>Time in:</strong> {v.timeIn}</p>
+                  <p className="gl-sub gl-timeout">{v.timeOut ? `Time Out: ${v.timeOut}` : 'Time Out: —'}</p>
+                </div>
+                <div className="gl-right">
+                  <p className="gl-rdate">{v.date}</p>
+                  <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
+                  {v.isActive && <span className="gl-badge" style={showVip ? { backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082' } : {}}>Active</span>}
+                </div>
               </div>
-              <div className="gl-right">
-                <p className="gl-rdate">{v.date}</p>
-                <p className="gl-rdest">{v.destination} – {v.purpose}</p>
-                {v.isActive && <span className="gl-badge">Active</span>}
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
@@ -557,6 +623,109 @@ function VipQueueList({ onBack }) {
                     style={{ flex: 1, padding: '8px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
                     ✕ Cancel
                   </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────
+   Active Visitors sub-screen
+───────────────────────────────────── */
+function ActiveVisitorsScreen({ onBack }) {
+  const [showVip, setShowVip] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const activeRegular = visitorLogs.filter(v => v.isActive);
+  const activeVIPs = vipVisitors.filter(v => v.timeOut == null); // assuming VIPs without timeOut are active
+  const baseActive = showVip ? activeVIPs : activeRegular;
+
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    let [m, d, y] = parts;
+    if (m.length === 1) m = '0' + m;
+    if (d.length === 1) d = '0' + d;
+    if (y.length === 2) y = '20' + y;
+    return `${y}-${m}-${d}`;
+  };
+
+  const filteredLogs = baseActive.filter(log => {
+    const term = searchTerm.toLowerCase();
+    const searchMatch = !term || (
+      log.name?.toLowerCase().includes(term) ||
+      log.destination?.toLowerCase().includes(term) ||
+      log.purpose?.toLowerCase().includes(term)
+    );
+    const dateMatch = !selectedDate || normalizeDate(log.date) === selectedDate;
+    return searchMatch && dateMatch;
+  });
+
+  return (
+    <div className="gd-page">
+      <header className="gd-header">
+        <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
+        <span className="gd-header-brand">VisiTrack</span>
+      </header>
+      <div className="gd-body">
+        <div className="vip-back-row">
+          <button className="gd-back-btn" onClick={onBack}>← Back</button>
+          <h2 className="gl-title">Active Visitors</h2>
+          <span className="gl-date">{today}</span>
+        </div>
+
+        <div className="gl-toggle-container">
+          <button
+            className={`gl-toggle-btn ${!showVip ? 'active' : ''}`}
+            onClick={() => setShowVip(false)}
+          >
+            Regular
+          </button>
+          <button
+            className={`gl-toggle-btn ${showVip ? 'active' : ''}`}
+            onClick={() => setShowVip(true)}
+          >
+            VIP
+          </button>
+        </div>
+
+        <div className="gl-filters">
+          <input
+            type="text"
+            className="gl-search-input"
+            placeholder="Search by name, destination..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <input
+            type="date"
+            className="gl-date-input"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
+
+        <div className="gl-list">
+          {filteredLogs.length === 0 ? (
+            <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No active {showVip ? 'VIPs' : 'visitors'} found</p>
+          ) : (
+            filteredLogs.map(v => (
+              <div key={v.id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+                <div className="gl-left">
+                  <p className="gl-name">{v.name}</p>
+                  <p className="gl-sub"><strong>Time in:</strong> {v.timeIn}</p>
+                  <p className="gl-sub gl-timeout">Time Out: —</p>
+                </div>
+                <div className="gl-right">
+                  <p className="gl-rdate">{v.date}</p>
+                  <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
+                  <span className="gl-badge" style={showVip ? { backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082' } : {}}>Active</span>
                 </div>
               </div>
             ))
