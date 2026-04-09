@@ -16,7 +16,10 @@ export default function GuardLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!gate) { setError('Please select a gate.'); return; }
+    if (!gate) {
+      setError('Please select a gate.');
+      return;
+    }
     setLoading(true);
     await new Promise(r => setTimeout(r, 400));
     const ok = guardLogin(guardId, password, gate);
@@ -30,18 +33,27 @@ export default function GuardLogin() {
 
   return (
     <div className="guard-login-page">
-      <header className="guard-login-header">
-        <img src="/wuplogo.png" alt="VisiTrack Logo" className="guard-login-header-logo" />
-        <span className="guard-login-header-brand">VisiTrack</span>
-        <Link to="/" className="guard-login-admin-link">← Portal Selection</Link>
-      </header>
+      <div className="guard-login-wrapper">
 
-      <div className="guard-login-body">
+        {/* Card */}
         <form className="guard-login-card" onSubmit={handleSubmit}>
-          <h1 className="guard-login-title">Guard Login</h1>
 
+          {/* Branding Inside Card */}
+          <div className="guard-login-brand" style={{ marginBottom: '8px', justifyContent: 'center' }}>
+            <img src="/wuplogo.png" alt="VisiTrack Logo" className="guard-login-logo" style={{ width: '56px', height: '56px' }} />
+            <span className="guard-login-brand-name">VisiTrack</span>
+          </div>
+          <p className="guard-login-tagline" style={{ textAlign: 'center', marginBottom: '32px' }}>Handle visitors without worries</p>
+
+          {/* Heading */}
+          <div className="guard-login-card-heading">
+            <h1 className="guard-login-welcome">Guard Access</h1>
+            <p className="guard-login-sub">Sign in to your guard terminal</p>
+          </div>
+
+          {/* ID Field */}
           <div className="guard-login-field">
-            <label htmlFor="guard-id">ID</label>
+            <label htmlFor="guard-id">Guard ID</label>
             <input
               id="guard-id"
               type="text"
@@ -53,6 +65,7 @@ export default function GuardLogin() {
             />
           </div>
 
+          {/* Password Field */}
           <div className="guard-login-field">
             <label htmlFor="guard-password">Password</label>
             <input
@@ -66,23 +79,28 @@ export default function GuardLogin() {
             />
           </div>
 
-          <div className="guard-login-field">
+          {/* Gate Number Field */}
+          <div className="guard-login-field" style={{ marginBottom: '28px' }}>
             <label htmlFor="guard-gate">Gate Number</label>
-            <select
-              id="guard-gate"
-              value={gate}
-              onChange={e => setGate(e.target.value)}
-              required
-            >
-              <option value="">— Select Gate —</option>
-              {GATE_OPTIONS.map(g => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
+            <div className="guard-login-select-wrapper">
+              <select
+                id="guard-gate"
+                value={gate}
+                onChange={e => setGate(e.target.value)}
+                required
+              >
+                <option value="" disabled>— Select Gate —</option>
+                {GATE_OPTIONS.map(g => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
+          {/* Error */}
           {error && <p className="guard-login-error">{error}</p>}
 
+          {/* Submit */}
           <div className="guard-login-actions">
             <button
               id="guard-login-btn"
@@ -90,13 +108,22 @@ export default function GuardLogin() {
               className="guard-login-btn"
               disabled={loading}
             >
-              {loading ? 'Signing in…' : 'login'}
+              {loading ? 'Signing in…' : 'Sign In'}
             </button>
+          </div>
+
+          {/* Divider */}
+          <div className="guard-login-divider">
+            <span /><p>or</p><span />
           </div>
         </form>
 
-        <p className="guard-login-hint">
+        <p className="guard-login-hint" style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.85rem', color: 'rgba(30, 40, 35, 0.6)' }}>
           Default password for all guards: <strong>guard123</strong>
+        </p>
+
+        <p className="guard-login-guard-link-text">
+          <Link to="/" className="guard-login-guard-link">← Back to Portal Selection</Link>
         </p>
       </div>
     </div>

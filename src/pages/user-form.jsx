@@ -1,7 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import QRCode from 'react-qr-code';
 import { Link } from 'react-router-dom';
 import './user-form.css';
+
+const destGroups = [
+    {
+        label: "Offices",
+        options: [
+            { value: "OFFICE OF STUDENT AFFAIRS", label: "Office of Student Affairs" },
+            { value: "DEAN'S OFFICE", label: "Dean's Office" },
+            { value: "PRESIDENT'S OFFICE", label: "President's Office" },
+            { value: "ACCOUNTING", label: "Accounting" },
+            { value: "REGISTRAR", label: "Registrar" },
+            { value: "FACULTY", label: "Faculty" }
+        ]
+    },
+    {
+        label: "Basic Education",
+        options: [
+            { value: "SHARE", label: "SHARE" },
+            { value: "Center for Child Development", label: "Center for Child Development" },
+            { value: "Elementary", label: "Elementary" },
+            { value: "High School", label: "High School" }
+        ]
+    },
+    {
+        label: "College",
+        options: [
+            { value: "Arts and Sciences (CAS)", label: "Arts & Sciences (CAS)" },
+            { value: "College of Business and Accountancy", label: "Business & Accountancy (CBA)" },
+            { value: "Criminal Justice Education (CCJE)", label: "Criminal Justice (CCJE)" },
+            { value: "Education (CoEd)", label: "Education (CoEd)" },
+            { value: "Engineering and Computer Technology (CECT)", label: "Engineering & Tech (CECT)" },
+            { value: "Hospitality and Tourism Management (CHTM)", label: "Tourism & Hospitality (CHTM)" },
+            { value: "Nursing", label: "Nursing" },
+            { value: "Allied Medical Sciences", label: "Allied Medical Sciences" }
+        ]
+    }
+];
 
 const UserForm = () => {
     const [formData, setFormData] = useState({
@@ -9,11 +45,25 @@ const UserForm = () => {
         address: '',
         destination: '',
         purpose: '',
-        date: ''
+        date: new Date().toISOString().split('T')[0]
     });
 
     const [qrValue, setQrValue] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
+    
+    // Custom Dropdown State
+    const [destOpen, setDestOpen] = useState(false);
+    const destRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (destRef.current && !destRef.current.contains(event.target)) {
+                setDestOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -40,7 +90,7 @@ const UserForm = () => {
             address: '',
             destination: '',
             purpose: '',
-            date: ''
+            date: new Date().toISOString().split('T')[0]
         });
         setQrValue('');
         setIsSubmitted(false);
@@ -51,13 +101,16 @@ const UserForm = () => {
         return (
             <div className="form-page">
                 <div className="form-wrapper">
-                    <div className="form-header">
-                        <img src="/wuplogo.png" alt="VisiTrack Logo" className="form-header-logo" />
-                        <h2 className="form-title">Visitor Registration</h2>
-                        <p className="form-subtitle">Fill out the form below to generate your entry pass</p>
+                    <div className="form-brand">
+                        <img src="/wuplogo.png" alt="VisiTrack Logo" />
+                        <span>VisiTrack</span>
                     </div>
 
                     <form className="form-card" onSubmit={handleSubmit}>
+                        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                            <h2 className="form-title">Visitor Access Form</h2>
+                            <p className="form-subtitle">Fill out the form below to generate your entry pass</p>
+                        </div>
                         <div className="form-field">
                             <label htmlFor="name">Full Name <span className="req">*</span></label>
                             <input
@@ -84,23 +137,37 @@ const UserForm = () => {
                             />
                         </div>
 
-                        <div className="form-field">
-                            <label htmlFor="destination">Destination <span className="req">*</span></label>
-                            <select
-                                id="destination"
-                                name="destination"
-                                value={formData.destination}
-                                onChange={handleChange}
-                                required
+                        <div className="form-field" ref={destRef} style={{ position: 'relative' }}>
+                            <label>Destination <span className="req">*</span></label>
+                            <div 
+                                className={`custom-select ${destOpen ? 'open' : ''}`} 
+                                onClick={() => setDestOpen(!destOpen)}
                             >
-                                <option value="" disabled>Select a destination...</option>
-                                <option value="OFFICE OF STUDENT AFFAIR">OFFICE OF STUDENT AFFAIR</option>
-                                <option value="DEAN'S OFFICE">DEAN'S OFFICE</option>
-                                <option value="PRESIDENTS OFFICE">PRESIDENTS OFFICE</option>
-                                <option value="ACCOUNTING">ACCOUNTING</option>
-                                <option value="REGISTRAR">REGISTRAR</option>
-                                <option value="FACULTY">FACULTY</option>
-                            </select>
+                                {formData.destination || <span style={{color: 'rgba(26, 40, 32, 0.4)'}}>Select a destination...</span>}
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a2820" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+
+                            {destOpen && (
+                                <div className="custom-options">
+                                    {destGroups.map((group, idx) => (
+                                        <div key={idx}>
+                                            <div className="custom-optgroup">{group.label}</div>
+                                            {group.options.map((opt, i) => (
+                                                <div 
+                                                    key={i} 
+                                                    className="custom-option"
+                                                    onClick={() => {
+                                                        handleChange({ target: { name: 'destination', value: opt.value }});
+                                                        setDestOpen(false);
+                                                    }}
+                                                >
+                                                    {opt.label}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="form-field">
@@ -117,15 +184,10 @@ const UserForm = () => {
                         </div>
 
                         <div className="form-field">
-                            <label htmlFor="date">Date of Visit <span className="req">*</span></label>
-                            <input
-                                type="date"
-                                id="date"
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>Date of Visit</label>
+                            <div style={{ padding: '14px 16px', background: 'rgba(255, 255, 255, 0.4)', border: '2px solid rgba(107, 143, 126, 0.2)', borderRadius: '14px', fontSize: '1rem', color: 'rgba(26, 40, 32, 0.6)', fontFamily: 'Outfit', fontWeight: '600', userSelect: 'none' }}>
+                                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            </div>
                         </div>
 
                         <div className="form-actions">

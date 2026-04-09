@@ -64,30 +64,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* VIP Logs — big table (top-right) */}
-          <div className="dashboard-in-campus">
-            <div className="table-container header-green">
-              <div className="table-header">VIP Logs</div>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Name</th>
-                    <th>Destination</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vipVisitors.map((log, index) => (
-                    <tr key={`vip-top-${log.id || index}`}>
-                      <td>{log.date}</td>
-                      <td>{log.name}</td>
-                      <td>{log.destination}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+
         </div>
 
         {/* BOTTOM SECTION: Visitor Logs (left) + Currently In-Campus (right, small) */}

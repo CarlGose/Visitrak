@@ -165,42 +165,47 @@ function VipForm({ onBack, gate }) {
   };
 
   return (
-    <div className="gd-page vip-page-override">
-      <header className="gd-header vip-header-centered">
-        <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" />
-      </header>
-      <div className="gd-body vip-body-override">
-        <div className="vip-back-row">
-          <button className="gd-back-btn-icon" onClick={onBack}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          </button>
-        </div>
-        <div className="vip-form-card">
-          <h2 className="vip-form-title">VIP INFO</h2>
+    <div className="vp-page-override">
+      <div className="vp-wrapper">
+        <form className="vp-form-card" onSubmit={handleAdd}>
+          <div className="vp-brand">
+            <img src="/wuplogo.png" alt="VisiTrack Logo" className="vp-logo" />
+            <span className="vp-brand-name">VisiTrack</span>
+          </div>
+          <p className="vp-tagline">Handle visitors without worries</p>
+
+          <div className="vp-form-heading">
+            <h1 className="vp-form-title">VIP Details</h1>
+            <p className="vp-form-sub">Log a secure VIP entry pass</p>
+          </div>
 
           {submitted && (
-            <div className="vip-success">✓ Entry logged successfully!</div>
+            <div className="vp-success">✓ VIP entry logged successfully!</div>
           )}
 
-          <form className="vip-form" onSubmit={handleAdd}>
-            <div className="vip-field">
+          <div className="vp-form">
+            <div className="vp-field">
               <label htmlFor="vip-name">Name <span className="req">*</span></label>
-              <input id="vip-name" type="text" value={form.name} onChange={set('name')} required />
+              <input id="vip-name" type="text" placeholder="Visitor's full name" value={form.name} onChange={set('name')} required />
             </div>
-            <div className="vip-field">
+            <div className="vp-field">
               <label htmlFor="vip-plate">Plate No. <span className="req">*</span></label>
-              <input id="vip-plate" type="text" value={form.plate} onChange={set('plate')} required />
+              <input id="vip-plate" type="text" placeholder="Vehicle plate number" value={form.plate} onChange={set('plate')} required />
             </div>
-            <div className="vip-field">
+            <div className="vp-field">
               <label htmlFor="vip-person">Person to Visit <span className="req">*</span></label>
-              <input id="vip-person" type="text" value={form.personToVisit} onChange={set('personToVisit')} required />
+              <input id="vip-person" type="text" placeholder="Whom they are visiting" value={form.personToVisit} onChange={set('personToVisit')} required />
             </div>
-            <div className="vip-field">
+            <div className="vp-field" style={{ marginBottom: '12px' }}>
               <label htmlFor="vip-date">Date <span className="req">*</span></label>
               <input id="vip-date" type="date" value={form.date} onChange={set('date')} required />
             </div>
-            <button id="vip-add-btn" type="submit" className="vip-add-btn">SUBMIT</button>
-          </form>
+            <button id="vip-add-btn" type="submit" className="vp-add-btn">Log Info</button>
+          </div>
+        </form>
+
+        <div className="vp-back-link">
+          <button className="vp-back-link-btn" onClick={onBack}>← Back to Dashboard</button>
         </div>
       </div>
     </div>
@@ -231,6 +236,7 @@ function GuardLogs({ onBack }) {
   const baseLogs = showVip ? vipVisitors : visitorLogs;
 
   const filteredLogs = baseLogs.filter(log => {
+    if (log.isActive) return false;
     const term = searchTerm.toLowerCase();
     const searchMatch = !term || (
       log.name?.toLowerCase().includes(term) ||
@@ -248,8 +254,11 @@ function GuardLogs({ onBack }) {
         <span className="gd-header-brand">VisiTrack</span>
       </header>
       <div className="gd-body">
-        <div className="vip-back-row">
-          <button className="gd-back-btn" onClick={onBack}>← Back</button>
+        <div className="vip-back-row" style={{ alignItems: 'center' }}>
+          <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1rem', padding: 0, margin: 0, border: 'none', background: 'none', cursor: 'pointer' }}>
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+             Back
+          </button>
           <h2 className="gl-title">View Logs</h2>
           <span className="gl-date">{today}</span>
         </div>
@@ -290,16 +299,15 @@ function GuardLogs({ onBack }) {
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No {showVip ? 'VIP' : 'visitor'} logs found</p>
           ) : (
             filteredLogs.map(v => (
-              <div key={v.id} className={`gl-row ${v.isActive ? 'gl-row--active' : ''}`} style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+              <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
                   <p className="gl-sub"><strong>Time in:</strong> {v.timeIn}</p>
-                  <p className="gl-sub gl-timeout">{v.timeOut ? `Time Out: ${v.timeOut}` : 'Time Out: —'}</p>
+                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.timeOut || '—'}</p>
                 </div>
                 <div className="gl-right">
                   <p className="gl-rdate">{v.date}</p>
                   <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
-                  {v.isActive && <span className="gl-badge" style={showVip ? { backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082' } : {}}>Active</span>}
                 </div>
               </div>
             ))
@@ -579,54 +587,62 @@ function VipQueueList({ onBack }) {
   };
 
   return (
-    <div className="gd-page">
-      <header className="gd-header">
-        <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
-        <span className="gd-header-brand">VisiTrack</span>
-      </header>
-      <div className="gd-body" style={{ display: 'flex', flexDirection: 'column' }}>
-        <div className="vip-back-row">
-          <button className="gd-back-btn" onClick={onBack}>← Back</button>
-          <h2 className="gl-title" style={{ flex: 1, textAlign: 'center' }}>VIP Queues</h2>
-          <span className="gl-date">{today}</span>
-        </div>
+    <div className="vp-page-override">
+      {/* Branding top left */}
+      <div style={{ position: 'absolute', top: '24px', left: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src="/wuplogo.png" alt="VisiTrack Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+        <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', background: 'linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>VisiTrack</span>
+      </div>
 
-        <div className="gl-list" style={{ marginTop: '1rem', flex: 1, overflowY: 'auto' }}>
-          {vipQueue.length === 0 ? (
-            <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '3rem' }}>No VIPs queued currently</p>
-          ) : (
-            vipQueue.map(v => (
-              <div key={v.id} className="gl-row" style={{ borderLeft: '4px solid #fbc02d', backgroundColor: '#fff', display: 'block' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div className="gl-left">
-                    <p className="gl-name">{v.name}</p>
-                    <p className="gl-sub" style={{ marginTop: '4px' }}><strong>Plate No:</strong> {v.plate}</p>
-                    <p className="gl-sub"><strong>Logged By:</strong> {v.addedBy} at {v.timestamp || '--:--'}</p>
+      <div className="vp-wrapper" style={{ maxWidth: '1400px', width: '95%', height: '90vh', margin: 'auto' }}>
+        <div className="vp-form-card" style={{ padding: '40px', height: '100%', maxHeight: 'none', display: 'flex', flexDirection: 'column' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexShrink: 0 }}>
+             <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1.1rem', padding: 0, margin: 0 }}>
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+               Back
+             </button>
+             <h2 className="vp-form-title" style={{ margin: 0, fontSize: '2.2rem', textAlign: 'center' }}>VIP Queues</h2>
+             <span style={{ color: '#1a2820', fontWeight: '600', fontSize: '1rem' }}>{today}</span>
+          </div>
+
+          <div style={{ overflowY: 'auto', flex: 1, paddingRight: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {vipQueue.length === 0 ? (
+              <p className="vp-form-sub" style={{ textAlign: 'center', margin: '40px 0' }}>No VIPs queued currently</p>
+            ) : (
+              vipQueue.map(v => (
+                <div key={v.id} style={{ backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 6px 16px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
+                    <div>
+                      <p style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', margin: '0 0 8px' }}>{v.name}</p>
+                      <p style={{ margin: '0 0 6px', fontSize: '1rem', color: '#444' }}><strong>Plate No:</strong> {v.plate}</p>
+                      <p style={{ margin: 0, fontSize: '1rem', color: '#444' }}><strong>Logged By:</strong> {v.addedBy} {v.timestamp ? `at ${v.timestamp}` : ''}</p>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{ margin: '0 0 8px', color: '#c62828', fontWeight: '800', fontSize: '1rem' }}>Expected: {v.date}</p>
+                      <p style={{ margin: '0 0 10px', fontSize: '1rem', color: '#444' }}>
+                        {v.personToVisit ? `Visiting: ${v.personToVisit}` : v.destination}
+                      </p>
+                      <span style={{ backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082', borderRadius: '20px', padding: '4px 12px', fontSize: '0.8rem', fontWeight: '800', display: 'inline-block' }}>VIP STATUS</span>
+                    </div>
                   </div>
-                  <div className="gl-right" style={{ textAlign: 'right' }}>
-                    <p className="gl-rdate" style={{ color: '#d32f2f', fontWeight: 'bold' }}>Expected: {v.date}</p>
-                    <p className="gl-rdest" style={{ marginTop: '4px' }}>
-                      {v.personToVisit ? `Visiting: ${v.personToVisit}` : v.destination}
-                    </p>
-                    <span className="gl-badge" style={{ backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082', marginTop: '6px', display: 'inline-block' }}>VIP STATUS</span>
+
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '20px' }}>
+                    <button
+                      onClick={() => handleArrived(v)}
+                      style={{ flex: 1, padding: '14px', backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', fontSize: '1.05rem' }}>
+                      ✓ Mark Arrived
+                    </button>
+                    <button
+                      onClick={() => handleCancel(v.id)}
+                      style={{ flex: 1, padding: '14px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', fontSize: '1.05rem' }}>
+                      ✕ Cancel
+                    </button>
                   </div>
                 </div>
-
-                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid #eee', paddingTop: '12px' }}>
-                  <button
-                    onClick={() => handleArrived(v)}
-                    style={{ flex: 1, padding: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    ✓ Mark Arrived
-                  </button>
-                  <button
-                    onClick={() => handleCancel(v.id)}
-                    style={{ flex: 1, padding: '8px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    ✕ Cancel
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -674,8 +690,11 @@ function ActiveVisitorsScreen({ onBack }) {
         <span className="gd-header-brand">VisiTrack</span>
       </header>
       <div className="gd-body">
-        <div className="vip-back-row">
-          <button className="gd-back-btn" onClick={onBack}>← Back</button>
+        <div className="vip-back-row" style={{ alignItems: 'center' }}>
+          <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1rem', padding: 0, margin: 0, border: 'none', background: 'none', cursor: 'pointer' }}>
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+             Back
+          </button>
           <h2 className="gl-title">Active Visitors</h2>
           <span className="gl-date">{today}</span>
         </div>
