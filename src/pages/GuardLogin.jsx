@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { GATE_OPTIONS } from '../data/mockData';
@@ -8,10 +8,19 @@ export default function GuardLogin() {
   const [guardId, setGuardId] = useState('');
   const [password, setPassword] = useState('');
   const [gate, setGate] = useState('');
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { guardLogin } = useAuth();
+  const { guardLogin, user, restoreSession } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.role === 'guard') {
+      navigate('/guard/dashboard', { replace: true });
+    } else if (!user) {
+      restoreSession('guard');
+    }
+  }, [user, navigate, restoreSession]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +31,7 @@ export default function GuardLogin() {
     }
     setLoading(true);
     await new Promise(r => setTimeout(r, 400));
-    const ok = guardLogin(guardId, password, gate);
+    const ok = await guardLogin(guardId, password, gate, remember);
     setLoading(false);
     if (ok) {
       navigate('/guard/dashboard');
@@ -95,6 +104,18 @@ export default function GuardLogin() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Remember Me */}
+          <div className="guard-login-remember" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', padding: '0 4px' }}>
+            <input
+              id="guard-remember"
+              type="checkbox"
+              checked={remember}
+              onChange={e => setRemember(e.target.checked)}
+              style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: 'var(--color-gold)' }}
+            />
+            <label htmlFor="guard-remember" style={{ fontSize: '0.9rem', color: 'rgba(30, 40, 35, 0.8)', cursor: 'pointer' }}>Remember me</label>
           </div>
 
           {/* Error */}

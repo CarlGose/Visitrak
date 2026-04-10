@@ -1,30 +1,72 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import { visitorLogs, vipVisitors, inCampus } from '../data/mockData';
+import { supabase } from '../supabaseClient';
 import './Dashboard.css';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const currentDate = '10-11-2025';
+  const [logs, setLogs] = useState([]);
+  const [activeLogs, setActiveLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const { totalVisitorsThisMonth, todaysVisitors, monthYear, todaysDateFormatted } = useMemo(() => {
-    const monthYear = 'Oct 2025';
-    const todaysDateFormatted = 'Oct 11, 2025';
-    const totalVisitorsThisMonthCount = 350;
-    const todaysVisitorsCount = visitorLogs.filter(log => log.date === currentDate).length;
+  // For realism, let's use actual current dates instead of hardcoded 10-11-2025
+  const today = new Date();
+  const currentDate = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const monthYear = today.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  const todaysDateFormatted = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const isoDate = `${year}-${month}-${day}`;
+
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    const { data: allLogs } = await supabase
+      .from('visitor_logs')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (allLogs) {
+      setLogs(allLogs);
+      setActiveLogs(allLogs.filter(L => L.is_active));
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+
+    // Real-time subscription — re-fetch whenever any row changes
+    const channel = supabase
+      .channel('dashboard-visitor-logs')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'visitor_logs' },
+        () => { fetchDashboardData(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
+  const { totalVisitorsThisMonth, todaysVisitors } = useMemo(() => {
+    if (!logs) return { totalVisitorsThisMonth: 0, todaysVisitors: 0 };
+    
+    // Very simple stat calculation
+    const totalVisitorsThisMonthCount = logs.length; // placeholder for actual month query
+    const todaysVisitorsCount = logs.filter(log => log.date === currentDate || log.date === isoDate).length;
 
     return {
       totalVisitorsThisMonth: totalVisitorsThisMonthCount,
-      todaysVisitors: todaysVisitorsCount,
-      monthYear,
-      todaysDateFormatted
+      todaysVisitors: todaysVisitorsCount
     };
-  }, []);
+  }, [logs, currentDate, isoDate]);
 
   const recentLogs = useMemo(() => {
-    return visitorLogs.filter(log => log.date === currentDate);
-  }, []);
+    return logs.filter(log => log.date === currentDate || log.date === isoDate);
+  }, [logs, currentDate, isoDate]);
 
   return (
     <div className="dashboard-page">
@@ -100,12 +142,16 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {recentLogs.map((log) => (
+                    {loading ? (
+                      <tr><td colSpan="5" style={{textAlign: 'center'}}>Loading...</td></tr>
+                    ) : recentLogs.length === 0 ? (
+                      <tr><td colSpan="5" style={{textAlign: 'center'}}>No visitors today</td></tr>
+                    ) : recentLogs.map((log) => (
                       <tr key={`log-${log.id}`}>
                         <td>{log.date}</td>
-                        <td>{log.timeIn}</td>
-                        <td className={log.timeOut ? '' : 'time-out-active'}>
-                          {log.timeOut || 'Active'}
+                        <td>{log.time_in}</td>
+                        <td className={log.time_out ? '' : 'time-out-active'}>
+                          {log.time_out || 'Active'}
                         </td>
                         <td>{log.name}</td>
                         <td>{log.destination}</td>
@@ -141,12 +187,16 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {inCampus.map((visitor, index) => (
-                      <tr key={`incampus-log-${visitor.id || index}`}>
+                    {loading ? (
+                       <tr><td colSpan="4" style={{textAlign: 'center'}}>Loading...</td></tr>
+                    ) : activeLogs.length === 0 ? (
+                       <tr><td colSpan="4" style={{textAlign: 'center'}}>No one in campus</td></tr>
+                    ) : activeLogs.map((visitor) => (
+                      <tr key={`incampus-log-${visitor.id}`}>
                         <td>{visitor.date}</td>
                         <td>{visitor.name}</td>
                         <td>{visitor.destination}</td>
-                        <td>{visitor.timeIn}</td>
+                        <td>{visitor.time_in}</td>
                       </tr>
                     ))}
                   </tbody>

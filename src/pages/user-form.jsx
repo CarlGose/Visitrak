@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import QRCode from 'react-qr-code';
 import { Link } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 import './user-form.css';
 
 const destGroups = [
@@ -40,17 +41,22 @@ const destGroups = [
 ];
 
 const UserForm = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        address: '',
-        destination: '',
-        purpose: '',
-        date: new Date().toISOString().split('T')[0]
+    const [formData, setFormData] = useState(() => {
+        const saved = localStorage.getItem('visitrak_qr_form');
+        if (saved) return JSON.parse(saved);
+        return {
+            name: '',
+            address: '',
+            destination: '',
+            purpose: '',
+            date: new Date().toISOString().split('T')[0]
+        };
     });
 
-    const [qrValue, setQrValue] = useState('');
-    const [isSubmitted, setIsSubmitted] = useState(false);
-    
+    const [qrValue, setQrValue] = useState(() => localStorage.getItem('visitrak_qr_value') || '');
+    const [isSubmitted, setIsSubmitted] = useState(() => !!localStorage.getItem('visitrak_qr_value'));
+    const [isInside, setIsInside] = useState(false);
+
     // Custom Dropdown State
     const [destOpen, setDestOpen] = useState(false);
     const destRef = useRef(null);
@@ -64,6 +70,55 @@ const UserForm = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // Hook to check status on load and subscribe to real-time changes
+    useEffect(() => {
+        if (!isSubmitted || !formData.name) return;
+
+        const checkStatus = async () => {
+            const { data } = await supabase
+                .from('visitor_logs')
+                .select('*')
+                .eq('name', formData.name)
+                .eq('date', formData.date)
+                .order('id', { ascending: false })
+                .limit(1);
+
+            if (data && data.length > 0) {
+                const log = data[0];
+                if (log.is_active === false && log.time_out) {
+                    handleClear(); // Already scanned out
+                } else if (log.is_active === true) {
+                    setIsInside(true); // Scanned in, but not out
+                }
+            }
+        };
+        
+        checkStatus();
+
+        const channel = supabase
+            .channel('qr-status-watch')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'visitor_logs' }, (payload) => {
+                const rowObj = payload.new || payload.old || {};
+                
+                // If it's a new or updated record for this visitor today
+                if (rowObj.name === formData.name) {
+                    if (payload.eventType === 'INSERT' && rowObj.is_active === true) {
+                        setIsInside(true); // They just timed in!
+                    } 
+                    else if (payload.eventType === 'UPDATE') {
+                        if (rowObj.is_active === false && rowObj.time_out) {
+                            handleClear(); // Automatically clear when scanned out
+                        } else if (rowObj.is_active === true) {
+                            setIsInside(true);
+                        }
+                    }
+                }
+            })
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
+    }, [isSubmitted, formData.name, formData.date]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -80,11 +135,17 @@ const UserForm = () => {
             purpose: formData.purpose,
             date: formData.date
         });
+        
+        localStorage.setItem('visitrak_qr_form', JSON.stringify(formData));
+        localStorage.setItem('visitrak_qr_value', qrData);
+        
         setQrValue(qrData);
         setIsSubmitted(true);
     };
 
-    const handleBack = () => {
+    const handleClear = () => {
+        localStorage.removeItem('visitrak_qr_form');
+        localStorage.removeItem('visitrak_qr_value');
         setFormData({
             name: '',
             address: '',
@@ -93,7 +154,12 @@ const UserForm = () => {
             date: new Date().toISOString().split('T')[0]
         });
         setQrValue('');
+        setIsInside(false);
         setIsSubmitted(false);
+    };
+
+    const handleBack = () => {
+        handleClear();
     };
 
     // Form View
@@ -139,11 +205,11 @@ const UserForm = () => {
 
                         <div className="form-field" ref={destRef} style={{ position: 'relative' }}>
                             <label>Destination <span className="req">*</span></label>
-                            <div 
-                                className={`custom-select ${destOpen ? 'open' : ''}`} 
+                            <div
+                                className={`custom-select ${destOpen ? 'open' : ''}`}
                                 onClick={() => setDestOpen(!destOpen)}
                             >
-                                {formData.destination || <span style={{color: 'rgba(26, 40, 32, 0.4)'}}>Select a destination...</span>}
+                                {formData.destination || <span style={{ color: 'rgba(26, 40, 32, 0.4)' }}>Select a destination...</span>}
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a2820" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                             </div>
 
@@ -153,11 +219,11 @@ const UserForm = () => {
                                         <div key={idx}>
                                             <div className="custom-optgroup">{group.label}</div>
                                             {group.options.map((opt, i) => (
-                                                <div 
-                                                    key={i} 
+                                                <div
+                                                    key={i}
                                                     className="custom-option"
                                                     onClick={() => {
-                                                        handleChange({ target: { name: 'destination', value: opt.value }});
+                                                        handleChange({ target: { name: 'destination', value: opt.value } });
                                                         setDestOpen(false);
                                                     }}
                                                 >
@@ -234,7 +300,7 @@ const UserForm = () => {
                     </div>
 
                     <div className="qr-instruction-alert">
-                        Present this QR code to the guard to scan<br />for Time Out
+                        Present this QR code to the guard to scan<br />for Time in and Time Out
                     </div>
 
                     <div className="qr-details-list">
@@ -276,8 +342,19 @@ const UserForm = () => {
                     </div>
 
                     <div className="qr-pass-footer">
-                        <button onClick={handleBack} className="qr-finish-btn">
-                            Finish
+                        <button 
+                            onClick={handleBack} 
+                            className="qr-finish-btn" 
+                            disabled={isInside}
+                            style={isInside ? { 
+                                opacity: 0.6, 
+                                cursor: 'not-allowed', 
+                                background: '#aaa',
+                                border: 'none',
+                                color: '#fff'
+                            } : {}}
+                        >
+                            {isInside ? 'Currently Inside (Finish Disabled)' : 'Finish'}
                         </button>
                     </div>
                 </div>

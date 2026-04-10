@@ -1,39 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
+import { supabase } from '../supabaseClient';
+import { GATE_OPTIONS } from '../data/mockData';
 import './Manage.css';
 
-const initialGuards = [
-  { id: 1, name: 'Leo Rivera', number: '180-203-11', password: '' },
-  { id: 2, name: 'Kristine Joy Luis', number: '113-264-17', password: '' },
-  { id: 3, name: 'James Roque', number: '773-344-42', password: '' },
-  { id: 4, name: 'Jose Joseph', number: '221-342-54', password: '' },
-  { id: 5, name: 'Michael Santos', number: '751-488-12', password: '' },
-];
-
 export default function Manage() {
-  const [guards, setGuards] = useState(initialGuards);
+  const [guards, setGuards] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add'); // 'add' or 'edit'
   const [currentGuard, setCurrentGuard] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const [isCameraActive, setIsCameraActive] = useState(false);
   const videoRef = React.useRef(null);
   const streamRef = React.useRef(null);
 
+  // ── Upload photo to Supabase Storage ──
+  const uploadPhoto = async (dataUrl, guardId) => {
+    // Convert data URL → Blob
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const ext = blob.type.split('/')[1] || 'jpg';
+    const filename = `guard-${guardId || Date.now()}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('guard-photos')
+      .upload(filename, blob, { upsert: true, contentType: blob.type });
+
+    if (uploadError) throw new Error('Photo upload failed: ' + uploadError.message);
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('guard-photos')
+      .getPublicUrl(filename);
+
+    return publicUrl;
+  };
+
+  // ── Fetch guards from Supabase ──
+  const fetchGuards = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('guards')
+      .select('*')
+      .order('id', { ascending: true });
+    if (!error && data) setGuards(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchGuards();
+
+    // Realtime updates
+    const channel = supabase
+      .channel('manage-guards')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'guards' },
+        () => { fetchGuards(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
+  // ── Camera helpers ──
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       streamRef.current = stream;
       setIsCameraActive(true);
-      // We need a small delay to ensure the video element is rendered before setting its srcObject
       setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
+        if (videoRef.current) videoRef.current.srcObject = stream;
       }, 100);
     } catch (err) {
-      console.error("Error accessing camera:", err);
-      alert("Could not access the camera. Please ensure permissions are granted.");
+      console.error('Error accessing camera:', err);
+      alert('Could not access the camera. Please ensure permissions are granted.');
     }
   };
 
@@ -50,17 +92,16 @@ export default function Manage() {
       const canvas = document.createElement('canvas');
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg');
-      setCurrentGuard({ ...currentGuard, photo: dataUrl });
+      canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
+      setCurrentGuard({ ...currentGuard, photo: canvas.toDataURL('image/jpeg') });
       stopCamera();
     }
   };
 
+  // ── Modal helpers ──
   const openAddModal = () => {
     setModalType('add');
-    setCurrentGuard({ name: '', number: '', password: '' });
+    setCurrentGuard({ name: '', guard_id: '', password: '', gate: '', photo: null });
     setIsModalOpen(true);
   };
 
@@ -76,21 +117,54 @@ export default function Manage() {
     setCurrentGuard(null);
   };
 
-  const handleSave = () => {
-    if (modalType === 'add') {
-      const newGuard = {
-        ...currentGuard,
-        id: guards.length ? Math.max(...guards.map(g => g.id)) + 1 : 1,
-      };
-      setGuards([...guards, newGuard]);
-    } else {
-      setGuards(guards.map(g => g.id === currentGuard.id ? currentGuard : g));
+  // ── Save (insert or update) ──
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      // If photo is a new data URL (from file/camera), upload to Storage first
+      let photoUrl = currentGuard.photo || null;
+      if (photoUrl && photoUrl.startsWith('data:')) {
+        photoUrl = await uploadPhoto(photoUrl, currentGuard.guard_id);
+      }
+
+      if (modalType === 'add') {
+        const { error } = await supabase.from('guards').insert([{
+          name: currentGuard.name,
+          guard_id: currentGuard.guard_id,
+          password: currentGuard.password,
+          gate: currentGuard.gate || null,
+          photo: photoUrl,
+        }]);
+        if (error) throw new Error(error.message);
+      } else {
+        const updateData = {
+          name: currentGuard.name,
+          guard_id: currentGuard.guard_id,
+          gate: currentGuard.gate || null,
+          photo: photoUrl,
+        };
+        // Only update password if one was entered
+        if (currentGuard.password) updateData.password = currentGuard.password;
+
+        const { error } = await supabase
+          .from('guards')
+          .update(updateData)
+          .eq('id', currentGuard.id);
+        if (error) throw new Error(error.message);
+      }
+      closeModal();
+    } catch (err) {
+      alert('Error saving guard: ' + err.message);
+    } finally {
+      setSaving(false);
     }
-    closeModal();
   };
 
-  const handleDelete = (id) => {
-    setGuards(guards.filter(g => g.id !== id));
+  // ── Delete ──
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this guard?')) return;
+    const { error } = await supabase.from('guards').delete().eq('id', id);
+    if (error) alert('Error deleting guard: ' + error.message);
   };
 
   return (
@@ -106,7 +180,11 @@ export default function Manage() {
           </div>
 
           <div className="guards-list">
-            {guards.map((guard) => (
+            {loading ? (
+              <p style={{ textAlign: 'center', color: '#888', padding: '24px 0' }}>Loading...</p>
+            ) : guards.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#888', padding: '24px 0' }}>No guards registered.</p>
+            ) : guards.map((guard) => (
               <div key={guard.id} className="guard-row">
                 <div className="guard-info">
                   <div className="guard-avatar">
@@ -120,7 +198,7 @@ export default function Manage() {
                   </div>
                   <div className="guard-details">
                     <span className="guard-name">{guard.name}</span>
-                    <span className="guard-number">{guard.number}</span>
+                    <span className="guard-number">{guard.guard_id}</span>
                   </div>
                 </div>
                 <div className="guard-actions">
@@ -158,13 +236,28 @@ export default function Manage() {
               </div>
 
               <div className="form-group">
-                <label>ID Number</label>
+                <label>Guard ID</label>
                 <input
                   type="text"
-                  value={currentGuard?.number || ''}
-                  onChange={(e) => setCurrentGuard({ ...currentGuard, number: e.target.value })}
+                  value={currentGuard?.guard_id || ''}
+                  onChange={(e) => setCurrentGuard({ ...currentGuard, guard_id: e.target.value })}
                   required
                 />
+              </div>
+
+              <div className="form-group">
+                <label>Gate</label>
+                <select
+                  value={currentGuard?.gate || ''}
+                  onChange={(e) => setCurrentGuard({ ...currentGuard, gate: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.95rem', background: '#fff', color: '#222', cursor: 'pointer' }}
+                >
+                  <option value="" disabled>— Select Gate —</option>
+                  {GATE_OPTIONS.map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group">
@@ -173,7 +266,8 @@ export default function Manage() {
                   type="password"
                   value={currentGuard?.password || ''}
                   onChange={(e) => setCurrentGuard({ ...currentGuard, password: e.target.value })}
-                  required
+                  required={modalType === 'add'}
+                  placeholder={modalType === 'edit' ? 'Leave blank to keep current' : ''}
                 />
               </div>
 
@@ -204,7 +298,7 @@ export default function Manage() {
                         const file = e.target.files[0];
                         if (file) {
                           const reader = new FileReader();
-                          reader.onload = (e) => setCurrentGuard({ ...currentGuard, photo: e.target.result });
+                          reader.onload = (ev) => setCurrentGuard({ ...currentGuard, photo: ev.target.result });
                           reader.readAsDataURL(file);
                         }
                       }}
@@ -239,8 +333,8 @@ export default function Manage() {
               </div>
 
               <div className="modal-actions">
-                <button type="submit" className="save-btn">
-                  {modalType === 'add' ? 'Create Account' : 'Edit'}
+                <button type="submit" className="save-btn" disabled={saving}>
+                  {saving ? 'Saving...' : modalType === 'add' ? 'Create Account' : 'Save Changes'}
                 </button>
               </div>
             </form>

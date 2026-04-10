@@ -16,16 +16,16 @@ import VipQueue from './pages/VipQueue';
 // Protect admin routes — must be logged in as admin
 function AdminRoute({ children }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role === 'guard') return <Navigate to="/guard/dashboard" replace />;
+  // On /guard/* paths the user state is loaded from the guard key,
+  // so we only check the admin key for admin routes.
+  if (!user || user.role !== 'admin') return <Navigate to="/login" replace />;
   return children;
 }
 
 // Protect guard routes — must be logged in as guard
 function GuardRoute({ children }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/guard/login" replace />;
-  if (user.role === 'admin') return <Navigate to="/dashboard" replace />;
+  if (!user || user.role !== 'guard') return <Navigate to="/guard/login" replace />;
   return children;
 }
 

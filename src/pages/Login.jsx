@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
@@ -9,15 +9,23 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user, restoreSession } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      navigate('/dashboard', { replace: true });
+    } else if (!user) {
+      restoreSession('admin');
+    }
+  }, [user, navigate, restoreSession]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     await new Promise(r => setTimeout(r, 400));
-    const ok = login(id, password, remember);
+    const ok = await login(id, password, remember);
     setLoading(false);
     if (ok) {
       navigate('/dashboard');

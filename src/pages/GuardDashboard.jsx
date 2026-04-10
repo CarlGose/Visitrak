@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Scanner } from '@yudiel/react-qr-scanner';
-import { visitorLogs, vipVisitors, vipQueue, DESTINATIONS, PURPOSES } from '../data/mockData';
+import { supabase } from '../supabaseClient';
+import { DESTINATIONS, PURPOSES } from '../data/mockData';
 import './GuardDashboard.css';
 
 // Icons
@@ -58,8 +59,6 @@ export default function GuardDashboard() {
 
   const todayStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  const activeVisitors = visitorLogs.filter(v => v.isActive);
-
   const handleLogout = () => {
     logout();
     navigate('/guard/login');
@@ -90,9 +89,17 @@ export default function GuardDashboard() {
         {/* Guard profile card */}
         <div className="gd-profile-card">
           <div className="gd-avatar">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="44" height="44">
-              <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z" />
-            </svg>
+            {user?.photo ? (
+              <img
+                src={user.photo}
+                alt={user.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            ) : (
+              <svg viewBox="0 0 24 24" fill="currentColor" width="44" height="44">
+                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z" />
+              </svg>
+            )}
           </div>
           <div className="gd-profile-info">
             <p className="gd-profile-row"><span className="gd-label">Guard ID:</span> {user?.guardId || '—'}</p>
@@ -146,22 +153,26 @@ function VipForm({ onBack, gate }) {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!form.name || !form.plate || !form.personToVisit || !form.date) return;
 
-    vipQueue.unshift({
-      id: Date.now(),
+    const { error } = await supabase.from('vip_queue').insert([{
       name: form.name,
       plate: form.plate,
-      personToVisit: form.personToVisit,
+      person_to_visit: form.personToVisit,
       date: form.date,
-      addedBy: user?.name,
+      added_by: user?.name,
       timestamp: new Date().toLocaleTimeString()
-    });
+    }]);
 
-    setSubmitted(true);
-    setTimeout(() => { setSubmitted(false); setForm({ name: '', plate: '', personToVisit: '', date: '' }); }, 2000);
+    if (!error) {
+      setSubmitted(true);
+      setTimeout(() => { setSubmitted(false); setForm({ name: '', plate: '', personToVisit: '', date: '' }); }, 2000);
+    } else {
+      console.error(error);
+      alert("Error adding VIP");
+    }
   };
 
   return (
@@ -233,10 +244,29 @@ function GuardLogs({ onBack }) {
     return `${y}-${m}-${d}`;
   };
 
-  const baseLogs = showVip ? vipVisitors : visitorLogs;
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredLogs = baseLogs.filter(log => {
-    if (log.isActive) return false;
+  React.useEffect(() => {
+    fetchLogs();
+  }, [showVip]);
+
+  const fetchLogs = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('visitor_logs')
+      .select('*')
+      .eq('is_vip', showVip)
+      .order('id', { ascending: false });
+    
+    if (!error && data) {
+      setLogs(data);
+    }
+    setLoading(false);
+  };
+
+  const filteredLogs = logs.filter(log => {
+    if (log.is_active) return false;
     const term = searchTerm.toLowerCase();
     const searchMatch = !term || (
       log.name?.toLowerCase().includes(term) ||
@@ -295,15 +325,17 @@ function GuardLogs({ onBack }) {
         </div>
 
         <div className="gl-list">
-          {filteredLogs.length === 0 ? (
+          {loading ? (
+            <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>Loading logs...</p>
+          ) : filteredLogs.length === 0 ? (
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No {showVip ? 'VIP' : 'visitor'} logs found</p>
           ) : (
             filteredLogs.map(v => (
               <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
-                  <p className="gl-sub"><strong>Time in:</strong> {v.timeIn}</p>
-                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.timeOut || '—'}</p>
+                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
+                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}</p>
                 </div>
                 <div className="gl-right">
                   <p className="gl-rdate">{v.date}</p>
@@ -350,7 +382,7 @@ function QrScanner({ onBack }) {
     };
   }, [scanMessage, scanResult]);
 
-  const handleScan = (detectedCodes) => {
+  const handleScan = async (detectedCodes) => {
     if (scanResult) return;
     if (detectedCodes && detectedCodes.length > 0) {
       const raw = detectedCodes[0].rawValue;
@@ -358,13 +390,22 @@ function QrScanner({ onBack }) {
         const parsed = JSON.parse(raw);
 
         const dateToCheck = parsed.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const existingLogIndex = visitorLogs.findIndex(v => v.name === parsed.name && v.isActive);
-        const alreadyLoggedIndex = visitorLogs.findIndex(v => v.name === parsed.name && !v.isActive && v.date === dateToCheck && v.timeIn && v.timeOut);
         const now = new Date();
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+        // Fetch logs relevant to this user
+        const { data: userLogs, error } = await supabase
+          .from('visitor_logs')
+          .select('*')
+          .eq('name', parsed.name);
+          
+        if (error) throw error;
+
+        const existingActive = userLogs?.find(v => v.is_active);
+        const alreadyLoggedToday = userLogs?.find(v => !v.is_active && v.date === dateToCheck && v.time_in && v.time_out);
+
         let actionMsg = '';
-        if (alreadyLoggedIndex >= 0) {
+        if (alreadyLoggedToday) {
           try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const playBeep = (freq, startTime, duration) => {
@@ -382,22 +423,27 @@ function QrScanner({ onBack }) {
             playBeep(300, 0.25, 0.15);
           } catch (err) { console.error(err); }
           actionMsg = 'WARNING: VISITOR ALREADY LOGGED TODAY!';
-        } else if (existingLogIndex >= 0) {
-          visitorLogs[existingLogIndex].timeOut = timeString;
-          visitorLogs[existingLogIndex].isActive = false;
+        } else if (existingActive) {
+          await supabase
+            .from('visitor_logs')
+            .update({ time_out: timeString, is_active: false })
+            .eq('id', existingActive.id);
+            
           actionMsg = `TIME OUT SUCCESSFUL at ${timeString}`;
         } else {
-          const newLog = {
-            id: Date.now(),
-            name: parsed.name,
-            destination: parsed.destination || 'Campus',
-            purpose: parsed.purpose || 'Visit',
-            date: parsed.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            timeIn: timeString,
-            timeOut: null,
-            isActive: true
-          };
-          visitorLogs.unshift(newLog);
+          await supabase
+            .from('visitor_logs')
+            .insert([{
+              name: parsed.name,
+              destination: parsed.destination || 'Campus',
+              purpose: parsed.purpose || 'Visit',
+              date: parsed.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              time_in: timeString,
+              time_out: null,
+              is_active: true,
+              address: parsed.address || '',
+              is_vip: false
+            }]);
           actionMsg = `TIME IN SUCCESSFUL at ${timeString}`;
         }
         setScanMessage(actionMsg);
@@ -558,32 +604,44 @@ function QrScanner({ onBack }) {
    VIP Queue List sub-screen
 ───────────────────────────────────── */
 function VipQueueList({ onBack }) {
-  const [updater, setUpdater] = React.useState(0);
-  const forceUpdate = () => setUpdater(prev => prev + 1);
+  const [queue, setQueue] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-  const handleArrived = (vip) => {
-    const idx = vipQueue.findIndex(v => v.id === vip.id);
-    if (idx > -1) vipQueue.splice(idx, 1);
+  React.useEffect(() => {
+    fetchQueue();
+  }, []);
 
-    visitorLogs.unshift({
-      id: Date.now(),
-      name: vip.name,
-      destination: vip.personToVisit || vip.destination || 'VIP Visit',
-      purpose: 'VIP',
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      timeIn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      timeOut: null,
-      isActive: true
-    });
-    forceUpdate();
+  const fetchQueue = async () => {
+    setLoading(true);
+    const { data } = await supabase.from('vip_queue').select('*').order('id', { ascending: false });
+    if (data) setQueue(data);
+    setLoading(false);
   };
 
-  const handleCancel = (id) => {
+  const handleArrived = async (vip) => {
+    // Delete from queue
+    await supabase.from('vip_queue').delete().eq('id', vip.id);
+
+    // Insert to visitor_logs
+    await supabase.from('visitor_logs').insert([{
+      name: vip.name,
+      destination: vip.person_to_visit || vip.destination || 'VIP Visit',
+      purpose: 'VIP',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time_in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time_out: null,
+      is_active: true,
+      is_vip: true
+    }]);
+
+    fetchQueue();
+  };
+
+  const handleCancel = async (id) => {
     if (!window.confirm("Are you sure you want to remove this VIP from the queue?")) return;
-    const idx = vipQueue.findIndex(v => v.id === id);
-    if (idx > -1) vipQueue.splice(idx, 1);
-    forceUpdate();
+    await supabase.from('vip_queue').delete().eq('id', id);
+    fetchQueue();
   };
 
   return (
@@ -607,21 +665,23 @@ function VipQueueList({ onBack }) {
           </div>
 
           <div style={{ overflowY: 'auto', flex: 1, paddingRight: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {vipQueue.length === 0 ? (
+            {loading ? (
+              <p className="vp-form-sub" style={{ textAlign: 'center', margin: '40px 0' }}>Loading VIP queue...</p>
+            ) : queue.length === 0 ? (
               <p className="vp-form-sub" style={{ textAlign: 'center', margin: '40px 0' }}>No VIPs queued currently</p>
             ) : (
-              vipQueue.map(v => (
+              queue.map(v => (
                 <div key={v.id} style={{ backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 6px 16px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
                     <div>
                       <p style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', margin: '0 0 8px' }}>{v.name}</p>
                       <p style={{ margin: '0 0 6px', fontSize: '1rem', color: '#444' }}><strong>Plate No:</strong> {v.plate}</p>
-                      <p style={{ margin: 0, fontSize: '1rem', color: '#444' }}><strong>Logged By:</strong> {v.addedBy} {v.timestamp ? `at ${v.timestamp}` : ''}</p>
+                      <p style={{ margin: 0, fontSize: '1rem', color: '#444' }}><strong>Logged By:</strong> {v.added_by} {v.timestamp ? `at ${v.timestamp}` : ''}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ margin: '0 0 8px', color: '#c62828', fontWeight: '800', fontSize: '1rem' }}>Expected: {v.date}</p>
                       <p style={{ margin: '0 0 10px', fontSize: '1rem', color: '#444' }}>
-                        {v.personToVisit ? `Visiting: ${v.personToVisit}` : v.destination}
+                        {v.person_to_visit ? `Visiting: ${v.person_to_visit}` : v.destination}
                       </p>
                       <span style={{ backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082', borderRadius: '20px', padding: '4px 12px', fontSize: '0.8rem', fontWeight: '800', display: 'inline-block' }}>VIP STATUS</span>
                     </div>
@@ -656,10 +716,43 @@ function ActiveVisitorsScreen({ onBack }) {
   const [showVip, setShowVip] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [activeLogs, setActiveLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const activeRegular = visitorLogs.filter(v => v.isActive);
-  const activeVIPs = vipVisitors.filter(v => v.timeOut == null); // assuming VIPs without timeOut are active
-  const baseActive = showVip ? activeVIPs : activeRegular;
+
+  React.useEffect(() => {
+    fetchActiveLogs();
+  }, [showVip]);
+
+  const fetchActiveLogs = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('visitor_logs')
+      .select('*')
+      .eq('is_active', true)
+      .eq('is_vip', showVip)
+      .order('id', { ascending: false });
+    
+    if (data) setActiveLogs(data);
+    setLoading(false);
+  };
+
+  const handleManualTimeOut = async (log) => {
+    if (!window.confirm(`Are you sure you want to manually time out ${log.name}?`)) return;
+    
+    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const { error } = await supabase
+      .from('visitor_logs')
+      .update({ time_out: timeString, is_active: false })
+      .eq('id', log.id);
+      
+    if (!error) {
+      fetchActiveLogs();
+    } else {
+      alert("Error timing out visitor");
+    }
+  };
 
   const normalizeDate = (dateStr) => {
     if (!dateStr) return '';
@@ -672,7 +765,7 @@ function ActiveVisitorsScreen({ onBack }) {
     return `${y}-${m}-${d}`;
   };
 
-  const filteredLogs = baseActive.filter(log => {
+  const filteredLogs = activeLogs.filter(log => {
     const term = searchTerm.toLowerCase();
     const searchMatch = !term || (
       log.name?.toLowerCase().includes(term) ||
@@ -731,20 +824,34 @@ function ActiveVisitorsScreen({ onBack }) {
         </div>
 
         <div className="gl-list">
-          {filteredLogs.length === 0 ? (
+          {loading ? (
+            <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>Loading active visitors...</p>
+          ) : filteredLogs.length === 0 ? (
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No active {showVip ? 'VIPs' : 'visitors'} found</p>
           ) : (
             filteredLogs.map(v => (
               <div key={v.id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
-                  <p className="gl-sub"><strong>Time in:</strong> {v.timeIn}</p>
+                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
                   <p className="gl-sub gl-timeout">Time Out: —</p>
                 </div>
-                <div className="gl-right">
-                  <p className="gl-rdate">{v.date}</p>
-                  <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
-                  <span className="gl-badge" style={showVip ? { backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082' } : {}}>Active</span>
+                <div className="gl-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <p className="gl-rdate">{v.date}</p>
+                    <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'auto' }}>
+                    <span className="gl-badge" style={showVip ? { backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082' } : {}}>Active</span>
+                    <button 
+                      onClick={() => handleManualTimeOut(v)}
+                      style={{ padding: '6px 14px', fontSize: '0.8rem', fontWeight: '800', border: '1px solid #ddd', backgroundColor: '#fff', borderRadius: '8px', cursor: 'pointer', color: '#555', transition: 'all 0.2s' }}
+                      onMouseEnter={(e) => { e.target.style.backgroundColor = '#f1f3f5'; e.target.style.borderColor = '#ccc'; }}
+                      onMouseLeave={(e) => { e.target.style.backgroundColor = '#fff'; e.target.style.borderColor = '#ddd'; }}
+                    >
+                      Time Out
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

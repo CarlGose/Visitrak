@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import { visitorLogs } from '../data/mockData';
+import { supabase } from '../supabaseClient';
 import './Logs.css';
 
 export default function Logs() {
@@ -8,8 +8,41 @@ export default function Logs() {
   const [selectedDate, setSelectedDate] = useState(''); // 'YYYY-MM-DD'
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
-  // Helper to convert mockData dates like '10-11-2025' or '10-9-2025' to 'YYYY-MM-DD'
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchLogs = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('visitor_logs')
+      .select('*')
+      .eq('is_vip', false)
+      .order('id', { ascending: false });
+
+    if (!error && data) {
+      setLogs(data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchLogs();
+
+    const channel = supabase
+      .channel('logs-visitor-logs')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'visitor_logs' },
+        () => { fetchLogs(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const normalizeDate = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr; // Already YYYY-MM-DD
     const parts = dateStr.split('-');
     if (parts.length !== 3) return dateStr;
     let [m, d, y] = parts;
@@ -19,8 +52,17 @@ export default function Logs() {
     return `${y}-${m}-${d}`;
   };
 
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [y, m, d] = dateStr.split('-');
+      return `${m}/${d}/${y}`;
+    }
+    return dateStr.replace(/-/g, '/'); // fallback
+  };
+
   // Filter logs based on search term and selected date
-  const filteredLogs = visitorLogs.filter(log => {
+  const filteredLogs = logs.filter(log => {
     const matchesSearch = 
       log.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,19 +134,29 @@ export default function Logs() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLogs.map((log) => (
-                  <tr key={`log-${log.id}`}>
-                    <td>{log.date}</td>
-                    <td>{log.timeIn}</td>
-                    <td className={log.timeOut ? '' : 'time-out-active'}>
-                      {log.timeOut || 'Active'}
-                    </td>
-                    <td>{log.name}</td>
-                    <td>{log.address}</td>
-                    <td>{log.destination}</td>
-                    <td>{log.purpose}</td>
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: 'center' }}>Loading logs...</td>
                   </tr>
-                ))}
+                ) : filteredLogs.length > 0 ? (
+                  filteredLogs.map((log) => (
+                    <tr key={`log-${log.id}`}>
+                      <td>{formatDateDisplay(log.date)}</td>
+                      <td>{log.time_in}</td>
+                      <td className={log.time_out ? '' : 'time-out-active'}>
+                        {log.time_out || 'Active'}
+                      </td>
+                      <td>{log.name}</td>
+                      <td>{log.address}</td>
+                      <td>{log.destination}</td>
+                      <td>{log.purpose}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: 'center' }}>No logs found</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

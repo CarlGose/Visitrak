@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import { vipVisitors } from '../data/mockData';
+import { supabase } from '../supabaseClient';
 import './Logs.css';
 
 export default function VipLogs() {
@@ -8,7 +8,41 @@ export default function VipLogs() {
   const [selectedDate, setSelectedDate] = useState('');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchLogs = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('visitor_logs')
+      .select('*')
+      .eq('is_vip', true)
+      .order('id', { ascending: false });
+
+    if (!error && data) {
+      setLogs(data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchLogs();
+
+    const channel = supabase
+      .channel('viplogs-visitor-logs')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'visitor_logs' },
+        () => { fetchLogs(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const normalizeDate = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr; // Already YYYY-MM-DD
     const parts = dateStr.split('-');
     if (parts.length !== 3) return dateStr;
     let [m, d, y] = parts;
@@ -18,7 +52,16 @@ export default function VipLogs() {
     return `${y}-${m}-${d}`;
   };
 
-  const filteredVipLogs = vipVisitors.filter(log => {
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [y, m, d] = dateStr.split('-');
+      return `${m}/${d}/${y}`;
+    }
+    return dateStr.replace(/-/g, '/'); // fallback
+  };
+
+  const filteredVipLogs = logs.filter(log => {
     const matchesSearch =
       log.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.destination.toLowerCase().includes(searchTerm.toLowerCase());
@@ -77,22 +120,32 @@ export default function VipLogs() {
               <thead>
                 <tr>
                   <th>DATE</th>
+                  <th>TIME-IN</th>
+                  <th>TIME-OUT</th>
                   <th>NAME</th>
                   <th>DESTINATION</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredVipLogs.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: 'center' }}>Loading...</td>
+                  </tr>
+                ) : filteredVipLogs.length > 0 ? (
                   filteredVipLogs.map((log) => (
                     <tr key={`vip-${log.id}`}>
-                      <td>{log.date}</td>
+                      <td>{formatDateDisplay(log.date)}</td>
+                      <td>{log.time_in}</td>
+                      <td className={log.time_out ? '' : 'time-out-active'} style={!log.time_out ? { fontWeight: 'bold', color: '#f57f17' } : {}}>
+                        {log.time_out || 'Active'}
+                      </td>
                       <td>{log.name}</td>
                       <td>{log.destination}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan="5" style={{ textAlign: 'center' }}>No VIP logs found</td>
                   </tr>
                 )}
               </tbody>

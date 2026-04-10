@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import { vipQueue } from '../data/mockData';
+import { supabase } from '../supabaseClient';
 import './Logs.css';
 
 export default function VipQueue() {
@@ -8,8 +8,39 @@ export default function VipQueue() {
   const [selectedDate, setSelectedDate] = useState('');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
+  const [queue, setQueue] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchQueue = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('vip_queue')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (!error && data) {
+      setQueue(data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchQueue();
+
+    const channel = supabase
+      .channel('vipqueue-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vip_queue' },
+        () => { fetchQueue(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const normalizeDate = (dateStr) => {
-    const parts = dateStr.split('-');
+    const parts = dateStr?.split('-') || [];
     if (parts.length !== 3) return dateStr;
     let [m, d, y] = parts;
     if (m.length === 1) m = '0' + m;
@@ -18,7 +49,7 @@ export default function VipQueue() {
     return `${y}-${m}-${d}`;
   };
 
-  const filteredQueueLogs = vipQueue.filter(log => {
+  const filteredQueueLogs = queue.filter(log => {
     const matchesSearch =
       log.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.destination.toLowerCase().includes(searchTerm.toLowerCase());
@@ -83,13 +114,17 @@ export default function VipQueue() {
                 </tr>
               </thead>
               <tbody>
-                {filteredQueueLogs.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: 'center' }}>Loading...</td>
+                  </tr>
+                ) : filteredQueueLogs.length > 0 ? (
                   filteredQueueLogs.map((log) => (
                     <tr key={`queue-${log.id}`}>
                       <td>{log.date}</td>
                       <td>{log.name}</td>
                       <td>{log.destination}</td>
-                      <td>{log.addedBy}</td>
+                      <td>{log.added_by}</td>
                     </tr>
                   ))
                 ) : (
