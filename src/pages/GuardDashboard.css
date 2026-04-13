@@ -105,18 +105,7 @@
   color: #4a7c5f;
 }
 
-.gd-gate-badge {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 4px 12px;
-  background-color: #4a7c5f;
-  color: white;
-  border-radius: 30px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  align-self: flex-start;
-}
+
 
 /* ── Menu grid ── */
 .gd-menu {
@@ -651,11 +640,6 @@
   }
   .gd-profile-row {
     font-size: 1.25rem;
-  }
-  .gd-gate-badge {
-    font-size: 1.1rem;
-    padding: 6px 16px;
-    margin-top: 8px;
   }
   
   .gd-menu {

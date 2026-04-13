@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
   };
 
   // Guard login
-  const guardLogin = async (guardId, password, gate, remember) => {
+  const guardLogin = async (guardId, password, remember) => {
     try {
       const { data, error } = await supabase
         .from('guards')
@@ -106,7 +106,6 @@ export function AuthProvider({ children }) {
         name: data.name,
         guardId: data.guard_id,
         role: 'guard',
-        gate: gate || data.gate,
         photo: data.photo || null,
       };
       setUser(userData);

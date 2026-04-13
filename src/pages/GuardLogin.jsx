@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { GATE_OPTIONS } from '../data/mockData';
 import './GuardLogin.css';
 
 export default function GuardLogin() {
   const [guardId, setGuardId] = useState('');
   const [password, setPassword] = useState('');
-  const [gate, setGate] = useState('');
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,13 +23,9 @@ export default function GuardLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!gate) {
-      setError('Please select a gate.');
-      return;
-    }
     setLoading(true);
     await new Promise(r => setTimeout(r, 400));
-    const ok = await guardLogin(guardId, password, gate, remember);
+    const ok = await guardLogin(guardId, password, remember);
     setLoading(false);
     if (ok) {
       navigate('/guard/dashboard');
@@ -88,23 +82,6 @@ export default function GuardLogin() {
             />
           </div>
 
-          {/* Gate Number Field */}
-          <div className="guard-login-field" style={{ marginBottom: '28px' }}>
-            <label htmlFor="guard-gate">Gate Number</label>
-            <div className="guard-login-select-wrapper">
-              <select
-                id="guard-gate"
-                value={gate}
-                onChange={e => setGate(e.target.value)}
-                required
-              >
-                <option value="" disabled>— Select Gate —</option>
-                {GATE_OPTIONS.map(g => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
-            </div>
-          </div>
 
           {/* Remember Me */}
           <div className="guard-login-remember" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', padding: '0 4px' }}>

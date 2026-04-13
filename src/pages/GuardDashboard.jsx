@@ -80,7 +80,7 @@ export default function GuardDashboard() {
     navigate('/guard/login');
   };
 
-  if (activeSection === 'vip') return <VipForm onBack={() => setActiveSection(null)} gate={user?.gate} />;
+  if (activeSection === 'vip') return <VipForm onBack={() => setActiveSection(null)} />;
   if (activeSection === 'logs') return <GuardLogs onBack={() => setActiveSection(null)} />;
   if (activeSection === 'qr') return <QrScanner onBack={() => setActiveSection(null)} />;
   if (activeSection === 'vip_queue') return <VipQueueList onBack={() => setActiveSection(null)} />;
@@ -121,7 +121,6 @@ export default function GuardDashboard() {
             <p className="gd-profile-row"><span className="gd-label">Guard ID:</span> {user?.guardId || '—'}</p>
             <p className="gd-profile-row"><span className="gd-label">Name:</span> {user?.name || 'Guard'}</p>
             <p className="gd-profile-row"><span className="gd-label">Date:</span> {todayStr}</p>
-            <p className="gd-profile-row gd-gate-badge">{user?.gate || 'Main Gate'}</p>
           </div>
         </div>
 
@@ -162,7 +161,7 @@ export default function GuardDashboard() {
 /* ─────────────────────────────────────
    VIP / CAR Entry Form sub-screen
 ───────────────────────────────────── */
-function VipForm({ onBack, gate }) {
+function VipForm({ onBack }) {
   const { user } = useAuth();
   const [form, setForm] = useState({ name: '', plate: '', personToVisit: '', date: '' });
   const [submitted, setSubmitted] = useState(false);

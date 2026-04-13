@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import { supabase } from '../supabaseClient';
-import { GATE_OPTIONS } from '../data/mockData';
 import './Manage.css';
 
 export default function Manage() {
@@ -35,6 +34,29 @@ export default function Manage() {
       .getPublicUrl(filename);
 
     return publicUrl;
+  };
+
+  // ── Generate next guard ID in YYYY-NNNN format ──
+  const generateNextGuardId = async () => {
+    const year = new Date().getFullYear();
+    const prefix = `${year}-`;
+
+    // Fetch all guards whose guard_id starts with the current year
+    const { data } = await supabase
+      .from('guards')
+      .select('guard_id')
+      .like('guard_id', `${prefix}%`)
+      .order('guard_id', { ascending: false })
+      .limit(1);
+
+    let nextNum = 1;
+    if (data && data.length > 0) {
+      const lastId = data[0].guard_id; // e.g. "2026-0003"
+      const lastNum = parseInt(lastId.split('-')[1], 10);
+      if (!isNaN(lastNum)) nextNum = lastNum + 1;
+    }
+
+    return `${year}-${String(nextNum).padStart(4, '0')}`;
   };
 
   // ── Fetch guards from Supabase ──
@@ -99,9 +121,10 @@ export default function Manage() {
   };
 
   // ── Modal helpers ──
-  const openAddModal = () => {
+  const openAddModal = async () => {
     setModalType('add');
-    setCurrentGuard({ name: '', guard_id: '', password: '', gate: '', photo: null });
+    const nextId = await generateNextGuardId();
+    setCurrentGuard({ name: '', guard_id: nextId, password: '', photo: null });
     setIsModalOpen(true);
   };
 
@@ -132,7 +155,6 @@ export default function Manage() {
           name: currentGuard.name,
           guard_id: currentGuard.guard_id,
           password: currentGuard.password,
-          gate: currentGuard.gate || null,
           photo: photoUrl,
         }]);
         if (error) throw new Error(error.message);
@@ -140,7 +162,6 @@ export default function Manage() {
         const updateData = {
           name: currentGuard.name,
           guard_id: currentGuard.guard_id,
-          gate: currentGuard.gate || null,
           photo: photoUrl,
         };
         // Only update password if one was entered
@@ -242,23 +263,12 @@ export default function Manage() {
                   value={currentGuard?.guard_id || ''}
                   onChange={(e) => setCurrentGuard({ ...currentGuard, guard_id: e.target.value })}
                   required
+                  readOnly={modalType === 'add'}
+                  style={modalType === 'add' ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
                 />
               </div>
 
-              <div className="form-group">
-                <label>Gate</label>
-                <select
-                  value={currentGuard?.gate || ''}
-                  onChange={(e) => setCurrentGuard({ ...currentGuard, gate: e.target.value })}
-                  required
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.95rem', background: '#fff', color: '#222', cursor: 'pointer' }}
-                >
-                  <option value="" disabled>— Select Gate —</option>
-                  {GATE_OPTIONS.map(g => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
-                </select>
-              </div>
+
 
               <div className="form-group">
                 <label>Password</label>

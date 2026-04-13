@@ -43,14 +43,12 @@ export const inCampus = [
 
 // Guards data
 export const initialGuards = [
-  { id: 1, name: 'Leo Rivera',        guardId: '09-08-7',   password: 'guard123', gate: 'Main Gate'  },
-  { id: 2, name: 'Kristine Joy Luis', guardId: '113-264-17',password: 'guard123', gate: 'Gate 2'     },
-  { id: 3, name: 'James Roque',       guardId: '773-344-42',password: 'guard123', gate: 'Gate 3'     },
-  { id: 4, name: 'Jose Joseph',       guardId: '221-342-54',password: 'guard123', gate: 'Side Gate'  },
-  { id: 5, name: 'Michael Santos',    guardId: '751-488-12',password: 'guard123', gate: 'Back Gate'  },
+  { id: 1, name: 'Leo Rivera',        guardId: '09-08-7',   password: 'guard123' },
+  { id: 2, name: 'Kristine Joy Luis', guardId: '113-264-17',password: 'guard123' },
+  { id: 3, name: 'James Roque',       guardId: '773-344-42',password: 'guard123' },
+  { id: 4, name: 'Jose Joseph',       guardId: '221-342-54',password: 'guard123' },
+  { id: 5, name: 'Michael Santos',    guardId: '751-488-12',password: 'guard123' },
 ];
-
-export const GATE_OPTIONS = ['Main Gate', 'Gate 2', 'Gate 3', 'Side Gate', 'Back Gate'];
 
 export const DESTINATIONS = ['Registrar', 'Accounting', 'Faculty', 'OSA', 'Library', 'VPAA Office', 'President\'s Office', 'Guidance Office', 'Clinic', 'Other'];
 export const PURPOSES = ['TOR', 'Payment', 'Enrollment', 'ID/Document Request', 'Meeting', 'Visit', 'Delivery', 'Other'];
