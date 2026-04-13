@@ -59,7 +59,6 @@ export default function PortalSelect() {
       {/* Background decoration */}
       <div className="ps-bg-blob ps-bg-blob--1" />
       <div className="ps-bg-blob ps-bg-blob--2" />
-      <p>WARRUP</p>
       <div className="ps-inner">
         {/* Branding */}
         <div className="ps-brand">
