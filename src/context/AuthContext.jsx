@@ -10,7 +10,7 @@ const GUARD_LOCAL_KEY = 'visitrak_guard_session';
 function saveSession(userData, remember, role) {
   // Always save to the specific tab
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(userData));
-  
+
   // If remember me is clicked, save cross-tab persistent session
   if (remember) {
     if (role === 'admin') localStorage.setItem(ADMIN_LOCAL_KEY, JSON.stringify(userData));
@@ -21,7 +21,7 @@ function saveSession(userData, remember, role) {
 function clearSession() {
   // Clear the current tab's active session
   sessionStorage.removeItem(SESSION_KEY);
-  
+
   // Also clear persistent sessions if they exist (so logout fully clears them)
   localStorage.removeItem(ADMIN_LOCAL_KEY);
   localStorage.removeItem(GUARD_LOCAL_KEY);
@@ -34,7 +34,7 @@ function loadSession() {
 
   // Priority 2: New tab opened. Check localStorage intelligent fallback
   const isGuardRoute = window.location.pathname.startsWith('/guard');
-  
+
   if (isGuardRoute) {
     const savedGuard = localStorage.getItem(GUARD_LOCAL_KEY);
     if (savedGuard) {
@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
   // Listen for logouts from other tabs
   useEffect(() => {
     const channel = new BroadcastChannel('visitrak_auth');
-    
+
     channel.onmessage = (event) => {
       if (event.data.type === 'LOGOUT' && user && event.data.role === user.role) {
         clearSession();
@@ -121,7 +121,7 @@ export function AuthProvider({ children }) {
     const role = user?.role;
     clearSession();
     setUser(null);
-    
+
     // Notify other tabs to log out if they share the same role
     const channel = new BroadcastChannel('visitrak_auth');
     channel.postMessage({ type: 'LOGOUT', role: role });

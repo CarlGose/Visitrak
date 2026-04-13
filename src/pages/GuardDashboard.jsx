@@ -359,12 +359,8 @@ function GuardLogs({ onBack }) {
               <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
-                  {!showVip && (
-                    <>
-                      <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
-                      <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}</p>
-                    </>
-                  )}
+                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
+                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}</p>
                 </div>
                 <div className="gl-right">
                   <p className="gl-rdate">{formatDateDisplay(v.date)}</p>

@@ -6,7 +6,7 @@ const portals = [
   {
     id: 'user-landing',
     label: 'User Gateway',
-    description: 'Log visits and get your entry pass',
+    description: 'Get your WU-P QR entry pass',
     route: '/user-landing',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -37,8 +37,8 @@ const portals = [
   },
   {
     id: 'guard',
-    label: 'Guard Log',
-    description: 'Log visitors, record VIP entries, and view on-site activity',
+    label: 'Guard Access',
+    description: 'Log visitors, and record VIP entries',
     route: '/guard/login',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

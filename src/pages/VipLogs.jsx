@@ -212,6 +212,8 @@ export default function VipLogs() {
               <thead>
                 <tr>
                   <th>DATE</th>
+                  <th>TIME IN</th>
+                  <th>TIME OUT</th>
                   <th>NAME</th>
                   <th>DESTINATION</th>
                 </tr>
@@ -219,19 +221,21 @@ export default function VipLogs() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="3" style={{ textAlign: 'center' }}>Loading...</td>
+                    <td colSpan="5" style={{ textAlign: 'center' }}>Loading...</td>
                   </tr>
                 ) : filteredVipLogs.length > 0 ? (
                   filteredVipLogs.map((log) => (
                     <tr key={`vip-${log.id}`}>
                       <td>{formatDateDisplay(log.date)}</td>
+                      <td>{log.time_in}</td>
+                      <td>{log.time_out || 'Active'}</td>
                       <td>{log.name}</td>
                       <td>{log.destination}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan="5" style={{ textAlign: 'center' }}>No VIP logs found</td>
                   </tr>
                 )}
               </tbody>

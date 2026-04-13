@@ -52,7 +52,7 @@ export default function VipQueue() {
   const filteredQueueLogs = queue.filter(log => {
     const matchesSearch =
       log.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.destination.toLowerCase().includes(searchTerm.toLowerCase());
+      (log.person_to_visit || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDate = selectedDate ? normalizeDate(log.date) === selectedDate : true;
     return matchesSearch && matchesDate;
   });
@@ -71,7 +71,7 @@ export default function VipQueue() {
               </svg>
               <input
                 type="text"
-                placeholder="search by name or destination"
+                placeholder="search by name or person to visit"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -109,7 +109,7 @@ export default function VipQueue() {
                 <tr>
                   <th>DATE</th>
                   <th>NAME</th>
-                  <th>DESTINATION</th>
+                  <th>PERSON TO VISIT</th>
                   <th>ADDED BY</th>
                 </tr>
               </thead>
@@ -123,7 +123,7 @@ export default function VipQueue() {
                     <tr key={`queue-${log.id}`}>
                       <td>{log.date}</td>
                       <td>{log.name}</td>
-                      <td>{log.destination}</td>
+                      <td>{log.person_to_visit}</td>
                       <td>{log.added_by}</td>
                     </tr>
                   ))
@@ -136,26 +136,6 @@ export default function VipQueue() {
             </table>
           </div>
 
-          <div className="logs-footer">
-            <div className="export-container">
-              <button className="export-btn" onClick={() => setExportMenuOpen(!exportMenuOpen)}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Export
-              </button>
-              {exportMenuOpen && (
-                <div className="export-dropdown">
-                  <button onClick={() => setExportMenuOpen(false)}>Days</button>
-                  <button onClick={() => setExportMenuOpen(false)}>Weeks</button>
-                  <button onClick={() => setExportMenuOpen(false)}>Months</button>
-                  <button onClick={() => setExportMenuOpen(false)}>Year</button>
-                </div>
-              )}
-            </div>
-          </div>
 
         </div>
       </main>

@@ -116,10 +116,6 @@ export default function GuardLogin() {
           </div>
         </form>
 
-        <p className="guard-login-hint" style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.85rem', color: 'rgba(30, 40, 35, 0.6)' }}>
-          Default password for all guards: <strong>guard123</strong>
-        </p>
-
         <p className="guard-login-guard-link-text">
           <Link to="/" className="guard-login-guard-link">← Back to Portal Selection</Link>
         </p>
