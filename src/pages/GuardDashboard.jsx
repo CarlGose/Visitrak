@@ -52,6 +52,22 @@ const ArrowRight = () => (
   </svg>
 );
 
+const formatDateDisplay = (dateStr) => {
+  if (!dateStr) return '';
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const [y, m, d] = dateStr.split('-');
+    return `${m}/${d}/${y}`;
+  }
+  const d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    const mn = String(d.getMonth() + 1).padStart(2, '0');
+    const dy = String(d.getDate()).padStart(2, '0');
+    const yr = d.getFullYear();
+    return `${mn}/${dy}/${yr}`;
+  }
+  return dateStr;
+};
+
 export default function GuardDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -235,13 +251,23 @@ function GuardLogs({ onBack }) {
   // Helper to convert mockData dates like '10-11-2025' or '10-9-2025' to 'YYYY-MM-DD'
   const normalizeDate = (dateStr) => {
     if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr;
+    const parsedDate = new Date(dateStr);
+    if (!isNaN(parsedDate.getTime())) {
+      const m = String(parsedDate.getMonth() + 1).padStart(2, '0');
+      const d = String(parsedDate.getDate()).padStart(2, '0');
+      const y = parsedDate.getFullYear();
+      return `${y}-${m}-${d}`;
+    }
     const parts = dateStr.split('-');
-    if (parts.length !== 3) return dateStr;
-    let [m, d, y] = parts;
-    if (m.length === 1) m = '0' + m;
-    if (d.length === 1) d = '0' + d;
-    if (y.length === 2) y = '20' + y;
-    return `${y}-${m}-${d}`;
+    if (parts.length === 3) {
+      let [m, d, y] = parts;
+      if (m.length === 1) m = '0' + m;
+      if (d.length === 1) d = '0' + d;
+      if (y.length === 2) y = '20' + y;
+      return `${y}-${m}-${d}`;
+    }
+    return dateStr;
   };
 
   const [logs, setLogs] = useState([]);
@@ -266,7 +292,7 @@ function GuardLogs({ onBack }) {
   };
 
   const filteredLogs = logs.filter(log => {
-    if (log.is_active) return false;
+    if (!showVip && log.is_active) return false;
     const term = searchTerm.toLowerCase();
     const searchMatch = !term || (
       log.name?.toLowerCase().includes(term) ||
@@ -334,11 +360,15 @@ function GuardLogs({ onBack }) {
               <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
-                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
-                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}</p>
+                  {!showVip && (
+                    <>
+                      <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
+                      <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}</p>
+                    </>
+                  )}
                 </div>
                 <div className="gl-right">
-                  <p className="gl-rdate">{v.date}</p>
+                  <p className="gl-rdate">{formatDateDisplay(v.date)}</p>
                   <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
                 </div>
               </div>
@@ -679,7 +709,7 @@ function VipQueueList({ onBack }) {
                       <p style={{ margin: 0, fontSize: '1rem', color: '#444' }}><strong>Logged By:</strong> {v.added_by} {v.timestamp ? `at ${v.timestamp}` : ''}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ margin: '0 0 8px', color: '#c62828', fontWeight: '800', fontSize: '1rem' }}>Expected: {v.date}</p>
+                      <p style={{ margin: '0 0 8px', color: '#c62828', fontWeight: '800', fontSize: '1rem' }}>Expected: {formatDateDisplay(v.date)}</p>
                       <p style={{ margin: '0 0 10px', fontSize: '1rem', color: '#444' }}>
                         {v.person_to_visit ? `Visiting: ${v.person_to_visit}` : v.destination}
                       </p>
@@ -756,13 +786,23 @@ function ActiveVisitorsScreen({ onBack }) {
 
   const normalizeDate = (dateStr) => {
     if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr;
+    const parsedDate = new Date(dateStr);
+    if (!isNaN(parsedDate.getTime())) {
+      const m = String(parsedDate.getMonth() + 1).padStart(2, '0');
+      const d = String(parsedDate.getDate()).padStart(2, '0');
+      const y = parsedDate.getFullYear();
+      return `${y}-${m}-${d}`;
+    }
     const parts = dateStr.split('-');
-    if (parts.length !== 3) return dateStr;
-    let [m, d, y] = parts;
-    if (m.length === 1) m = '0' + m;
-    if (d.length === 1) d = '0' + d;
-    if (y.length === 2) y = '20' + y;
-    return `${y}-${m}-${d}`;
+    if (parts.length === 3) {
+      let [m, d, y] = parts;
+      if (m.length === 1) m = '0' + m;
+      if (d.length === 1) d = '0' + d;
+      if (y.length === 2) y = '20' + y;
+      return `${y}-${m}-${d}`;
+    }
+    return dateStr;
   };
 
   const filteredLogs = activeLogs.filter(log => {
@@ -838,7 +878,7 @@ function ActiveVisitorsScreen({ onBack }) {
                 </div>
                 <div className="gl-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div style={{ textAlign: 'right' }}>
-                    <p className="gl-rdate">{v.date}</p>
+                    <p className="gl-rdate">{formatDateDisplay(v.date)}</p>
                     <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'auto' }}>

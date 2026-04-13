@@ -21,6 +21,22 @@ export default function Dashboard() {
   const day = String(today.getDate()).padStart(2, '0');
   const isoDate = `${year}-${month}-${day}`;
 
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [y, m, d] = dateStr.split('-');
+      return `${m}/${d}/${y}`;
+    }
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      const mn = String(d.getMonth() + 1).padStart(2, '0');
+      const dy = String(d.getDate()).padStart(2, '0');
+      const yr = d.getFullYear();
+      return `${mn}/${dy}/${yr}`;
+    }
+    return dateStr;
+  };
+
   const fetchDashboardData = async () => {
     setLoading(true);
     const { data: allLogs } = await supabase
@@ -148,7 +164,7 @@ export default function Dashboard() {
                       <tr><td colSpan="5" style={{textAlign: 'center'}}>No visitors today</td></tr>
                     ) : recentLogs.map((log) => (
                       <tr key={`log-${log.id}`}>
-                        <td>{log.date}</td>
+                        <td>{formatDateDisplay(log.date)}</td>
                         <td>{log.time_in}</td>
                         <td className={log.time_out ? '' : 'time-out-active'}>
                           {log.time_out || 'Active'}
@@ -193,7 +209,7 @@ export default function Dashboard() {
                        <tr><td colSpan="4" style={{textAlign: 'center'}}>No one in campus</td></tr>
                     ) : activeLogs.map((visitor) => (
                       <tr key={`incampus-log-${visitor.id}`}>
-                        <td>{visitor.date}</td>
+                        <td>{formatDateDisplay(visitor.date)}</td>
                         <td>{visitor.name}</td>
                         <td>{visitor.destination}</td>
                         <td>{visitor.time_in}</td>
