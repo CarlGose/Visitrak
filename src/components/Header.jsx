@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LayoutDashboard, ClipboardList, Star, Users, Shield } from 'lucide-react';
 import './Header.css';
 
 export default function Header() {
@@ -22,19 +23,24 @@ export default function Header() {
         
         <nav className="sidebar-nav" aria-label="Main navigation">
           <NavLink id="nav-dashboard" to="/dashboard" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            Dashboard
+            <LayoutDashboard size={20} />
+            <span>Dashboard</span>
           </NavLink>
           <NavLink id="nav-logs" to="/logs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            Logs
+            <ClipboardList size={20} />
+            <span>Logs</span>
           </NavLink>
           <NavLink id="nav-vip-logs" to="/vip-logs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            VIP Logs
+            <Star size={20} />
+            <span>VIP Logs</span>
           </NavLink>
           <NavLink id="nav-vip-queue" to="/vip-queue" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            VIP Queue
+            <Users size={20} />
+            <span>VIP Queue</span>
           </NavLink>
           <NavLink id="nav-manage" to="/manage" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            Manage
+            <Shield size={20} />
+            <span>Manage</span>
           </NavLink>
         </nav>
       </div>

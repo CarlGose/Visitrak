@@ -61,6 +61,7 @@
   font-size: 1.05rem;
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 
 .nav-link:hover {
