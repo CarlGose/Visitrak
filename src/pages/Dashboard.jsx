@@ -90,7 +90,7 @@ export default function Dashboard() {
       <main className="dashboard-content">
         <div className="dashboard-header">
           <div>
-            <h1>Dashboard</h1>
+            <h1>Dashboard <span className="live-badge"><span className="live-dot"></span>Live</span></h1>
             <p>Monitor and manage campus visitors</p>
           </div>
         </div>
