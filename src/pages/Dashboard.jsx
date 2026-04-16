@@ -8,6 +8,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [logs, setLogs] = useState([]);
   const [activeLogs, setActiveLogs] = useState([]);
+  const [totalGuards, setTotalGuards] = useState(0);
+  const [activeGuardsToday, setActiveGuardsToday] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // For realism, let's use actual current dates instead of hardcoded 10-11-2025
@@ -39,6 +41,8 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     setLoading(true);
+    
+    // Fetch visitor logs
     const { data: allLogs } = await supabase
       .from('visitor_logs')
       .select('*')
@@ -48,6 +52,27 @@ export default function Dashboard() {
       setLogs(allLogs);
       setActiveLogs(allLogs.filter(L => L.is_active));
     }
+
+    // Fetch guards data for analytics
+    const { data: allGuards } = await supabase
+      .from('guards')
+      .select('*');
+
+    if (allGuards) {
+      setTotalGuards(allGuards.length);
+      
+      const todayISO = new Date().toISOString().split('T')[0];
+      const todayLocale = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
+      // Calculate active guards based on last_login being today
+      const todayActiveGuards = allGuards.filter(g => {
+        if (!g.last_login) return false;
+        return g.last_login.startsWith(todayISO) || g.last_login === todayLocale;
+      });
+      
+      setActiveGuardsToday(todayActiveGuards.length);
+    }
+    
     setLoading(false);
   };
 
@@ -60,6 +85,11 @@ export default function Dashboard() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'visitor_logs' },
+        () => { fetchDashboardData(); }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'guards' },
         () => { fetchDashboardData(); }
       )
       .subscribe();
@@ -118,6 +148,26 @@ export default function Dashboard() {
                 <h3>Today's Visitors</h3>
                 <div className="stat-value">{todaysVisitors}</div>
                 <div className="stat-date">{todaysDateFormatted}</div>
+              </div>
+              <div className="stat-card" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', border: '1px solid #bbf7d0' }}>
+                <svg className="card-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <circle cx="12" cy="11" r="3"></circle>
+                </svg>
+                <h3 style={{ color: '#166534' }}>Active Guards Today</h3>
+                <div className="stat-value" style={{ color: '#14532d' }}>{activeGuardsToday}</div>
+                <div className="stat-date" style={{ color: '#166534' }}>{todaysDateFormatted}</div>
+              </div>
+              <div className="stat-card" style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)', border: '1px solid #e9d5ff' }}>
+                <svg className="card-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6b21a8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <h3 style={{ color: '#6b21a8' }}>Total Guards</h3>
+                <div className="stat-value" style={{ color: '#581c87' }}>{totalGuards}</div>
+                <div className="stat-date" style={{ color: '#6b21a8' }}>Overall</div>
               </div>
             </div>
           </div>

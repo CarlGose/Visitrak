@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, ClipboardList, Star, Users, Shield } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 import './Header.css';
 
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [adminName, setAdminName] = useState(user?.name || 'Admin');
+
+  useEffect(() => {
+    // Dynamically fetch the real admin name from Supabase instead of relying on cached session
+    if (user?.role === 'admin') {
+      const fetchAdminProfile = async () => {
+        const { data } = await supabase
+          .from('admin_users')
+          .select('name')
+          .limit(1)
+          .single();
+        
+        if (data && data.name) {
+          setAdminName(data.name);
+        }
+      };
+      fetchAdminProfile();
+    } else if (user?.name) {
+      setAdminName(user.name);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -47,9 +69,9 @@ export default function Header() {
 
       <div className="sidebar-bottom">
         <div className="sidebar-user">
-          <div className="sidebar-avatar" aria-label="User avatar">{user?.name?.charAt(0) || 'G'}</div>
+          <div className="sidebar-avatar" aria-label="User avatar">{adminName.charAt(0)}</div>
           <div className="sidebar-user-info">
-            <span className="sidebar-user-name">{user?.name || 'Admin'}</span>
+            <span className="sidebar-user-name">{adminName}</span>
             <span className="sidebar-user-role">{user?.role || 'admin'}</span>
           </div>
         </div>

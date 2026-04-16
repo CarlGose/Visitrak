@@ -102,6 +102,13 @@ export function AuthProvider({ children }) {
 
       if (error || !data || data.password !== password) return false;
 
+      // Track active guard for today's analytics
+      const todayISO = new Date().toISOString().split('T')[0];
+      await supabase
+        .from('guards')
+        .update({ last_login: todayISO })
+        .eq('id', data.id);
+
       const userData = {
         name: data.name,
         guardId: data.guard_id,

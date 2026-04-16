@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { supabase } from '../supabaseClient';
-import { DESTINATIONS, PURPOSES } from '../data/mockData';
 import './GuardDashboard.css';
 
 // Icons
