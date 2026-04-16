@@ -83,6 +83,39 @@ export default function VipLogs() {
     return dateStr.replace(/-/g, '/'); // fallback
   };
 
+  const calculateDuration = (timeIn, timeOut) => {
+    if (!timeIn || !timeOut) return '';
+    const parseTime = (timeStr) => {
+      if(!timeStr) return 0;
+      const parts = timeStr.trim().split(' ');
+      if (parts.length < 2) return 0;
+      let [time, modifier] = parts;
+      let [hours, minutes] = time.split(':');
+      hours = parseInt(hours, 10);
+      minutes = parseInt(minutes, 10);
+      if (hours === 12) {
+        hours = modifier.toUpperCase() === 'AM' ? 0 : 12;
+      } else if (modifier.toUpperCase() === 'PM') {
+        hours += 12;
+      }
+      return hours * 60 + minutes;
+    };
+    try {
+      const inMins = parseTime(timeIn);
+      const outMins = parseTime(timeOut);
+      if(inMins === 0 || outMins === 0) return '';
+      let diff = outMins - inMins;
+      if (diff < 0) diff += 24 * 60;
+      const h = Math.floor(diff / 60);
+      const m = diff % 60;
+      if (h > 0) return `${h}h ${m}m`;
+      return `${m}m`;
+    } catch {
+      return '';
+    }
+  };
+
+
   const handleExport = async () => {
     setIsExporting(true);
     let query = supabase.from('visitor_logs').select('*').order('date', { ascending: false }).order('time_in', { ascending: false });
@@ -118,6 +151,7 @@ export default function VipLogs() {
           Date: formatDateDisplay(log.date),
           'Time In': log.time_in,
           'Time Out': log.time_out || 'Active',
+          Duration: log.time_out ? calculateDuration(log.time_in, log.time_out) : '-',
           Name: log.name,
           Type: 'VIP',
           'Address / Company': log.company || '',
@@ -131,6 +165,7 @@ export default function VipLogs() {
           Date: formatDateDisplay(log.date),
           'Time In': log.time_in,
           'Time Out': log.time_out || 'Active',
+          Duration: log.time_out ? calculateDuration(log.time_in, log.time_out) : '-',
           Name: log.name,
           Type: 'Regular',
           'Address / Company': log.address || '',
@@ -214,6 +249,7 @@ export default function VipLogs() {
                   <th>DATE</th>
                   <th>TIME IN</th>
                   <th>TIME OUT</th>
+                  <th>DURATION</th>
                   <th>NAME</th>
                   <th>DESTINATION</th>
                 </tr>
@@ -221,7 +257,7 @@ export default function VipLogs() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center' }}>Loading...</td>
+                    <td colSpan="6" style={{ textAlign: 'center' }}>Loading...</td>
                   </tr>
                 ) : filteredVipLogs.length > 0 ? (
                   filteredVipLogs.map((log) => (
@@ -229,13 +265,14 @@ export default function VipLogs() {
                       <td>{formatDateDisplay(log.date)}</td>
                       <td>{log.time_in}</td>
                       <td>{log.time_out || 'Active'}</td>
+                      <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
                       <td>{log.name}</td>
                       <td>{log.destination}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan="6" style={{ textAlign: 'center' }}>No VIP logs found</td>
                   </tr>
                 )}
               </tbody>
