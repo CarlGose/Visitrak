@@ -119,6 +119,7 @@ export default function GuardDashboard() {
           <div className="gd-profile-info">
             <p className="gd-profile-row"><span className="gd-label">Guard ID:</span> {user?.guardId || '—'}</p>
             <p className="gd-profile-row"><span className="gd-label">Name:</span> {user?.name || 'Guard'}</p>
+            <p className="gd-profile-row"><span className="gd-label">Gate:</span> {user?.gate || '—'}</p>
             <p className="gd-profile-row"><span className="gd-label">Date:</span> {todayStr}</p>
           </div>
         </div>

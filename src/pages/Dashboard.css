@@ -513,3 +513,208 @@
     font-size: 1.5rem;
   }
 }
+
+/* ── Active Guard List Section ── */
+.active-guard-section {
+  background-color: var(--color-white, #ffffff);
+  border-radius: var(--radius-lg, 18px);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.08));
+  border: 1px solid var(--color-header-border, #c9c1aa);
+  animation: dashFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s backwards;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.active-guard-section:hover {
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.12));
+  transform: translateY(-2px);
+}
+
+.active-guard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--color-header-border, #c9c1aa);
+}
+
+.active-guard-title-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.active-guard-title {
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-text, #1a1a1a);
+  margin: 0;
+}
+
+.active-guard-count {
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #15803d;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  padding: 5px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  letter-spacing: 0.3px;
+}
+
+/* ── Guard Cards Strip ── */
+.active-guard-list {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #c9c1aa transparent;
+}
+
+.active-guard-list::-webkit-scrollbar {
+  height: 5px;
+}
+
+.active-guard-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.active-guard-list::-webkit-scrollbar-thumb {
+  background-color: #c9c1aa;
+  border-radius: 9999px;
+}
+
+.active-guard-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1.5px solid #bbf7d0;
+  border-radius: 16px;
+  padding: 18px 20px;
+  min-width: 155px;
+  max-width: 155px;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s ease;
+  animation: guardCardIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  cursor: default;
+}
+
+.active-guard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.18);
+}
+
+@keyframes guardCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Avatar with online dot ── */
+.active-guard-avatar {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #e0f2e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid #86efac;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.active-guard-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.active-guard-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 13px;
+  height: 13px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  animation: onlinePing 1.8s ease-in-out infinite;
+}
+
+@keyframes onlinePing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
+}
+
+/* ── Guard Info ── */
+.active-guard-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  min-width: 0;
+}
+
+.active-guard-name {
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-text, #1a1a1a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 115px;
+}
+
+.active-guard-id {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #666);
+  letter-spacing: 0.3px;
+}
+
+/* ── Gate Badge ── */
+.active-guard-gate {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(22, 101, 52, 0.25);
+}
+
+/* ── Empty State ── */
+.active-guard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 0;
+  color: #aaa;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.active-guard-empty p {
+  margin: 0;
+  color: #bbb;
+}

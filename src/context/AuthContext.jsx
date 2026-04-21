@@ -70,6 +70,59 @@ export function AuthProvider({ children }) {
     return () => channel.close();
   }, [user]);
 
+  // Mark guard online in DB whenever they have an active session
+  // (handles both fresh logins AND cached "Remember Me" sessions)
+  useEffect(() => {
+    if (!user || user.role !== 'guard') return;
+
+    const syncOnlineStatus = async () => {
+      let dbId = user.dbId;
+
+      // Old cached sessions don't have dbId — fetch it using guardId
+      if (!dbId && user.guardId) {
+        const { data } = await supabase
+          .from('guards')
+          .select('id')
+          .eq('guard_id', user.guardId)
+          .single();
+        if (data) {
+          dbId = data.id;
+          // Patch the session so future calls have dbId
+          const updated = { ...user, dbId: data.id };
+          setUser(updated);
+          const tabSession = sessionStorage.getItem('visitrak_guard_session') ||
+                             sessionStorage.getItem('visitrak_session');
+          if (tabSession) sessionStorage.setItem('visitrak_session', JSON.stringify(updated));
+        }
+      }
+
+      if (dbId) {
+        await supabase
+          .from('guards')
+          .update({ is_online: true, gate: user.gate || null })
+          .eq('id', dbId);
+      }
+
+      // Mark offline when this tab/browser is closed
+      const markOffline = () => {
+        if (dbId) {
+          navigator.sendBeacon
+            ? navigator.sendBeacon(
+                `https://fdkuxllybkmstpsjyumk.supabase.co/rest/v1/guards?id=eq.${dbId}`,
+              )
+            : null;
+          // Fallback: synchronous XHR (works in some browsers on unload)
+          supabase.from('guards').update({ is_online: false, gate: null }).eq('id', dbId);
+        }
+      };
+      window.addEventListener('beforeunload', markOffline);
+      return () => window.removeEventListener('beforeunload', markOffline);
+    };
+
+    const cleanup = syncOnlineStatus();
+    return () => { cleanup.then?.(fn => fn?.()); };
+  }, [user?.guardId]);
+
   // Admin login
   const login = async (id, password, remember) => {
     try {
@@ -92,7 +145,7 @@ export function AuthProvider({ children }) {
   };
 
   // Guard login
-  const guardLogin = async (guardId, password, remember) => {
+  const guardLogin = async (guardId, password, remember, gate) => {
     try {
       const { data, error } = await supabase
         .from('guards')
@@ -102,18 +155,20 @@ export function AuthProvider({ children }) {
 
       if (error || !data || data.password !== password) return false;
 
-      // Track active guard for today's analytics
+      // Track active guard: mark online, record gate & last_login
       const todayISO = new Date().toISOString().split('T')[0];
       await supabase
         .from('guards')
-        .update({ last_login: todayISO })
+        .update({ last_login: todayISO, is_online: true, gate: gate || null })
         .eq('id', data.id);
 
       const userData = {
         name: data.name,
         guardId: data.guard_id,
+        dbId: data.id,
         role: 'guard',
         photo: data.photo || null,
+        gate: gate || null,
       };
       setUser(userData);
       saveSession(userData, remember, 'guard');
@@ -124,8 +179,22 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     const role = user?.role;
+    const dbId = user?.dbId;
+
+    // If guard, mark offline in the database before clearing session
+    if (role === 'guard' && dbId) {
+      try {
+        await supabase
+          .from('guards')
+          .update({ is_online: false, gate: null })
+          .eq('id', dbId);
+      } catch (err) {
+        console.error('Guard logout update error:', err);
+      }
+    }
+
     clearSession();
     setUser(null);
 

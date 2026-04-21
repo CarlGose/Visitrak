@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [activeLogs, setActiveLogs] = useState([]);
   const [totalGuards, setTotalGuards] = useState(0);
   const [activeGuardsToday, setActiveGuardsToday] = useState(0);
+  const [activeGuards, setActiveGuards] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // For realism, let's use actual current dates instead of hardcoded 10-11-2025
@@ -60,17 +61,13 @@ export default function Dashboard() {
 
     if (allGuards) {
       setTotalGuards(allGuards.length);
-      
-      const todayISO = new Date().toISOString().split('T')[0];
-      const todayLocale = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      
-      // Calculate active guards based on last_login being today
-      const todayActiveGuards = allGuards.filter(g => {
-        if (!g.last_login) return false;
-        return g.last_login.startsWith(todayISO) || g.last_login === todayLocale;
-      });
-      
-      setActiveGuardsToday(todayActiveGuards.length);
+
+      // Live online guards — used for both the stat card and the guard list
+      const onlineGuards = allGuards.filter(g => g.is_online);
+      setActiveGuards(onlineGuards);
+
+      // "Active Guards Today" mirrors the live online count
+      setActiveGuardsToday(onlineGuards.length);
     }
     
     setLoading(false);
@@ -173,6 +170,58 @@ export default function Dashboard() {
           </div>
 
 
+        </div>
+
+        {/* ACTIVE GUARD LIST — live section */}
+        <div className="active-guard-section">
+          <div className="active-guard-header">
+            <div className="active-guard-title-area">
+              <span className="live-badge" style={{ fontSize: '0.65rem' }}><span className="live-dot"></span>Live</span>
+              <h2 className="active-guard-title">Active Guards On Duty</h2>
+            </div>
+            <span className="active-guard-count">
+              {activeGuards.length} {activeGuards.length === 1 ? 'guard' : 'guards'} online
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="active-guard-empty">Loading...</div>
+          ) : activeGuards.length === 0 ? (
+            <div className="active-guard-empty">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <p>No guards are currently online</p>
+            </div>
+          ) : (
+            <div className="active-guard-list">
+              {activeGuards.map((guard) => (
+                <div key={guard.id} className="active-guard-card">
+                  <div className="active-guard-avatar">
+                    {guard.photo ? (
+                      <img src={guard.photo} alt={guard.name} className="active-guard-photo" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" style={{ color: '#6b8f7e' }}>
+                        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z" />
+                      </svg>
+                    )}
+                    <span className="active-guard-dot"></span>
+                  </div>
+                  <div className="active-guard-info">
+                    <span className="active-guard-name">{guard.name}</span>
+                    <span className="active-guard-id">{guard.guard_id}</span>
+                  </div>
+                  <div className="active-guard-gate">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                      <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    {guard.gate || 'Unassigned'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* BOTTOM SECTION: Visitor Logs (left) + Currently In-Campus (right, small) */}

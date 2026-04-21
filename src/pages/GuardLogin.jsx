@@ -6,6 +6,7 @@ import './GuardLogin.css';
 export default function GuardLogin() {
   const [guardId, setGuardId] = useState('');
   const [password, setPassword] = useState('');
+  const [gate, setGate] = useState('');
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,8 @@ export default function GuardLogin() {
     setError('');
     setLoading(true);
     await new Promise(r => setTimeout(r, 400));
-    const ok = await guardLogin(guardId, password, remember);
+    if (!gate) { setError('Please select your gate.'); setLoading(false); return; }
+    const ok = await guardLogin(guardId, password, remember, gate);
     setLoading(false);
     if (ok) {
       navigate('/guard/dashboard');
@@ -82,6 +84,26 @@ export default function GuardLogin() {
             />
           </div>
 
+
+          {/* Gate Selection */}
+          <div className="guard-login-field">
+            <label htmlFor="guard-gate">Gate Assignment</label>
+            <select
+              id="guard-gate"
+              value={gate}
+              onChange={e => setGate(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid #c9c1aa', fontSize: '0.95rem', fontFamily: 'inherit', backgroundColor: '#fafaf7', color: gate ? '#1a2820' : '#888', appearance: 'auto', cursor: 'pointer' }}
+            >
+              <option value="" disabled>Select your gate</option>
+              <option value="Main Gate">Main Gate</option>
+              <option value="Gate 1">Gate 1</option>
+              <option value="Gate 2">Gate 2</option>
+              <option value="Gate 3">Gate 3</option>
+              <option value="Gate 4">Gate 4</option>
+              <option value="Back Gate">Back Gate</option>
+            </select>
+          </div>
 
           {/* Remember Me */}
           <div className="guard-login-remember" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', padding: '0 4px' }}>
