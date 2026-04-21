@@ -86,7 +86,7 @@ export default function Logs() {
   const calculateDuration = (timeIn, timeOut) => {
     if (!timeIn || !timeOut) return '';
     const parseTime = (timeStr) => {
-      if(!timeStr) return 0;
+      if (!timeStr) return 0;
       const parts = timeStr.trim().split(' ');
       if (parts.length < 2) return 0;
       let [time, modifier] = parts;
@@ -103,7 +103,7 @@ export default function Logs() {
     try {
       const inMins = parseTime(timeIn);
       const outMins = parseTime(timeOut);
-      if(inMins === 0 || outMins === 0) return '';
+      if (inMins === 0 || outMins === 0) return '';
       let diff = outMins - inMins;
       if (diff < 0) diff += 24 * 60;
       const h = Math.floor(diff / 60);
@@ -156,7 +156,9 @@ export default function Logs() {
           'Address / Company': log.company || '',
           'Plate No': log.plate_no || '',
           Destination: log.destination || '',
-          Purpose: log.purpose || ''
+          Purpose: log.purpose || '',
+          'Gate In': log.gate_in || '',
+          'Gate Out': log.gate_out || ''
         };
       } else {
         return {
@@ -169,7 +171,9 @@ export default function Logs() {
           'Address / Company': log.address || '',
           'Plate No': '',
           Destination: log.destination || '',
-          Purpose: log.purpose || ''
+          Purpose: log.purpose || '',
+          'Gate In': log.gate_in || '',
+          'Gate Out': log.gate_out || ''
         };
       }
     });
@@ -250,27 +254,32 @@ export default function Logs() {
                 <tr>
                   <th>DATE</th>
                   <th>TIME-IN</th>
+                  <th>GATE</th>
                   <th>TIME-OUT</th>
+                  <th>GATE</th>
                   <th>DURATION</th>
                   <th>NAME</th>
                   <th>ADDRESS</th>
                   <th>DESTINATION</th>
                   <th>PURPOSE</th>
+
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center' }}>Loading logs...</td>
+                    <td colSpan="10" style={{ textAlign: 'center' }}>Loading logs...</td>
                   </tr>
                 ) : filteredLogs.length > 0 ? (
                   filteredLogs.map((log) => (
                     <tr key={`log-${log.id}`}>
                       <td>{formatDateDisplay(log.date)}</td>
                       <td>{log.time_in}</td>
+                      <td>{log.gate_in || '—'}</td>
                       <td className={log.time_out ? '' : 'time-out-active'}>
                         {log.time_out || 'Active'}
                       </td>
+                      <td>{log.gate_out || '—'}</td>
                       <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
                       <td>{log.name}</td>
                       <td>{log.address}</td>
@@ -280,7 +289,7 @@ export default function Logs() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center' }}>No logs found</td>
+                    <td colSpan="10" style={{ textAlign: 'center' }}>No logs found</td>
                   </tr>
                 )}
               </tbody>

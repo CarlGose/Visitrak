@@ -359,8 +359,8 @@ function GuardLogs({ onBack }) {
               <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
-                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
-                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}</p>
+                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>
+                  <p className="gl-sub" style={{ color: '#555' }}>Time Out: {v.time_out || '—'}{v.time_out && v.gate_out ? ` (${v.gate_out})` : ''}</p>
                 </div>
                 <div className="gl-right">
                   <p className="gl-rdate">{formatDateDisplay(v.date)}</p>
@@ -379,6 +379,7 @@ function GuardLogs({ onBack }) {
    QR Scanner sub-screen
 ───────────────────────────────────── */
 function QrScanner({ onBack }) {
+  const { user } = useAuth();
   const [scanResult, setScanResult] = useState(null);
   const [scanMessage, setScanMessage] = useState('');
 
@@ -451,7 +452,7 @@ function QrScanner({ onBack }) {
         } else if (existingActive) {
           await supabase
             .from('visitor_logs')
-            .update({ time_out: timeString, is_active: false })
+            .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
             .eq('id', existingActive.id);
             
           actionMsg = `TIME OUT SUCCESSFUL at ${timeString}`;
@@ -467,7 +468,8 @@ function QrScanner({ onBack }) {
               time_out: null,
               is_active: true,
               address: parsed.address || '',
-              is_vip: false
+              is_vip: false,
+              gate_in: user?.gate || null
             }]);
           actionMsg = `TIME IN SUCCESSFUL at ${timeString}`;
         }
@@ -629,6 +631,7 @@ function QrScanner({ onBack }) {
    VIP Queue List sub-screen
 ───────────────────────────────────── */
 function VipQueueList({ onBack }) {
+  const { user } = useAuth();
   const [queue, setQueue] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -657,7 +660,8 @@ function VipQueueList({ onBack }) {
       time_in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       time_out: null,
       is_active: true,
-      is_vip: true
+      is_vip: true,
+      gate_in: user?.gate || null
     }]);
 
     fetchQueue();
@@ -738,6 +742,7 @@ function VipQueueList({ onBack }) {
    Active Visitors sub-screen
 ───────────────────────────────────── */
 function ActiveVisitorsScreen({ onBack }) {
+  const { user } = useAuth();
   const [showVip, setShowVip] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -769,7 +774,7 @@ function ActiveVisitorsScreen({ onBack }) {
     
     const { error } = await supabase
       .from('visitor_logs')
-      .update({ time_out: timeString, is_active: false })
+      .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
       .eq('id', log.id);
       
     if (!error) {
@@ -868,7 +873,7 @@ function ActiveVisitorsScreen({ onBack }) {
               <div key={v.id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
-                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}</p>
+                  <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>
                   <p className="gl-sub gl-timeout">Time Out: —</p>
                 </div>
                 <div className="gl-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>

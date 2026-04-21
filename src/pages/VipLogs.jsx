@@ -86,7 +86,7 @@ export default function VipLogs() {
   const calculateDuration = (timeIn, timeOut) => {
     if (!timeIn || !timeOut) return '';
     const parseTime = (timeStr) => {
-      if(!timeStr) return 0;
+      if (!timeStr) return 0;
       const parts = timeStr.trim().split(' ');
       if (parts.length < 2) return 0;
       let [time, modifier] = parts;
@@ -103,7 +103,7 @@ export default function VipLogs() {
     try {
       const inMins = parseTime(timeIn);
       const outMins = parseTime(timeOut);
-      if(inMins === 0 || outMins === 0) return '';
+      if (inMins === 0 || outMins === 0) return '';
       let diff = outMins - inMins;
       if (diff < 0) diff += 24 * 60;
       const h = Math.floor(diff / 60);
@@ -123,19 +123,19 @@ export default function VipLogs() {
     if (exportType === 'day' && exportDayValue) {
       const { data } = await query;
       const filteredData = (data || []).filter(row => {
-          const normDate = normalizeDate(row.date);
-          return normDate === exportDayValue;
+        const normDate = normalizeDate(row.date);
+        return normDate === exportDayValue;
       });
       processExport(filteredData);
     } else if (exportType === 'month' && exportMonthValue) {
       const { data } = await query;
       const filteredData = (data || []).filter(row => {
-          const normDate = normalizeDate(row.date);
-          return normDate.startsWith(exportMonthValue);
+        const normDate = normalizeDate(row.date);
+        return normDate.startsWith(exportMonthValue);
       });
       processExport(filteredData);
     }
-    
+
     setIsExporting(false);
   };
 
@@ -158,7 +158,9 @@ export default function VipLogs() {
           'Plate No': log.plate_no || '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
-          'Expected Date': log.expected_date ? formatDateDisplay(log.expected_date) : ''
+          'Expected Date': log.expected_date ? formatDateDisplay(log.expected_date) : '',
+          'Gate In': log.gate_in || '',
+          'Gate Out': log.gate_out || ''
         };
       } else {
         return {
@@ -172,7 +174,9 @@ export default function VipLogs() {
           'Plate No': '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
-          'Expected Date': ''
+          'Expected Date': '',
+          'Gate In': log.gate_in || '',
+          'Gate Out': log.gate_out || ''
         };
       }
     });
@@ -251,13 +255,13 @@ export default function VipLogs() {
                   <th>TIME OUT</th>
                   <th>DURATION</th>
                   <th>NAME</th>
-                  <th>DESTINATION</th>
+                  <th>PERSON TO VISIT</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center' }}>Loading...</td>
+                    <td colSpan="8" style={{ textAlign: 'center' }}>Loading...</td>
                   </tr>
                 ) : filteredVipLogs.length > 0 ? (
                   filteredVipLogs.map((log) => (
@@ -272,7 +276,7 @@ export default function VipLogs() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan="8" style={{ textAlign: 'center' }}>No VIP logs found</td>
                   </tr>
                 )}
               </tbody>
@@ -299,10 +303,10 @@ export default function VipLogs() {
                   ) : exportType === 'day' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1a2820' }}>Select Day:</label>
-                      <input 
-                        type="date" 
-                        value={exportDayValue} 
-                        onChange={(e) => setExportDayValue(e.target.value)} 
+                      <input
+                        type="date"
+                        value={exportDayValue}
+                        onChange={(e) => setExportDayValue(e.target.value)}
                         style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', outline: 'none' }}
                       />
                       <button onClick={handleExport} disabled={isExporting || !exportDayValue} style={{ background: '#10b981', color: 'white', padding: '8px', borderRadius: '6px', fontWeight: 'bold' }}>
@@ -313,10 +317,10 @@ export default function VipLogs() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1a2820' }}>Select Month:</label>
-                      <input 
-                        type="month" 
-                        value={exportMonthValue} 
-                        onChange={(e) => setExportMonthValue(e.target.value)} 
+                      <input
+                        type="month"
+                        value={exportMonthValue}
+                        onChange={(e) => setExportMonthValue(e.target.value)}
                         style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', outline: 'none' }}
                       />
                       <button onClick={handleExport} disabled={isExporting || !exportMonthValue} style={{ background: '#10b981', color: 'white', padding: '8px', borderRadius: '6px', fontWeight: 'bold' }}>

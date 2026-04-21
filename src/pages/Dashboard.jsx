@@ -254,13 +254,14 @@ export default function Dashboard() {
                       <th>TIME-OUT</th>
                       <th>NAME</th>
                       <th>DESTINATION</th>
+                      <th>GATE IN</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
-                      <tr><td colSpan="5" style={{textAlign: 'center'}}>Loading...</td></tr>
+                      <tr><td colSpan="6" style={{textAlign: 'center'}}>Loading...</td></tr>
                     ) : recentLogs.length === 0 ? (
-                      <tr><td colSpan="5" style={{textAlign: 'center'}}>No visitors today</td></tr>
+                      <tr><td colSpan="6" style={{textAlign: 'center'}}>No visitors today</td></tr>
                     ) : recentLogs.map((log) => (
                       <tr key={`log-${log.id}`}>
                         <td>{formatDateDisplay(log.date)}</td>
@@ -270,6 +271,7 @@ export default function Dashboard() {
                         </td>
                         <td>{log.name}</td>
                         <td>{log.destination}</td>
+                        <td>{log.gate_in || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -299,19 +301,21 @@ export default function Dashboard() {
                       <th>NAME</th>
                       <th>DESTINATION</th>
                       <th>TIME-IN</th>
+                      <th>GATE IN</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
-                       <tr><td colSpan="4" style={{textAlign: 'center'}}>Loading...</td></tr>
+                       <tr><td colSpan="5" style={{textAlign: 'center'}}>Loading...</td></tr>
                     ) : activeLogs.length === 0 ? (
-                       <tr><td colSpan="4" style={{textAlign: 'center'}}>No one in campus</td></tr>
+                       <tr><td colSpan="5" style={{textAlign: 'center'}}>No one in campus</td></tr>
                     ) : activeLogs.map((visitor) => (
                       <tr key={`incampus-log-${visitor.id}`}>
                         <td>{formatDateDisplay(visitor.date)}</td>
                         <td>{visitor.name}</td>
                         <td>{visitor.destination}</td>
                         <td>{visitor.time_in}</td>
+                        <td>{visitor.gate_in || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
