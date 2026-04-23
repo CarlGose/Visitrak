@@ -8,12 +8,10 @@ const destGroups = [
     {
         label: "Offices",
         options: [
-            { value: "OFFICE OF STUDENT AFFAIRS", label: "Office of Student Affairs" },
-            { value: "DEAN'S OFFICE", label: "Dean's Office" },
+            { value: "OFFICE OF STUDENT AFFAIRS", label: "Office of Student Affairs" }, ,
             { value: "PRESIDENT'S OFFICE", label: "President's Office" },
             { value: "ACCOUNTING", label: "Accounting" },
-            { value: "REGISTRAR", label: "Registrar" },
-            { value: "FACULTY", label: "Faculty" }
+            { value: "REGISTRAR", label: "Registrar" }
         ]
     },
     {
@@ -93,19 +91,19 @@ const UserForm = () => {
                 }
             }
         };
-        
+
         checkStatus();
 
         const channel = supabase
             .channel('qr-status-watch')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'visitor_logs' }, (payload) => {
                 const rowObj = payload.new || payload.old || {};
-                
+
                 // If it's a new or updated record for this visitor today
                 if (rowObj.name === formData.name) {
                     if (payload.eventType === 'INSERT' && rowObj.is_active === true) {
                         setIsInside(true); // They just timed in!
-                    } 
+                    }
                     else if (payload.eventType === 'UPDATE') {
                         if (rowObj.is_active === false && rowObj.time_out) {
                             handleClear(); // Automatically clear when scanned out
@@ -135,10 +133,10 @@ const UserForm = () => {
             purpose: formData.purpose,
             date: formData.date
         });
-        
+
         localStorage.setItem('visitrak_qr_form', JSON.stringify(formData));
         localStorage.setItem('visitrak_qr_value', qrData);
-        
+
         setQrValue(qrData);
         setIsSubmitted(true);
     };
@@ -342,13 +340,13 @@ const UserForm = () => {
                     </div>
 
                     <div className="qr-pass-footer">
-                        <button 
-                            onClick={handleBack} 
-                            className="qr-finish-btn" 
+                        <button
+                            onClick={handleBack}
+                            className="qr-finish-btn"
                             disabled={isInside}
-                            style={isInside ? { 
-                                opacity: 0.6, 
-                                cursor: 'not-allowed', 
+                            style={isInside ? {
+                                opacity: 0.6,
+                                cursor: 'not-allowed',
                                 background: '#aaa',
                                 border: 'none',
                                 color: '#fff'
