@@ -62,11 +62,12 @@ export default function PortalSelect() {
       <div className="ps-inner">
         {/* Branding */}
         <div className="ps-brand">
-          <img src="/wuplogo.png" alt="VisiTrack Logo" className="ps-logo" />
+          <img src="/wuplogo.png" alt="WUP Logo" className="ps-logo" />
           <div>
             <h1 className="ps-brand-name">VisiTrack</h1>
             <p className="ps-brand-tagline">Handle visitors without worries</p>
           </div>
+          <img src="/visitrak-badge.png" alt="VisiTrack Badge" className="ps-logo ps-logo--visitrak" />
         </div>
 
         <p className="ps-prompt">Select a portal to continue</p>

@@ -21,6 +21,7 @@
   pointer-events: none;
   z-index: 0;
 }
+
 .ps-bg-blob--1 {
   width: 480px;
   height: 480px;
@@ -28,6 +29,7 @@
   top: -140px;
   left: -120px;
 }
+
 .ps-bg-blob--2 {
   width: 400px;
   height: 400px;
@@ -50,8 +52,15 @@
 }
 
 @keyframes psSlideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Branding ── */
@@ -66,13 +75,38 @@
   height: 72px;
   object-fit: contain;
   border-radius: 50%;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
   animation: psFloat 4s ease-in-out infinite;
 }
 
+.ps-logo--visitrak {
+  animation: psFloatAlt 4s ease-in-out infinite;
+  zoom: 1.15;
+  mix-blend-mode: multiply;
+}
+
 @keyframes psFloat {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes psFloatAlt {
+
+  0%,
+  100% {
+    transform: translateY(-6px);
+  }
+
+  50% {
+    transform: translateY(0);
+  }
 }
 
 .ps-brand-name {
@@ -122,20 +156,27 @@
   border-radius: 20px;
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.03);
   border-left: 5px solid var(--accent);
-  transition: transform 0.22s cubic-bezier(0.2,0.8,0.2,1),
-              box-shadow 0.22s ease,
-              background-color 0.22s ease;
-  animation: psCardIn 0.5s cubic-bezier(0.2,0.8,0.2,1) backwards;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+  animation: psCardIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   animation-delay: var(--delay, 0s);
   position: relative;
   overflow: hidden;
 }
 
 @keyframes psCardIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .ps-card::before {
@@ -150,7 +191,7 @@
 
 .ps-card:hover {
   transform: translateX(6px) translateY(-3px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .ps-card:hover::before {
@@ -228,7 +269,11 @@
   transform: translateX(-4px);
   transition: opacity 0.22s, transform 0.22s;
 }
-.ps-card-arrow svg { width: 100%; height: 100%; }
+
+.ps-card-arrow svg {
+  width: 100%;
+  height: 100%;
+}
 
 .ps-card:hover .ps-card-arrow {
   opacity: 1;
@@ -245,8 +290,24 @@
 
 /* ── Responsive ── */
 @media (max-width: 480px) {
-  .ps-brand-name { font-size: 1.9rem; }
-  .ps-logo { width: 56px; height: 56px; }
-  .ps-card { padding: 16px 18px; }
-  .ps-card-label { font-size: 1rem; }
+  .ps-brand-name {
+    font-size: 1.9rem;
+  }
+
+  .ps-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .ps-card {
+    padding: 16px 18px;
+  }
+
+  .ps-card-label {
+    font-size: 1rem;
+  }
+
+  .ps-brand {
+    gap: 10px;
+  }
 }

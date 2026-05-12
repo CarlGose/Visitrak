@@ -8,7 +8,7 @@ const destGroups = [
     {
         label: "Offices",
         options: [
-            { value: "OFFICE OF STUDENT AFFAIRS", label: "Office of Student Affairs" }, ,
+            { value: "OFFICE OF STUDENT AFFAIRS", label: "Office of Student Affairs" },
             { value: "PRESIDENT'S OFFICE", label: "President's Office" },
             { value: "ACCOUNTING", label: "Accounting" },
             { value: "REGISTRAR", label: "Registrar" }
