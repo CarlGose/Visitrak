@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/visitrak-badge.png" id="favicon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="VisiTrack - Handle visitors without worries. Campus visitor management system." />
     <title>VisiTrack - Admin Portal</title>
@@ -13,5 +13,30 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      (function () {
+        var img = new Image();
+        img.src = '/visitrak-badge.png';
+        img.onload = function () {
+          var size = 64;
+          var canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          var ctx = canvas.getContext('2d');
+          // White circular background
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fill();
+          // Draw logo centered with padding
+          var pad = 4;
+          ctx.drawImage(img, pad, pad, size - pad * 2, size - pad * 2);
+          var link = document.getElementById('favicon');
+          link.type = 'image/png';
+          link.href = canvas.toDataURL('image/png');
+        };
+      })();
+    </script>
   </body>
 </html>
