@@ -5,8 +5,16 @@ import * as XLSX from 'xlsx';
 import './Logs.css';
 
 export default function Logs() {
+  const getTodayString = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(''); // 'YYYY-MM-DD'
+  const [selectedDate, setSelectedDate] = useState(getTodayString()); // 'YYYY-MM-DD'
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
   const [exportType, setExportType] = useState(''); // 'month' or 'day'
@@ -202,6 +210,39 @@ export default function Logs() {
     return matchesSearch && matchesDate;
   });
 
+  const parseTimeToMinutes = (timeStr) => {
+    if (!timeStr) return 0;
+    const parts = timeStr.trim().split(' ');
+    if (parts.length < 2) {
+      const tParts = timeStr.split(':');
+      if (tParts.length >= 2) {
+        return parseInt(tParts[0], 10) * 60 + parseInt(tParts[1], 10);
+      }
+      return 0;
+    }
+    let [time, modifier] = parts;
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours, 10);
+    minutes = parseInt(minutes, 10);
+    if (hours === 12) {
+      hours = modifier.toUpperCase() === 'AM' ? 0 : 12;
+    } else if (modifier.toUpperCase() === 'PM') {
+      hours += 12;
+    }
+    return hours * 60 + minutes;
+  };
+
+  const sortedLogs = [...filteredLogs].sort((a, b) => {
+    const dateA = normalizeDate(a.date);
+    const dateB = normalizeDate(b.date);
+    if (dateA !== dateB) {
+      return dateB.localeCompare(dateA); // Newest date first
+    }
+    const timeA = parseTimeToMinutes(a.time_in);
+    const timeB = parseTimeToMinutes(b.time_in);
+    return timeB - timeA; // Newest time first
+  });
+
   return (
     <div className="logs-page">
       <Header />
@@ -225,6 +266,11 @@ export default function Logs() {
             <h1 className="logs-page-title">Visitor Logs</h1>
 
             <div className="calendar-container">
+              {selectedDate && (
+                <span className="selected-date-text">
+                  {formatDateDisplay(selectedDate)}
+                </span>
+              )}
               <button className={`calendar-btn ${selectedDate ? 'active-date' : ''}`} aria-label="Select Date">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -254,9 +300,9 @@ export default function Logs() {
                 <tr>
                   <th>DATE</th>
                   <th>TIME-IN</th>
-                  <th>GATE</th>
+                  <th>GATE-IN</th>
                   <th>TIME-OUT</th>
-                  <th>GATE</th>
+                  <th>GATE-OUT</th>
                   <th>DURATION</th>
                   <th>NAME</th>
                   <th>ADDRESS</th>
@@ -270,8 +316,8 @@ export default function Logs() {
                   <tr>
                     <td colSpan="10" style={{ textAlign: 'center' }}>Loading logs...</td>
                   </tr>
-                ) : filteredLogs.length > 0 ? (
-                  filteredLogs.map((log) => (
+                ) : sortedLogs.length > 0 ? (
+                  sortedLogs.map((log) => (
                     <tr key={`log-${log.id}`}>
                       <td>{formatDateDisplay(log.date)}</td>
                       <td>{log.time_in}</td>

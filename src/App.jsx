@@ -12,6 +12,7 @@ import UserForm from './pages/user-form';
 import UserLanding from './pages/UserLanding';
 import VipLogs from './pages/VipLogs';
 import VipQueue from './pages/VipQueue';
+import Archives from './pages/Archives';
 
 // Protect admin routes — must be logged in as admin
 function AdminRoute({ children }) {
@@ -44,6 +45,7 @@ function App() {
           <Route path="/logs" element={<AdminRoute><Logs /></AdminRoute>} />
           <Route path="/vip-logs" element={<AdminRoute><VipLogs /></AdminRoute>} />
           <Route path="/vip-queue" element={<AdminRoute><VipQueue /></AdminRoute>} />
+          <Route path="/archives" element={<AdminRoute><Archives /></AdminRoute>} />
           <Route path="/manage" element={<AdminRoute><Manage /></AdminRoute>} />
 
           {/* ── Guard portal ── */}

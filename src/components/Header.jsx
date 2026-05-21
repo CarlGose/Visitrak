@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, ClipboardList, Star, Users, Shield } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Star, Users, Shield, Archive } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './Header.css';
 
@@ -59,6 +59,10 @@ export default function Header() {
           <NavLink id="nav-vip-queue" to="/vip-queue" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <Users size={20} />
             <span>VIP Queue</span>
+          </NavLink>
+          <NavLink id="nav-archives" to="/archives" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <Archive size={20} />
+            <span>Archives</span>
           </NavLink>
           <NavLink id="nav-manage" to="/manage" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <Shield size={20} />

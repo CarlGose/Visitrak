@@ -2,26 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import { supabase } from '../supabaseClient';
 import * as XLSX from 'xlsx';
-import './Logs.css';
+import './Archives.css';
 
-export default function VipLogs() {
-  const getTodayString = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
+export default function Archives() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(getTodayString());
+  const [selectedDate, setSelectedDate] = useState('');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
-
   const [exportType, setExportType] = useState(''); // 'month' or 'day'
   const [exportMonthValue, setExportMonthValue] = useState('');
   const [exportDayValue, setExportDayValue] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
+  const [showVip, setShowVip] = useState(false); // Toggle between Regular and VIP logs
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +22,6 @@ export default function VipLogs() {
     const { data, error } = await supabase
       .from('visitor_logs')
       .select('*')
-      .eq('is_vip', true)
       .order('id', { ascending: false });
 
     if (!error && data) {
@@ -43,7 +34,7 @@ export default function VipLogs() {
     fetchLogs();
 
     const channel = supabase
-      .channel('viplogs-visitor-logs')
+      .channel('archives-visitor-logs')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'visitor_logs' },
@@ -123,33 +114,79 @@ export default function VipLogs() {
     }
   };
 
+  const getCurrentWeekMondayDate = () => {
+    const d = new Date();
+    const day = d.getDay(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(d.setDate(diff));
+    const y = monday.getFullYear();
+    const m = String(monday.getMonth() + 1).padStart(2, '0');
+    const dateVal = String(monday.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dateVal}`;
+  };
+
+  // Filter archived logs (logs before current week's Monday, matches search / date, matches showVip category)
+  const filteredArchivedLogs = logs.filter(log => {
+    const normDate = normalizeDate(log.date);
+    const currentWeekMondayStr = getCurrentWeekMondayDate();
+
+    // Check if the record is archived (before current week's Monday)
+    const isArchived = normDate && normDate < currentWeekMondayStr;
+    if (!isArchived) return false;
+
+    // Check VIP category match
+    if (log.is_vip !== showVip) return false;
+
+    // Search query matches
+    const searchVal = searchTerm.toLowerCase();
+    const matchesSearch =
+      log.name.toLowerCase().includes(searchVal) ||
+      (log.address && log.address.toLowerCase().includes(searchVal)) ||
+      (log.company && log.company.toLowerCase().includes(searchVal)) ||
+      (log.destination && log.destination.toLowerCase().includes(searchVal)) ||
+      (log.purpose && log.purpose.toLowerCase().includes(searchVal));
+
+    // Calendar selected date matches
+    const matchesDate = selectedDate ? normalizeDate(log.date) === selectedDate : true;
+
+    return matchesSearch && matchesDate;
+  });
 
   const handleExport = async () => {
     setIsExporting(true);
-    let query = supabase.from('visitor_logs').select('*').order('date', { ascending: false }).order('time_in', { ascending: false });
+    // Grab all logs of current view type
+    const { data, error } = await supabase
+      .from('visitor_logs')
+      .select('*')
+      .eq('is_vip', showVip);
 
-    if (exportType === 'day' && exportDayValue) {
-      const { data } = await query;
-      const filteredData = (data || []).filter(row => {
-        const normDate = normalizeDate(row.date);
-        return normDate === exportDayValue;
-      });
-      processExport(filteredData);
-    } else if (exportType === 'month' && exportMonthValue) {
-      const { data } = await query;
-      const filteredData = (data || []).filter(row => {
-        const normDate = normalizeDate(row.date);
-        return normDate.startsWith(exportMonthValue);
-      });
-      processExport(filteredData);
+    if (error) {
+      console.error(error);
+      setIsExporting(false);
+      return;
     }
 
+    const currentWeekMondayStr = getCurrentWeekMondayDate();
+
+    // Filter archived logs on client side for maximum reliability with mixed date formats
+    let filteredData = (data || []).filter(row => {
+      const normDate = normalizeDate(row.date);
+      return normDate && normDate < currentWeekMondayStr;
+    });
+
+    if (exportType === 'day' && exportDayValue) {
+      filteredData = filteredData.filter(row => normalizeDate(row.date) === exportDayValue);
+    } else if (exportType === 'month' && exportMonthValue) {
+      filteredData = filteredData.filter(row => normalizeDate(row.date).startsWith(exportMonthValue));
+    }
+
+    processExport(filteredData);
     setIsExporting(false);
   };
 
   const processExport = (dataToExport) => {
     if (!dataToExport || dataToExport.length === 0) {
-      alert("No logs found for the selected timeframe.");
+      alert("No archived logs found for the selected timeframe.");
       return;
     }
 
@@ -166,7 +203,6 @@ export default function VipLogs() {
           'Plate No': log.plate_no || '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
-          'Expected Date': log.expected_date ? formatDateDisplay(log.expected_date) : '',
           'Gate In': log.gate_in || '',
           'Gate Out': log.gate_out || ''
         };
@@ -182,7 +218,6 @@ export default function VipLogs() {
           'Plate No': '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
-          'Expected Date': '',
           'Gate In': log.gate_in || '',
           'Gate Out': log.gate_out || ''
         };
@@ -191,55 +226,18 @@ export default function VipLogs() {
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(combinedLogs);
-    XLSX.utils.book_append_sheet(wb, ws, "All Logs");
+    XLSX.utils.book_append_sheet(wb, ws, "Archived Logs");
 
-    const filename = exportType === 'day' ? `WUP-VipLogs_${exportDayValue}.xlsx` : `WUP-VipLogs_${exportMonthValue}.xlsx`;
+    const category = showVip ? 'VIPLogs' : 'VisitorLogs';
+    const filename = exportType === 'day' 
+      ? `VisiTrack_Archived_${category}_${exportDayValue}.xlsx` 
+      : `VisiTrack_Archived_${category}_${exportMonthValue || 'All'}.xlsx`;
+
     XLSX.writeFile(wb, filename);
 
     setExportMenuOpen(false);
     setExportType('');
   };
-
-  const filteredVipLogs = logs.filter(log => {
-    const matchesSearch =
-      log.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.destination.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = selectedDate ? normalizeDate(log.date) === selectedDate : true;
-    return matchesSearch && matchesDate;
-  });
-
-  const parseTimeToMinutes = (timeStr) => {
-    if (!timeStr) return 0;
-    const parts = timeStr.trim().split(' ');
-    if (parts.length < 2) {
-      const tParts = timeStr.split(':');
-      if (tParts.length >= 2) {
-        return parseInt(tParts[0], 10) * 60 + parseInt(tParts[1], 10);
-      }
-      return 0;
-    }
-    let [time, modifier] = parts;
-    let [hours, minutes] = time.split(':');
-    hours = parseInt(hours, 10);
-    minutes = parseInt(minutes, 10);
-    if (hours === 12) {
-      hours = modifier.toUpperCase() === 'AM' ? 0 : 12;
-    } else if (modifier.toUpperCase() === 'PM') {
-      hours += 12;
-    }
-    return hours * 60 + minutes;
-  };
-
-  const sortedVipLogs = [...filteredVipLogs].sort((a, b) => {
-    const dateA = normalizeDate(a.date);
-    const dateB = normalizeDate(b.date);
-    if (dateA !== dateB) {
-      return dateB.localeCompare(dateA); // Newest date first
-    }
-    const timeA = parseTimeToMinutes(a.time_in);
-    const timeB = parseTimeToMinutes(b.time_in);
-    return timeB - timeA; // Newest time first
-  });
 
   return (
     <div className="logs-page">
@@ -255,13 +253,16 @@ export default function VipLogs() {
               </svg>
               <input
                 type="text"
-                placeholder="search by name or destination"
+                placeholder={showVip ? "search by name or destination" : "search by name"}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <h1 className="logs-page-title">VIP Logs</h1>
+            <div className="archives-title-container">
+              <h1 className="logs-page-title archives-title">System Archives</h1>
+              <span className="archives-subtitle">Older Historical Logs</span>
+            </div>
 
             <div className="calendar-container">
               {selectedDate && (
@@ -292,37 +293,91 @@ export default function VipLogs() {
             </div>
           </div>
 
+          <div className="archives-toggle-bar">
+            <div className="archives-toggle-buttons">
+              <button 
+                className={`archives-toggle-btn ${!showVip ? 'active' : ''}`}
+                onClick={() => { setShowVip(false); setSearchTerm(''); setSelectedDate(''); }}
+              >
+                Regular Archives
+              </button>
+              <button 
+                className={`archives-toggle-btn ${showVip ? 'active' : ''}`}
+                onClick={() => { setShowVip(true); setSearchTerm(''); setSelectedDate(''); }}
+              >
+                VIP Archives
+              </button>
+            </div>
+            <div className="archives-info-text">
+              🔒 Logs from previous calendar weeks are automatically archived here every Monday.
+            </div>
+          </div>
+
           <div className="logs-table-wrapper">
             <table className="logs-data-table">
               <thead>
-                <tr>
-                  <th>DATE</th>
-                  <th>TIME IN</th>
-                  <th>TIME OUT</th>
-                  <th>DURATION</th>
-                  <th>NAME</th>
-                  <th>PERSON TO VISIT</th>
-                </tr>
+                {showVip ? (
+                  <tr>
+                    <th>DATE</th>
+                    <th>TIME IN</th>
+                    <th>TIME OUT</th>
+                    <th>DURATION</th>
+                    <th>NAME</th>
+                    <th>PERSON TO VISIT</th>
+                  </tr>
+                ) : (
+                  <tr>
+                    <th>DATE</th>
+                    <th>TIME-IN</th>
+                    <th>GATE-IN</th>
+                    <th>TIME-OUT</th>
+                    <th>GATE-OUT</th>
+                    <th>DURATION</th>
+                    <th>NAME</th>
+                    <th>ADDRESS</th>
+                    <th>DESTINATION</th>
+                    <th>PURPOSE</th>
+                  </tr>
+                )}
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center' }}>Loading...</td>
+                    <td colSpan={showVip ? "6" : "10"} style={{ textAlign: 'center' }}>Loading archives...</td>
                   </tr>
-                ) : sortedVipLogs.length > 0 ? (
-                  sortedVipLogs.map((log) => (
-                    <tr key={`vip-${log.id}`}>
-                      <td>{formatDateDisplay(log.date)}</td>
-                      <td>{log.time_in}</td>
-                      <td>{log.time_out || 'Active'}</td>
-                      <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
-                      <td>{log.name}</td>
-                      <td>{log.destination}</td>
+                ) : filteredArchivedLogs.length > 0 ? (
+                  filteredArchivedLogs.map((log) => (
+                    <tr key={`arch-${log.id}`}>
+                      {showVip ? (
+                        <>
+                          <td>{formatDateDisplay(log.date)}</td>
+                          <td>{log.time_in}</td>
+                          <td>{log.time_out || 'Active'}</td>
+                          <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
+                          <td>{log.name}</td>
+                          <td>{log.destination}</td>
+                        </>
+                      ) : (
+                        <>
+                          <td>{formatDateDisplay(log.date)}</td>
+                          <td>{log.time_in}</td>
+                          <td>{log.gate_in || '—'}</td>
+                          <td className={log.time_out ? '' : 'time-out-active'}>
+                            {log.time_out || 'Active'}
+                          </td>
+                          <td>{log.gate_out || '—'}</td>
+                          <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
+                          <td>{log.name}</td>
+                          <td>{log.address}</td>
+                          <td>{log.destination}</td>
+                          <td>{log.purpose}</td>
+                        </>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan={showVip ? "6" : "10"} style={{ textAlign: 'center' }}>No archived logs found</td>
                   </tr>
                 )}
               </tbody>
@@ -337,14 +392,16 @@ export default function VipLogs() {
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                Export
+                Export Archives
               </button>
+
               {exportMenuOpen && (
                 <div className="export-dropdown" style={{ padding: '12px', minWidth: '220px', right: 0 }}>
                   {!exportType ? (
                     <>
                       <button onClick={() => setExportType('day')} style={{ width: '100%', marginBottom: '6px', textAlign: 'left', padding: '10px' }}>Export Specific Day</button>
                       <button onClick={() => setExportType('month')} style={{ width: '100%', textAlign: 'left', padding: '10px' }}>Export Specific Month</button>
+                      <button onClick={() => { setExportType('all'); handleExport(); }} style={{ width: '100%', marginTop: '6px', textAlign: 'left', padding: '10px', background: '#10b981', color: 'white', borderRadius: '4px' }}>Export All Archives</button>
                     </>
                   ) : exportType === 'day' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -360,7 +417,7 @@ export default function VipLogs() {
                       </button>
                       <button onClick={() => setExportType('')} style={{ background: '#f3f4f6', color: '#333', padding: '8px', borderRadius: '6px' }}>Back</button>
                     </div>
-                  ) : (
+                  ) : exportType === 'month' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1a2820' }}>Select Month:</label>
                       <input
@@ -374,12 +431,11 @@ export default function VipLogs() {
                       </button>
                       <button onClick={() => setExportType('')} style={{ background: '#f3f4f6', color: '#333', padding: '8px', borderRadius: '6px' }}>Back</button>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
           </div>
-
         </div>
       </main>
     </div>
