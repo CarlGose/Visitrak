@@ -97,11 +97,9 @@ export default function GuardLogin() {
             >
               <option value="" disabled>Select your gate</option>
               <option value="Main Gate">Main Gate</option>
-              <option value="Gate 1">Gate 1</option>
-              <option value="Gate 2">Gate 2</option>
-              <option value="Gate 3">Gate 3</option>
-              <option value="Gate 4">Gate 4</option>
-              <option value="Back Gate">Back Gate</option>
+              <option value="Hospital Gate">Hospital Gate</option>
+              <option value="Gate 6">Gate 6</option>
+              <option value="North Gate">North Gate</option>
             </select>
           </div>
 

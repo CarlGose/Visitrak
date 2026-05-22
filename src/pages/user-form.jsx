@@ -18,7 +18,6 @@ const destGroups = [
         label: "Basic Education",
         options: [
             { value: "SHARE", label: "SHARE" },
-            { value: "Center for Child Development", label: "Center for Child Development" },
             { value: "Elementary", label: "Elementary" },
             { value: "High School", label: "High School" }
         ]
@@ -36,6 +35,118 @@ const destGroups = [
             { value: "Allied Medical Sciences", label: "Allied Medical Sciences" }
         ]
     }
+];
+
+const purposeOptions = {
+    // Offices
+    "OFFICE OF STUDENT AFFAIRS": [
+        "Inquiry / Consultation",
+        "Submit Documents / Clearance",
+        "Student ID Application / Claiming",
+        "Disciplinary Action / Meeting"
+    ],
+    "PRESIDENT'S OFFICE": [
+        "Meeting / Appointment",
+        "Document Submission",
+        "Official Business"
+    ],
+    "ACCOUNTING": [
+        "Tuition / Fee Payment",
+        "Refund Claiming",
+        "Payment Inquiry / Clearance",
+        "Exam Permit Collection"
+    ],
+    "REGISTRAR": [
+        "Request Documents (TOR, Diploma, Certifications)",
+        "Claim Documents",
+        "Enrollment Inquiry / Registration",
+        "Clearance / Evaluation"
+    ],
+
+    // Basic Education Group
+    "SHARE": [
+        "Parent-Teacher Conference (PTC)",
+        "Drop-off / Pick-up Student",
+        "Inquiry / Enrollment",
+        "Visit Faculty / Staff"
+    ],
+    "Elementary": [
+        "Parent-Teacher Conference (PTC)",
+        "Drop-off / Pick-up Student",
+        "Inquiry / Enrollment",
+        "Visit Faculty / Staff"
+    ],
+    "High School": [
+        "Parent-Teacher Conference (PTC)",
+        "Drop-off / Pick-up Student",
+        "Inquiry / Enrollment",
+        "Visit Faculty / Staff"
+    ],
+
+    // Colleges
+    "Arts and Sciences (CAS)": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "College of Business and Accountancy": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "Criminal Justice Education (CCJE)": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "Education (CoEd)": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "Engineering and Computer Technology (CECT)": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "Hospitality and Tourism Management (CHTM)": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "Nursing": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ],
+    "Allied Medical Sciences": [
+        "Consultation with Dean / Faculty",
+        "Claim Documents",
+        "Enrollment",
+        "Department Clearance"
+
+    ]
+};
+
+const defaultPurposes = [
+    "Meeting / Appointment",
+    "Inquiry / Consultation",
+    "Submit Documents"
+
 ];
 
 const UserForm = () => {
@@ -58,11 +169,44 @@ const UserForm = () => {
     // Custom Dropdown State
     const [destOpen, setDestOpen] = useState(false);
     const destRef = useRef(null);
+    const [purposeOpen, setPurposeOpen] = useState(false);
+    const purposeRef = useRef(null);
+
+    const [isCustomPurpose, setIsCustomPurpose] = useState(() => {
+        const saved = localStorage.getItem('visitrak_qr_form');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.destination && parsed.purpose) {
+                const list = purposeOptions[parsed.destination] || defaultPurposes;
+                if (list.length > 0 && !list.includes(parsed.purpose)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    });
+
+    const [customPurposeText, setCustomPurposeText] = useState(() => {
+        const saved = localStorage.getItem('visitrak_qr_form');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.destination && parsed.purpose) {
+                const list = purposeOptions[parsed.destination] || defaultPurposes;
+                if (list.length > 0 && !list.includes(parsed.purpose)) {
+                    return parsed.purpose;
+                }
+            }
+        }
+        return '';
+    });
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (destRef.current && !destRef.current.contains(event.target)) {
                 setDestOpen(false);
+            }
+            if (purposeRef.current && !purposeRef.current.contains(event.target)) {
+                setPurposeOpen(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -151,6 +295,8 @@ const UserForm = () => {
             purpose: '',
             date: new Date().toISOString().split('T')[0]
         });
+        setIsCustomPurpose(false);
+        setCustomPurposeText('');
         setQrValue('');
         setIsInside(false);
         setIsSubmitted(false);
@@ -221,7 +367,13 @@ const UserForm = () => {
                                                     key={i}
                                                     className="custom-option"
                                                     onClick={() => {
-                                                        handleChange({ target: { name: 'destination', value: opt.value } });
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            destination: opt.value,
+                                                            purpose: ''
+                                                        }));
+                                                        setIsCustomPurpose(false);
+                                                        setCustomPurposeText('');
                                                         setDestOpen(false);
                                                     }}
                                                 >
@@ -234,18 +386,63 @@ const UserForm = () => {
                             )}
                         </div>
 
-                        <div className="form-field">
-                            <label htmlFor="purpose">Purpose of Visit <span className="req">*</span></label>
-                            <input
-                                type="text"
-                                id="purpose"
-                                name="purpose"
-                                placeholder="e.g. Transcript of Records"
-                                value={formData.purpose}
-                                onChange={handleChange}
-                                required
-                            />
+                        <div className="form-field" ref={purposeRef} style={{ position: 'relative' }}>
+                            <label>Purpose of Visit <span className="req">*</span></label>
+                            <div
+                                className={`custom-select ${!formData.destination ? 'disabled' : ''} ${purposeOpen ? 'open' : ''}`}
+                                onClick={() => formData.destination && setPurposeOpen(!purposeOpen)}
+                            >
+                                {isCustomPurpose
+                                    ? "Other (Please specify...)"
+                                    : (formData.purpose || <span style={{ color: 'rgba(26, 40, 32, 0.4)' }}>
+                                        {formData.destination ? "Select a purpose..." : "Select a destination first..."}
+                                    </span>)
+                                }
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a2820" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+
+                            {purposeOpen && formData.destination && (
+                                <div className="custom-options">
+                                    {(purposeOptions[formData.destination] || defaultPurposes).map((opt, i) => (
+                                        <div
+                                            key={i}
+                                            className="custom-option"
+                                            onClick={() => {
+                                                if (opt === "Other") {
+                                                    setIsCustomPurpose(true);
+                                                    setFormData(prev => ({ ...prev, purpose: customPurposeText }));
+                                                } else {
+                                                    setIsCustomPurpose(false);
+                                                    setFormData(prev => ({ ...prev, purpose: opt }));
+                                                }
+                                                setPurposeOpen(false);
+                                            }}
+                                        >
+                                            {opt}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+
+                        {isCustomPurpose && formData.destination && (
+                            <div className="form-field dynamic-fade-in">
+                                <label htmlFor="customPurpose">Specify Purpose <span className="req">*</span></label>
+                                <input
+                                    type="text"
+                                    id="customPurpose"
+                                    name="customPurpose"
+                                    placeholder="Please specify your purpose..."
+                                    value={customPurposeText}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setCustomPurposeText(val);
+                                        setFormData(prev => ({ ...prev, purpose: val }));
+                                    }}
+                                    required
+                                />
+                            </div>
+                        )}
 
                         <div className="form-field">
                             <label>Date of Visit</label>
