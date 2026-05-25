@@ -608,6 +608,50 @@
   border-radius: 20px;
 }
 
+/* ── VIP Queue Header ── */
+.vip-queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+.vip-queue-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1a2820;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0;
+  margin: 0;
+}
+
+.vip-queue-title {
+  margin: 0;
+  font-size: 2.2rem;
+  text-align: center;
+}
+
+.vip-queue-date {
+  color: #1a2820;
+  font-weight: 600;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ── Responsive: Back row ── */
+.vip-back-row--responsive {
+  align-items: center;
+}
+
+/* ── VIP Queue wrapper spacing ── */
+.vip-queue-wrapper {
+  margin: 0 auto;
+  padding-top: 56px;
+}
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .gd-menu-btn {
@@ -616,6 +660,39 @@
   }
   .gd-visitor-right {
     max-width: 120px;
+  }
+
+  /* Stack the back-row header on mobile */
+  .vip-back-row--responsive {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 14px;
+  }
+
+  .vip-back-row--responsive .gl-title,
+  .vip-back-row--responsive .vip-queue-title {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 2px;
+  }
+
+  .vip-queue-title {
+    font-size: 1.5rem !important;
+  }
+
+  .vip-back-row--responsive .gl-date,
+  .vip-back-row--responsive .vip-queue-date {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .vip-back-row--responsive .vp-back-link-btn {
+    font-size: 0.9rem;
   }
 }
 

@@ -309,7 +309,7 @@ function GuardLogs({ onBack }) {
         <span className="gd-header-brand">VisiTrack</span>
       </header>
       <div className="gd-body">
-        <div className="vip-back-row" style={{ alignItems: 'center' }}>
+        <div className="vip-back-row vip-back-row--responsive">
           <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1rem', padding: 0, margin: 0, border: 'none', background: 'none', cursor: 'pointer' }}>
              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
              Back
@@ -681,16 +681,16 @@ function VipQueueList({ onBack }) {
         <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', background: 'linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>VisiTrack</span>
       </div>
 
-      <div className="vp-wrapper" style={{ maxWidth: '1400px', width: '95%', height: '90vh', margin: 'auto' }}>
+      <div className="vp-wrapper vip-queue-wrapper" style={{ maxWidth: '1400px', width: '95%', height: '90vh' }}>
         <div className="vp-form-card" style={{ padding: '40px', height: '100%', maxHeight: 'none', display: 'flex', flexDirection: 'column' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexShrink: 0 }}>
-             <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1.1rem', padding: 0, margin: 0 }}>
+          <div className="vip-back-row vip-back-row--responsive vip-queue-header">
+             <button className="vp-back-link-btn vip-queue-back-btn" onClick={onBack}>
                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                Back
              </button>
-             <h2 className="vp-form-title" style={{ margin: 0, fontSize: '2.2rem', textAlign: 'center' }}>VIP Queues</h2>
-             <span style={{ color: '#1a2820', fontWeight: '600', fontSize: '1rem' }}>{today}</span>
+             <h2 className="vp-form-title vip-queue-title">VIP Queues</h2>
+             <span className="vip-queue-date">{today}</span>
           </div>
 
           <div style={{ overflowY: 'auto', flex: 1, paddingRight: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>

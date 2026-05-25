@@ -67,7 +67,12 @@
 .ps-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ps-brand > div {
+  text-align: center;
 }
 
 .ps-logo {
