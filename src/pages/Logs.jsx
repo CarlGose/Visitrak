@@ -13,8 +13,19 @@ export default function Logs() {
     return `${year}-${month}-${day}`;
   };
 
+  const getCurrentWeekMondayDate = () => {
+    const d = new Date();
+    const day = d.getDay(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(d.setDate(diff));
+    const y = monday.getFullYear();
+    const m = String(monday.getMonth() + 1).padStart(2, '0');
+    const dateVal = String(monday.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dateVal}`;
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(getTodayString()); // 'YYYY-MM-DD'
+  const [selectedDate, setSelectedDate] = useState(''); // 'YYYY-MM-DD' (empty defaults to showing the current week)
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
   const [exportType, setExportType] = useState(''); // 'month' or 'day'
@@ -127,18 +138,20 @@ export default function Logs() {
     setIsExporting(true);
     let query = supabase.from('visitor_logs').select('*').order('date', { ascending: false }).order('time_in', { ascending: false });
 
+    const currentWeekMondayStr = getCurrentWeekMondayDate();
+
     if (exportType === 'day' && exportDayValue) {
       const { data } = await query;
       const filteredData = (data || []).filter(row => {
         const normDate = normalizeDate(row.date);
-        return normDate === exportDayValue;
+        return normDate === exportDayValue && normDate >= currentWeekMondayStr;
       });
       processExport(filteredData);
     } else if (exportType === 'month' && exportMonthValue) {
       const { data } = await query;
       const filteredData = (data || []).filter(row => {
         const normDate = normalizeDate(row.date);
-        return normDate.startsWith(exportMonthValue);
+        return normDate.startsWith(exportMonthValue) && normDate >= currentWeekMondayStr;
       });
       processExport(filteredData);
     }
@@ -199,6 +212,11 @@ export default function Logs() {
 
   // Filter logs based on search term and selected date
   const filteredLogs = logs.filter(log => {
+    const normDate = normalizeDate(log.date);
+    const currentWeekMondayStr = getCurrentWeekMondayDate();
+    const isArchived = normDate && normDate < currentWeekMondayStr;
+    if (isArchived) return false;
+
     const matchesSearch =
       log.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.address.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -269,6 +269,17 @@ function GuardLogs({ onBack }) {
     return dateStr;
   };
 
+  const getCurrentWeekMondayDate = () => {
+    const d = new Date();
+    const day = d.getDay(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(d.setDate(diff));
+    const y = monday.getFullYear();
+    const m = String(monday.getMonth() + 1).padStart(2, '0');
+    const dateVal = String(monday.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dateVal}`;
+  };
+
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -292,6 +303,11 @@ function GuardLogs({ onBack }) {
 
   const filteredLogs = logs.filter(log => {
     if (!showVip && log.is_active) return false;
+    const normDate = normalizeDate(log.date);
+    const currentWeekMondayStr = getCurrentWeekMondayDate();
+    const isArchived = normDate && normDate < currentWeekMondayStr;
+    if (isArchived) return false;
+
     const term = searchTerm.toLowerCase();
     const searchMatch = !term || (
       log.name?.toLowerCase().includes(term) ||
