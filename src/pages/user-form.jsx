@@ -149,6 +149,52 @@ const defaultPurposes = [
 
 ];
 
+const validIdOptions = [
+    { group: "Primary Valid IDs", ids: [
+        "Philippine National ID (PhilID / ePhilID)",
+        "Philippine Passport",
+        "Driver's License (including Student Permits)",
+        "UMID Card (Unified Multi-Purpose ID)",
+        "SSS ID (Social Security System)",
+        "GSIS ID / e-Card (Government Service Insurance System)",
+        "PRC ID (Professional Regulation Commission)",
+        "Postal ID (PVC Plastic Card)",
+        "Voter's ID / Digitized Voter's Certification",
+        "School ID (for current students)",
+        "Company ID / Government Office ID",
+        "OWWA ID (Overseas Workers Welfare Administration)",
+        "OFW ID / iDOLE Card",
+        "Seaman's Book (Seafarer's Identification and Record Book)",
+        "Alien Certificate of Registration (ACR I-Card)",
+        "Senior Citizen ID",
+        "PWD ID (Person with Disability)",
+        "Solo Parent ID",
+        "Integrated Bar of the Philippines (IBP) ID",
+        "Firearms License (License to Own and Possess Firearms)"
+    ]},
+    { group: "Secondary Valid IDs and Documents", ids: [
+        "TIN Card (Taxpayer Identification Number)",
+        "PhilHealth ID",
+        "Pag-IBIG Loyalty Card",
+        "NBI Clearance",
+        "Police Clearance / ID",
+        "Barangay Clearance / Certificate",
+        "Barangay ID",
+        "Cedula (Community Tax Certificate)",
+        "PSA Birth Certificate",
+        "PSA Marriage Contract",
+        "Transcript of Records (TOR)",
+        "School Form 137 / Permanent Record",
+        "Alumni ID",
+        "Postal ID (Paper-based/Old format)",
+        "Pantawid Pamilyang Pilipino Program (4Ps) ID",
+        "Government Service Record",
+        "City / Municipal / Local Health Card",
+        "Credit Card with photo",
+        "Bank Account Passbook / ATM Card"
+    ]}
+];
+
 const UserForm = () => {
     const [formData, setFormData] = useState(() => {
         const saved = localStorage.getItem('visitrak_qr_form');
@@ -158,6 +204,7 @@ const UserForm = () => {
             address: '',
             destination: '',
             purpose: '',
+            valid_id: '',
             date: new Date().toISOString().split('T')[0]
         };
     });
@@ -171,6 +218,9 @@ const UserForm = () => {
     const destRef = useRef(null);
     const [purposeOpen, setPurposeOpen] = useState(false);
     const purposeRef = useRef(null);
+    const [idOpen, setIdOpen] = useState(false);
+    const idRef = useRef(null);
+    const [idSearch, setIdSearch] = useState('');
 
     const [isCustomPurpose, setIsCustomPurpose] = useState(() => {
         const saved = localStorage.getItem('visitrak_qr_form');
@@ -207,6 +257,10 @@ const UserForm = () => {
             }
             if (purposeRef.current && !purposeRef.current.contains(event.target)) {
                 setPurposeOpen(false);
+            }
+            if (idRef.current && !idRef.current.contains(event.target)) {
+                setIdOpen(false);
+                setIdSearch('');
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -269,12 +323,17 @@ const UserForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!formData.valid_id) {
+            alert('Please select a Valid ID type.');
+            return;
+        }
         // Stringify the form data to be encoded as a QR Code
         const qrData = JSON.stringify({
             name: formData.name,
             address: formData.address,
             destination: formData.destination,
             purpose: formData.purpose,
+            valid_id: formData.valid_id,
             date: formData.date
         });
 
@@ -293,6 +352,7 @@ const UserForm = () => {
             address: '',
             destination: '',
             purpose: '',
+            valid_id: '',
             date: new Date().toISOString().split('T')[0]
         });
         setIsCustomPurpose(false);
@@ -444,6 +504,67 @@ const UserForm = () => {
                             </div>
                         )}
 
+                        {/* Valid ID Searchable Dropdown */}
+                        <div className="form-field" ref={idRef} style={{ position: 'relative' }}>
+                            <label>Valid ID Presented <span className="req">*</span></label>
+                            <div
+                                className={`custom-select ${idOpen ? 'open' : ''}`}
+                                onClick={() => setIdOpen(!idOpen)}
+                            >
+                                {formData.valid_id || <span style={{ color: 'rgba(26, 40, 32, 0.4)' }}>Select a valid ID...</span>}
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a2820" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+
+                            {idOpen && (
+                                <div className="custom-options id-dropdown-options">
+                                    <div className="id-search-box">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                        <input
+                                            type="text"
+                                            className="id-search-input"
+                                            placeholder="Search ID type..."
+                                            value={idSearch}
+                                            onChange={(e) => setIdSearch(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="id-options-scroll">
+                                        {validIdOptions.map((group, gIdx) => {
+                                            const filtered = group.ids.filter(id =>
+                                                id.toLowerCase().includes(idSearch.toLowerCase())
+                                            );
+                                            if (filtered.length === 0) return null;
+                                            return (
+                                                <div key={gIdx}>
+                                                    <div className="custom-optgroup">{group.group}</div>
+                                                    {filtered.map((id, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className={`custom-option ${formData.valid_id === id ? 'selected' : ''}`}
+                                                            onClick={() => {
+                                                                setFormData(prev => ({ ...prev, valid_id: id }));
+                                                                setIdOpen(false);
+                                                                setIdSearch('');
+                                                            }}
+                                                        >
+                                                            {id}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            );
+                                        })}
+                                        {validIdOptions.every(g => g.ids.filter(id => id.toLowerCase().includes(idSearch.toLowerCase())).length === 0) && (
+                                            <div style={{ padding: '12px 16px', color: 'rgba(26,40,32,0.4)', fontSize: '0.9rem', textAlign: 'center' }}>No matching ID found</div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="form-field">
                             <label>Date of Visit</label>
                             <div style={{ padding: '14px 16px', background: 'rgba(255, 255, 255, 0.4)', border: '2px solid rgba(107, 143, 126, 0.2)', borderRadius: '14px', fontSize: '1rem', color: 'rgba(26, 40, 32, 0.6)', fontFamily: 'Outfit', fontWeight: '600', userSelect: 'none' }}>
@@ -526,6 +647,13 @@ const UserForm = () => {
                             </span>
                             <span className="qr-detail-label">Purpose:</span>
                             <span className="qr-detail-value">{formData.purpose}</span>
+                        </div>
+                        <div className="qr-detail-row">
+                            <span className="qr-detail-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="2" y1="7" x2="22" y2="7"></line><line x1="6" y1="11" x2="10" y2="11"></line></svg>
+                            </span>
+                            <span className="qr-detail-label">Valid ID:</span>
+                            <span className="qr-detail-value">{formData.valid_id}</span>
                         </div>
                         <div className="qr-detail-row">
                             <span className="qr-detail-icon">

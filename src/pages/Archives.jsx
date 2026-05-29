@@ -218,6 +218,7 @@ export default function Archives() {
           'Plate No': '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
+          'Valid ID': log.valid_id || '',
           'Gate In': log.gate_in || '',
           'Gate Out': log.gate_out || ''
         };
@@ -337,13 +338,14 @@ export default function Archives() {
                     <th>ADDRESS</th>
                     <th>DESTINATION</th>
                     <th>PURPOSE</th>
+                    <th>VALID ID</th>
                   </tr>
                 )}
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={showVip ? "6" : "10"} style={{ textAlign: 'center' }}>Loading archives...</td>
+                    <td colSpan={showVip ? "6" : "11"} style={{ textAlign: 'center' }}>Loading archives...</td>
                   </tr>
                 ) : filteredArchivedLogs.length > 0 ? (
                   filteredArchivedLogs.map((log) => (
@@ -371,13 +373,14 @@ export default function Archives() {
                           <td>{log.address}</td>
                           <td>{log.destination}</td>
                           <td>{log.purpose}</td>
+                          <td>{log.valid_id || '—'}</td>
                         </>
                       )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={showVip ? "6" : "10"} style={{ textAlign: 'center' }}>No archived logs found</td>
+                    <td colSpan={showVip ? "6" : "11"} style={{ textAlign: 'center' }}>No archived logs found</td>
                   </tr>
                 )}
               </tbody>

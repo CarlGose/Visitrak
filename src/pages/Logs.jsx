@@ -193,6 +193,7 @@ export default function Logs() {
           'Plate No': '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
+          'Valid ID': log.valid_id || '',
           'Gate In': log.gate_in || '',
           'Gate Out': log.gate_out || ''
         };
@@ -326,13 +327,13 @@ export default function Logs() {
                   <th>ADDRESS</th>
                   <th>DESTINATION</th>
                   <th>PURPOSE</th>
-
+                  <th>VALID ID</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center' }}>Loading logs...</td>
+                    <td colSpan="11" style={{ textAlign: 'center' }}>Loading logs...</td>
                   </tr>
                 ) : sortedLogs.length > 0 ? (
                   sortedLogs.map((log) => (
@@ -349,11 +350,12 @@ export default function Logs() {
                       <td>{log.address}</td>
                       <td>{log.destination}</td>
                       <td>{log.purpose}</td>
+                      <td>{log.valid_id || '—'}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center' }}>No logs found</td>
+                    <td colSpan="11" style={{ textAlign: 'center' }}>No logs found</td>
                   </tr>
                 )}
               </tbody>

@@ -396,6 +396,7 @@ function GuardLogs({ onBack }) {
                 <div className="gl-right">
                   <p className="gl-rdate">{formatDateDisplay(v.date)}</p>
                   <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
+                  {!v.is_vip && v.valid_id && <p className="gl-rdest" style={{ fontSize: '0.8rem', color: '#888', marginTop: '2px' }}>ID: {v.valid_id}</p>}
                 </div>
               </div>
             ))
@@ -500,7 +501,8 @@ function QrScanner({ onBack }) {
               is_active: true,
               address: parsed.address || '',
               is_vip: false,
-              gate_in: user?.gate || null
+              gate_in: user?.gate || null,
+              valid_id: parsed.valid_id || ''
             }]);
           actionMsg = `TIME IN SUCCESSFUL at ${timeString}`;
         }
@@ -630,6 +632,10 @@ function QrScanner({ onBack }) {
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
                       <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Purpose:</span>
                       <span style={{ textAlign: 'right' }}>{scanResult.purpose}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Valid ID:</span>
+                      <span style={{ textAlign: 'right' }}>{scanResult.valid_id || '—'}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Date:</span>

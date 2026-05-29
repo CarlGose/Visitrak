@@ -238,6 +238,7 @@ export default function VipLogs() {
           'Plate No': '',
           Destination: log.destination || '',
           Purpose: log.purpose || '',
+          'Valid ID': log.valid_id || '',
           'Expected Date': '',
           'Gate In': log.gate_in || '',
           'Gate Out': log.gate_out || ''
