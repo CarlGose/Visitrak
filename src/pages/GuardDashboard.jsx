@@ -163,27 +163,30 @@ export default function GuardDashboard() {
 ───────────────────────────────────── */
 function VipForm({ onBack }) {
   const { user } = useAuth();
-  const [form, setForm] = useState({ name: '', plate: '', personToVisit: '', date: '' });
+  const [form, setForm] = useState({ name: '', plate: '', personToVisit: '', date: '', carModel: '', carColor: '', contactPerson: '' });
   const [submitted, setSubmitted] = useState(false);
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.plate || !form.personToVisit || !form.date) return;
+    if (!form.name || !form.plate || !form.personToVisit || !form.date || !form.carModel || !form.carColor || !form.contactPerson) return;
 
     const { error } = await supabase.from('vip_queue').insert([{
       name: form.name,
       plate: form.plate,
       person_to_visit: form.personToVisit,
       date: form.date,
+      car_model: form.carModel,
+      car_color: form.carColor,
+      contact_person: form.contactPerson,
       added_by: user?.name,
       timestamp: new Date().toLocaleTimeString()
     }]);
 
     if (!error) {
       setSubmitted(true);
-      setTimeout(() => { setSubmitted(false); setForm({ name: '', plate: '', personToVisit: '', date: '' }); }, 2000);
+      setTimeout(() => { setSubmitted(false); setForm({ name: '', plate: '', personToVisit: '', date: '', carModel: '', carColor: '', contactPerson: '' }); }, 2000);
     } else {
       console.error(error);
       alert("Error adding VIP");
@@ -217,6 +220,18 @@ function VipForm({ onBack }) {
             <div className="vp-field">
               <label htmlFor="vip-plate">Plate No. <span className="req">*</span></label>
               <input id="vip-plate" type="text" placeholder="Vehicle plate number" value={form.plate} onChange={set('plate')} required />
+            </div>
+            <div className="vp-field">
+              <label htmlFor="vip-car-model">Make & Model <span className="req">*</span></label>
+              <input id="vip-car-model" type="text" placeholder="e.g. Toyota Vios" value={form.carModel} onChange={set('carModel')} required />
+            </div>
+            <div className="vp-field">
+              <label htmlFor="vip-car-color">Color <span className="req">*</span></label>
+              <input id="vip-car-color" type="text" placeholder="e.g. Black" value={form.carColor} onChange={set('carColor')} required />
+            </div>
+            <div className="vp-field">
+              <label htmlFor="vip-contact">Contact Number <span className="req">*</span></label>
+              <input id="vip-contact" type="text" placeholder="e.g. 09123456789" value={form.contactPerson} onChange={set('contactPerson')} required />
             </div>
             <div className="vp-field">
               <label htmlFor="vip-person">Person to Visit <span className="req">*</span></label>
@@ -650,6 +665,7 @@ function VipQueueList({ onBack }) {
   const { user } = useAuth();
   const [queue, setQueue] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [passengerCounts, setPassengerCounts] = React.useState({});
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   React.useEffect(() => {
@@ -663,7 +679,14 @@ function VipQueueList({ onBack }) {
     setLoading(false);
   };
 
+  const handlePassengerCountChange = (id, count) => {
+    setPassengerCounts(prev => ({ ...prev, [id]: count }));
+  };
+
   const handleArrived = async (vip) => {
+    const pCount = passengerCounts[vip.id] || vip.passengers_count || 1;
+    const vehicleStr = vip.car_model ? `${vip.car_model}${vip.car_color ? ` (${vip.car_color})` : ''}` : '';
+
     // Delete from queue
     await supabase.from('vip_queue').delete().eq('id', vip.id);
 
@@ -671,7 +694,7 @@ function VipQueueList({ onBack }) {
     await supabase.from('visitor_logs').insert([{
       name: vip.name,
       destination: vip.person_to_visit || vip.destination || 'VIP Visit',
-      purpose: 'VIP',
+      purpose: `VIP | Passengers: ${pCount} | Vehicle: ${vehicleStr || '—'} | Plate: ${vip.plate || '—'} | Contact: ${vip.contact_person || '—'}`,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       time_in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       time_out: null,
@@ -721,6 +744,36 @@ function VipQueueList({ onBack }) {
                     <div>
                       <p style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', margin: '0 0 8px' }}>{v.name}</p>
                       <p style={{ margin: '0 0 6px', fontSize: '1rem', color: '#444' }}><strong>Plate No:</strong> {v.plate}</p>
+                      <p style={{ margin: '0 0 6px', fontSize: '1rem', color: '#444' }}><strong>Vehicle:</strong> {v.car_model || '—'} ({v.car_color || '—'})</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 6px' }}>
+                        <span style={{ fontSize: '1rem', color: '#444' }}><strong>Passengers:</strong></span>
+                        <select
+                          value={passengerCounts[v.id] || v.passengers_count || 1}
+                          onChange={(e) => handlePassengerCountChange(v.id, parseInt(e.target.value, 10))}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid #ccc',
+                            fontSize: '0.95rem',
+                            outline: 'none',
+                            cursor: 'pointer',
+                            backgroundColor: '#fff',
+                            fontFamily: 'inherit'
+                          }}
+                        >
+                          <option value="1">1 Passenger</option>
+                          <option value="2">2 Passengers</option>
+                          <option value="3">3 Passengers</option>
+                          <option value="4">4 Passengers</option>
+                          <option value="5">5 Passengers</option>
+                          <option value="6">6 Passengers</option>
+                          <option value="7">7 Passengers</option>
+                          <option value="8">8 Passengers</option>
+                          <option value="9">9 Passengers</option>
+                          <option value="10">10 Passengers</option>
+                        </select>
+                      </div>
+                      <p style={{ margin: '0 0 6px', fontSize: '1rem', color: '#444' }}><strong>Contact No:</strong> {v.contact_person || '—'}</p>
                       <p style={{ margin: 0, fontSize: '1rem', color: '#444' }}><strong>Logged By:</strong> {v.added_by} {v.timestamp ? `at ${v.timestamp}` : ''}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>

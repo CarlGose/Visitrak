@@ -4,6 +4,47 @@ import { supabase } from '../supabaseClient';
 import * as XLSX from 'xlsx';
 import './Logs.css';
 
+const parseVipPurpose = (purposeStr) => {
+  const info = {
+    passengers: '1',
+    vehicle: '—',
+    color: '—',
+    plate: '—',
+    contact: '—'
+  };
+
+  if (!purposeStr) return info;
+
+  if (purposeStr.includes(' | ')) {
+    const parts = purposeStr.split(' | ');
+    parts.forEach(part => {
+      if (part.startsWith('Passengers: ')) {
+        info.passengers = part.replace('Passengers: ', '');
+      } else if (part.startsWith('Vehicle: ')) {
+        const vehicleStr = part.replace('Vehicle: ', '');
+        if (vehicleStr.includes(' (')) {
+          const subparts = vehicleStr.split(' (');
+          info.vehicle = subparts[0];
+          info.color = subparts[1].replace(')', '');
+        } else {
+          info.vehicle = vehicleStr;
+        }
+      } else if (part.startsWith('Plate: ')) {
+        info.plate = part.replace('Plate: ', '');
+      } else if (part.startsWith('Contact: ')) {
+        info.contact = part.replace('Contact: ', '');
+      }
+    });
+  } else if (purposeStr.startsWith('VIP (')) {
+    const match = purposeStr.match(/\((\d+) passengers\)/);
+    if (match) {
+      info.passengers = match[1];
+    }
+  }
+
+  return info;
+};
+
 export default function VipLogs() {
   const getTodayString = () => {
     const d = new Date();
@@ -168,6 +209,7 @@ export default function VipLogs() {
 
     const combinedLogs = dataToExport.map(log => {
       if (log.is_vip) {
+        const vipInfo = parseVipPurpose(log.purpose);
         return {
           Date: formatDateDisplay(log.date),
           'Time In': log.time_in,
@@ -175,11 +217,12 @@ export default function VipLogs() {
           Duration: log.time_out ? calculateDuration(log.time_in, log.time_out) : '-',
           Name: log.name,
           Type: 'VIP',
-          'Address / Company': log.company || '',
-          'Plate No': log.plate_no || '',
+          'Plate No': vipInfo.plate,
+          'Vehicle Model/Make': vipInfo.vehicle,
+          'Vehicle Color': vipInfo.color,
+          Passengers: vipInfo.passengers,
+          'Contact No': vipInfo.contact,
           Destination: log.destination || '',
-          Purpose: log.purpose || '',
-          'Expected Date': log.expected_date ? formatDateDisplay(log.expected_date) : '',
           'Gate In': log.gate_in || '',
           'Gate Out': log.gate_out || ''
         };
@@ -319,28 +362,41 @@ export default function VipLogs() {
                   <th>TIME OUT</th>
                   <th>DURATION</th>
                   <th>NAME</th>
+                  <th>PLATE NO.</th>
+                  <th>VEHICLE</th>
+                  <th>COLOR</th>
+                  <th>PASSENGERS</th>
+                  <th>CONTACT NO.</th>
                   <th>PERSON TO VISIT</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center' }}>Loading...</td>
+                    <td colSpan="11" style={{ textAlign: 'center' }}>Loading...</td>
                   </tr>
                 ) : sortedVipLogs.length > 0 ? (
-                  sortedVipLogs.map((log) => (
-                    <tr key={`vip-${log.id}`}>
-                      <td>{formatDateDisplay(log.date)}</td>
-                      <td>{log.time_in}</td>
-                      <td>{log.time_out || 'Active'}</td>
-                      <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
-                      <td>{log.name}</td>
-                      <td>{log.destination}</td>
-                    </tr>
-                  ))
+                  sortedVipLogs.map((log) => {
+                    const vipInfo = parseVipPurpose(log.purpose);
+                    return (
+                      <tr key={`vip-${log.id}`}>
+                        <td>{formatDateDisplay(log.date)}</td>
+                        <td>{log.time_in}</td>
+                        <td>{log.time_out || 'Active'}</td>
+                        <td>{log.time_out ? calculateDuration(log.time_in, log.time_out) : '-'}</td>
+                        <td>{log.name}</td>
+                        <td>{vipInfo.plate}</td>
+                        <td>{vipInfo.vehicle}</td>
+                        <td>{vipInfo.color}</td>
+                        <td>{vipInfo.passengers}</td>
+                        <td>{vipInfo.contact}</td>
+                        <td>{log.destination}</td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center' }}>No VIP logs found</td>
+                    <td colSpan="11" style={{ textAlign: 'center' }}>No VIP logs found</td>
                   </tr>
                 )}
               </tbody>

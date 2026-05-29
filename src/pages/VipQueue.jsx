@@ -14,7 +14,7 @@ export default function VipQueue() {
 
   // VIP/CAR Form state
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', plate: '', personToVisit: '', date: '' });
+  const [form, setForm] = useState({ name: '', plate: '', personToVisit: '', date: '', carModel: '', carColor: '', contactPerson: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -60,7 +60,7 @@ export default function VipQueue() {
 
   const handleAddVip = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.plate || !form.personToVisit || !form.date) return;
+    if (!form.name || !form.plate || !form.personToVisit || !form.date || !form.carModel || !form.carColor || !form.contactPerson) return;
     setSubmitting(true);
 
     const { error } = await supabase.from('vip_queue').insert([{
@@ -68,6 +68,9 @@ export default function VipQueue() {
       plate: form.plate,
       person_to_visit: form.personToVisit,
       date: form.date,
+      car_model: form.carModel,
+      car_color: form.carColor,
+      contact_person: form.contactPerson,
       added_by: user?.name || 'Admin',
       timestamp: new Date().toLocaleTimeString()
     }]);
@@ -76,7 +79,7 @@ export default function VipQueue() {
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
-        setForm({ name: '', plate: '', personToVisit: '', date: '' });
+        setForm({ name: '', plate: '', personToVisit: '', date: '', carModel: '', carColor: '', contactPerson: '' });
       }, 2000);
       fetchQueue();
     } else {
@@ -273,6 +276,66 @@ export default function VipQueue() {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#78350f', marginBottom: '5px' }}>
+                    Make & Model <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
+                  <input
+                    id="admin-vip-car-model"
+                    type="text"
+                    placeholder="e.g. Toyota Vios"
+                    value={form.carModel}
+                    onChange={set('carModel')}
+                    required
+                    style={{
+                      width: '100%', padding: '10px 14px', borderRadius: '8px',
+                      border: '1.5px solid #e5d5a0', fontSize: '0.92rem',
+                      fontFamily: 'inherit', backgroundColor: '#fffef7',
+                      outline: 'none', boxSizing: 'border-box',
+                      transition: 'border-color 0.2s'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#78350f', marginBottom: '5px' }}>
+                    Color <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
+                  <input
+                    id="admin-vip-car-color"
+                    type="text"
+                    placeholder="e.g. Black"
+                    value={form.carColor}
+                    onChange={set('carColor')}
+                    required
+                    style={{
+                      width: '100%', padding: '10px 14px', borderRadius: '8px',
+                      border: '1.5px solid #e5d5a0', fontSize: '0.92rem',
+                      fontFamily: 'inherit', backgroundColor: '#fffef7',
+                      outline: 'none', boxSizing: 'border-box',
+                      transition: 'border-color 0.2s'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#78350f', marginBottom: '5px' }}>
+                    Contact Number <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
+                  <input
+                    id="admin-vip-contact"
+                    type="text"
+                    placeholder="e.g. 09123456789"
+                    value={form.contactPerson}
+                    onChange={set('contactPerson')}
+                    required
+                    style={{
+                      width: '100%', padding: '10px 14px', borderRadius: '8px',
+                      border: '1.5px solid #e5d5a0', fontSize: '0.92rem',
+                      fontFamily: 'inherit', backgroundColor: '#fffef7',
+                      outline: 'none', boxSizing: 'border-box',
+                      transition: 'border-color 0.2s'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#78350f', marginBottom: '5px' }}>
                     Person to Visit <span style={{ color: '#dc2626' }}>*</span>
                   </label>
                   <input
@@ -344,6 +407,10 @@ export default function VipQueue() {
                   <th>DATE</th>
                   <th>NAME</th>
                   <th>PLATE NO.</th>
+                  <th>VEHICLE</th>
+                  <th>COLOR</th>
+                  <th>PASSENGERS</th>
+                  <th>CONTACT NO.</th>
                   <th>PERSON TO VISIT</th>
                   <th>ADDED BY</th>
                   <th style={{ width: '80px', textAlign: 'center' }}>ACTION</th>
@@ -352,7 +419,7 @@ export default function VipQueue() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center' }}>Loading...</td>
+                    <td colSpan="10" style={{ textAlign: 'center' }}>Loading...</td>
                   </tr>
                 ) : filteredQueueLogs.length > 0 ? (
                   filteredQueueLogs.map((log) => (
@@ -360,6 +427,10 @@ export default function VipQueue() {
                       <td>{log.date}</td>
                       <td>{log.name}</td>
                       <td>{log.plate || '—'}</td>
+                      <td>{log.car_model || '—'}</td>
+                      <td>{log.car_color || '—'}</td>
+                      <td>{log.passengers_count || '1'}</td>
+                      <td>{log.contact_person || '—'}</td>
                       <td>{log.person_to_visit}</td>
                       <td>{log.added_by}</td>
                       <td style={{ textAlign: 'center' }}>
@@ -386,7 +457,7 @@ export default function VipQueue() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center' }}>No VIPs in queue</td>
+                    <td colSpan="10" style={{ textAlign: 'center' }}>No VIPs in queue</td>
                   </tr>
                 )}
               </tbody>
