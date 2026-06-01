@@ -396,7 +396,16 @@ function GuardLogs({ onBack }) {
                 <div className="gl-right">
                   <p className="gl-rdate">{formatDateDisplay(v.date)}</p>
                   <p className="gl-rdest">{v.destination} {v.purpose ? `– ${v.purpose}` : ''}</p>
-                  {!v.is_vip && v.valid_id && <p className="gl-rdest" style={{ fontSize: '0.8rem', color: '#888', marginTop: '2px' }}>ID: {v.valid_id}</p>}
+                  {!v.is_vip && v.valid_id && (
+                    <p className="gl-rdest" style={{ fontSize: '0.8rem', color: '#888', marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
+                      ID: {v.valid_id}
+                      {v.id_claimed && (
+                        <span style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                          Claimed
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </div>
               </div>
             ))
@@ -859,6 +868,20 @@ function ActiveVisitorsScreen({ onBack }) {
     }
   };
 
+  const handleToggleClaimId = async (log) => {
+    const nextStatus = !log.id_claimed;
+    const { error } = await supabase
+      .from('visitor_logs')
+      .update({ id_claimed: nextStatus })
+      .eq('id', log.id);
+      
+    if (!error) {
+      fetchActiveLogs();
+    } else {
+      alert("Error updating ID claim status");
+    }
+  };
+
   const normalizeDate = (dateStr) => {
     if (!dateStr) return '';
     if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr;
@@ -950,6 +973,11 @@ function ActiveVisitorsScreen({ onBack }) {
                   <p className="gl-name">{v.name}</p>
                   <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>
                   <p className="gl-sub gl-timeout">Time Out: —</p>
+                  {!v.is_vip && v.valid_id && (
+                    <p className="gl-sub" style={{ marginTop: '4px' }}>
+                      <strong>ID:</strong> {v.valid_id}
+                    </p>
+                  )}
                 </div>
                 <div className="gl-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div style={{ textAlign: 'right' }}>
@@ -958,6 +986,37 @@ function ActiveVisitorsScreen({ onBack }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'auto' }}>
                     <span className="gl-badge" style={showVip ? { backgroundColor: '#fff8e1', color: '#f57f17', border: '1px solid #ffe082' } : {}}>Active</span>
+                    {!showVip && v.valid_id && (
+                      <button
+                        onClick={() => handleToggleClaimId(v)}
+                        style={{
+                          padding: '6px 14px',
+                          fontSize: '0.8rem',
+                          fontWeight: '800',
+                          border: '1px solid',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          backgroundColor: v.id_claimed ? '#e8f5e9' : '#fff',
+                          borderColor: v.id_claimed ? '#c8e6c9' : '#ddd',
+                          color: v.id_claimed ? '#2e7d32' : '#555'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!v.id_claimed) {
+                            e.target.style.backgroundColor = '#f1f3f5';
+                            e.target.style.borderColor = '#ccc';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!v.id_claimed) {
+                            e.target.style.backgroundColor = '#fff';
+                            e.target.style.borderColor = '#ddd';
+                          }
+                        }}
+                      >
+                        {v.id_claimed ? '✓ ID Claimed' : 'Claim ID'}
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleManualTimeOut(v)}
                       style={{ padding: '6px 14px', fontSize: '0.8rem', fontWeight: '800', border: '1px solid #ddd', backgroundColor: '#fff', borderRadius: '8px', cursor: 'pointer', color: '#555', transition: 'all 0.2s' }}

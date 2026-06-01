@@ -373,7 +373,18 @@ export default function Archives() {
                           <td>{log.address}</td>
                           <td>{log.destination}</td>
                           <td>{log.purpose}</td>
-                          <td>{log.valid_id || '—'}</td>
+                          <td>
+                             {log.valid_id ? (
+                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                 {log.valid_id}
+                                 {log.id_claimed && (
+                                   <span style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                                     Claimed
+                                   </span>
+                                 )}
+                               </div>
+                             ) : '—'}
+                           </td>
                         </>
                       )}
                     </tr>
