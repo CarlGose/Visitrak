@@ -5,8 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f2eb;
-  font-family: 'Inter', sans-serif;
+  background: linear-gradient(160deg, #f5f2eb 0%, #ede8da 40%, #f0ece0 100%);
+  font-family: 'Outfit', sans-serif;
   position: relative;
   overflow: hidden;
   padding: 24px 16px;
@@ -16,26 +16,33 @@
 .ps-bg-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.35;
+  filter: blur(90px);
+  opacity: 0.30;
   pointer-events: none;
   z-index: 0;
+  animation: blobFloat 12s ease-in-out infinite alternate;
 }
 
 .ps-bg-blob--1 {
-  width: 480px;
-  height: 480px;
+  width: 520px;
+  height: 520px;
   background: radial-gradient(circle, #6b8f7e 0%, transparent 70%);
-  top: -140px;
-  left: -120px;
+  top: -160px;
+  left: -140px;
 }
 
 .ps-bg-blob--2 {
-  width: 400px;
-  height: 400px;
+  width: 440px;
+  height: 440px;
   background: radial-gradient(circle, #c9a227 0%, transparent 70%);
-  bottom: -120px;
-  right: -100px;
+  bottom: -140px;
+  right: -120px;
+  animation-delay: -6s;
+}
+
+@keyframes blobFloat {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(30px, 20px) scale(1.06); }
 }
 
 /* ── Content wrapper ── */
@@ -56,7 +63,6 @@
     opacity: 0;
     transform: translateY(30px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -91,27 +97,13 @@
 }
 
 @keyframes psFloat {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-6px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
 }
 
 @keyframes psFloatAlt {
-
-  0%,
-  100% {
-    transform: translateY(-6px);
-  }
-
-  50% {
-    transform: translateY(0);
-  }
+  0%, 100% { transform: translateY(-6px); }
+  50%      { transform: translateY(0); }
 }
 
 .ps-brand-name {
@@ -143,7 +135,7 @@
   font-weight: 500;
 }
 
-/* ── Cards ── */
+/* ── Cards container ── */
 .ps-cards {
   display: flex;
   flex-direction: column;
@@ -151,86 +143,128 @@
   width: 100%;
 }
 
+/* ══════════════════════════════════════════════
+   ── iPhone Glassmorphism Cards ──
+   Frosted glass panels with colored glows
+   ══════════════════════════════════════════════ */
 .ps-card {
   display: flex;
   align-items: center;
   gap: 18px;
   padding: 20px 24px;
-  background: #ffffff;
-  border: none;
-  border-radius: 20px;
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.03);
-  border-left: 5px solid var(--accent);
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.22s ease,
-    background-color 0.22s ease;
-  animation: psCardIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-  animation-delay: var(--delay, 0s);
   position: relative;
   overflow: hidden;
+
+  /* ── Glass effect ── */
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+
+  /* ── iOS-style border: thin white top/left highlight ── */
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-top: 1px solid rgba(255, 255, 255, 0.85);
+  border-left: 5px solid var(--accent);
+  border-radius: 20px;
+
+  /* ── Colored shadow glow per card ── */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    0 4px 16px color-mix(in srgb, var(--accent) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* ── Transitions ── */
+  transition:
+    transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.28s ease,
+    background 0.28s ease,
+    border-color 0.28s ease;
+
+  /* ── Entrance animation ── */
+  animation: psCardIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: var(--delay, 0s);
 }
 
 @keyframes psCardIn {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(16px) scale(0.97);
   }
-
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
   }
 }
 
+/* ── Shimmer highlight on hover ── */
 .ps-card::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-color: var(--accent-light);
-  opacity: 0;
-  transition: opacity 0.22s ease;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transition: left 0.55s ease;
+  z-index: 0;
+  pointer-events: none;
   border-radius: inherit;
 }
 
+/* ── Hover state: intensified glow ── */
 .ps-card:hover {
-  transform: translateX(6px) translateY(-3px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px) scale(1.01);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.10),
+    0 6px 28px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .ps-card:hover::before {
-  opacity: 1;
+  left: 100%;
 }
 
 .ps-card:active {
-  transform: translateX(3px) translateY(0);
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: 0.08s;
 }
 
-/* ── Card icon ── */
+/* ── Card icon (frosted pill) ── */
 .ps-card-icon {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background-color: var(--accent-light);
+  background: color-mix(in srgb, var(--accent-light) 70%, white);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  transition: background-color 0.22s ease;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .ps-card:hover .ps-card-icon {
   background-color: var(--accent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .ps-card-icon svg {
   width: 26px;
   height: 26px;
   color: var(--accent);
-  transition: color 0.22s ease;
+  transition: color 0.25s ease;
 }
 
 .ps-card:hover .ps-card-icon svg {
@@ -270,9 +304,9 @@
   color: var(--accent);
   position: relative;
   z-index: 1;
-  opacity: 0.5;
+  opacity: 0.4;
   transform: translateX(-4px);
-  transition: opacity 0.22s, transform 0.22s;
+  transition: opacity 0.25s, transform 0.25s;
 }
 
 .ps-card-arrow svg {

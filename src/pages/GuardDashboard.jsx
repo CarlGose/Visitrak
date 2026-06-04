@@ -259,7 +259,6 @@ function VipForm({ onBack }) {
 function GuardLogs({ onBack }) {
   const [showVip, setShowVip] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   // Helper to convert mockData dates like '10-11-2025' or '10-9-2025' to 'YYYY-MM-DD'
@@ -329,8 +328,7 @@ function GuardLogs({ onBack }) {
       log.destination?.toLowerCase().includes(term) ||
       log.purpose?.toLowerCase().includes(term)
     );
-    const dateMatch = !selectedDate || normalizeDate(log.date) === selectedDate;
-    return searchMatch && dateMatch;
+    return searchMatch;
   });
 
   return (
@@ -371,12 +369,6 @@ function GuardLogs({ onBack }) {
             placeholder="Search by name, destination..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <input
-            type="date"
-            className="gl-date-input"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
           />
         </div>
 
