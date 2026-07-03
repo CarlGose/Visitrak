@@ -40,6 +40,27 @@ export default function Dashboard() {
     return dateStr;
   };
 
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr;
+    const parsedDate = new Date(dateStr);
+    if (!isNaN(parsedDate.getTime())) {
+      const m = String(parsedDate.getMonth() + 1).padStart(2, '0');
+      const d = String(parsedDate.getDate()).padStart(2, '0');
+      const y = parsedDate.getFullYear();
+      return `${y}-${m}-${d}`;
+    }
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      let [m, d, y] = parts;
+      if (m.length === 1) m = '0' + m;
+      if (d.length === 1) d = '0' + d;
+      if (y.length === 2) y = '20' + y;
+      return `${y}-${m}-${d}`;
+    }
+    return dateStr;
+  };
+
   const fetchDashboardData = async () => {
     setLoading(true);
     
@@ -117,7 +138,7 @@ export default function Dashboard() {
     });
 
     const totalVisitorsThisMonthCount = thisMonthLogs.length;
-    const todaysVisitorsCount = logs.filter(log => log.date === currentDate || log.date === isoDate).length;
+    const todaysVisitorsCount = logs.filter(log => normalizeDate(log.date) === isoDate).length;
 
     return {
       totalVisitorsThisMonth: totalVisitorsThisMonthCount,
@@ -126,8 +147,8 @@ export default function Dashboard() {
   }, [logs, currentDate, isoDate]);
 
   const recentLogs = useMemo(() => {
-    return logs.filter(log => log.date === currentDate || log.date === isoDate);
-  }, [logs, currentDate, isoDate]);
+    return logs.filter(log => normalizeDate(log.date) === isoDate);
+  }, [logs, isoDate]);
 
   return (
     <div className="dashboard-page">
