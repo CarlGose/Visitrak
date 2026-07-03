@@ -97,8 +97,26 @@ export default function Dashboard() {
   const { totalVisitorsThisMonth, todaysVisitors } = useMemo(() => {
     if (!logs) return { totalVisitorsThisMonth: 0, todaysVisitors: 0 };
     
-    // Very simple stat calculation
-    const totalVisitorsThisMonthCount = logs.length; // placeholder for actual month query
+    const currentMonth = today.getMonth(); // 0-indexed
+    const currentYear = today.getFullYear();
+
+    // Filter logs that belong to the current month
+    const thisMonthLogs = logs.filter(log => {
+      if (!log.date) return false;
+      // Try parsing as ISO date (YYYY-MM-DD)
+      if (log.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [y, m] = log.date.split('-').map(Number);
+        return y === currentYear && (m - 1) === currentMonth;
+      }
+      // Try parsing as locale string (e.g., "Jul 4, 2026" or "Oct 11, 2025")
+      const parsed = new Date(log.date);
+      if (!isNaN(parsed.getTime())) {
+        return parsed.getFullYear() === currentYear && parsed.getMonth() === currentMonth;
+      }
+      return false;
+    });
+
+    const totalVisitorsThisMonthCount = thisMonthLogs.length;
     const todaysVisitorsCount = logs.filter(log => log.date === currentDate || log.date === isoDate).length;
 
     return {
