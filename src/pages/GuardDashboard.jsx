@@ -416,6 +416,32 @@ function QrScanner({ onBack }) {
   const [scanResult, setScanResult] = useState(null);
   const [scanMessage, setScanMessage] = useState('');
 
+  const playSound = (type) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const playTone = (freq, startTime, duration, waveType) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = waveType;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, ctx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startTime + duration);
+        osc.start(ctx.currentTime + startTime);
+        osc.stop(ctx.currentTime + startTime + duration);
+      };
+      
+      if (type === 'success') {
+        playTone(523.25, 0, 0.1, 'sine');
+        playTone(659.25, 0.1, 0.2, 'sine');
+      } else if (type === 'error') {
+        playTone(300, 0, 0.15, 'square');
+        playTone(300, 0.25, 0.15, 'square');
+      }
+    } catch (err) { console.error(err); }
+  };
+
   React.useEffect(() => {
     let timeoutId;
     if (scanMessage && scanResult && scanMessage.includes('WARNING')) {
@@ -449,6 +475,7 @@ function QrScanner({ onBack }) {
         const parsed = JSON.parse(raw);
 
         if (parsed.type !== 'visitor') {
+          playSound('error');
           setScanMessage('WARNING: Invalid QR Code. Visitors only.');
           setScanResult({ rawText: raw });
           return;
@@ -471,22 +498,7 @@ function QrScanner({ onBack }) {
 
         let actionMsg = '';
         if (alreadyLoggedToday) {
-          try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const playBeep = (freq, startTime, duration) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.type = 'square';
-              osc.frequency.value = freq;
-              gain.gain.setValueAtTime(0.1, ctx.currentTime + startTime);
-              osc.start(ctx.currentTime + startTime);
-              osc.stop(ctx.currentTime + startTime + duration);
-            };
-            playBeep(300, 0, 0.15);
-            playBeep(300, 0.25, 0.15);
-          } catch (err) { console.error(err); }
+          playSound('error');
           actionMsg = 'WARNING: VISITOR ALREADY LOGGED TODAY!';
         } else if (existingActive) {
           await supabase
@@ -494,6 +506,7 @@ function QrScanner({ onBack }) {
             .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
             .eq('id', existingActive.id);
             
+          playSound('success');
           actionMsg = `TIME OUT SUCCESSFUL at ${timeString}`;
         } else {
           await supabase
@@ -511,11 +524,13 @@ function QrScanner({ onBack }) {
               gate_in: user?.gate || null,
               valid_id: parsed.valid_id || ''
             }]);
+          playSound('success');
           actionMsg = `TIME IN SUCCESSFUL at ${timeString}`;
         }
         setScanMessage(actionMsg);
         setScanResult(parsed);
       } catch (e) {
+        playSound('error');
         setScanResult({ rawText: raw });
         setScanMessage('Invalid QR Code');
       }
