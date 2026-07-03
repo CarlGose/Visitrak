@@ -481,7 +481,15 @@ function QrScanner({ onBack }) {
           return;
         }
 
-        const dateToCheck = parsed.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const getLocalISO = () => {
+          const d = new Date();
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}`;
+        };
+
+        const dateToCheck = parsed.date || getLocalISO();
         const now = new Date();
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -503,7 +511,7 @@ function QrScanner({ onBack }) {
         } else if (existingActive) {
           await supabase
             .from('visitor_logs')
-            .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
+            .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true })
             .eq('id', existingActive.id);
             
           playSound('success');
@@ -515,7 +523,7 @@ function QrScanner({ onBack }) {
               name: parsed.name,
               destination: parsed.destination || 'Campus',
               purpose: parsed.purpose || 'Visit',
-              date: parsed.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              date: parsed.date || getLocalISO(),
               time_in: timeString,
               time_out: null,
               is_active: true,
@@ -723,7 +731,7 @@ function VipQueueList({ onBack }) {
       name: vip.name,
       destination: vip.person_to_visit || vip.destination || 'VIP Visit',
       purpose: `VIP | Passengers: ${pCount} | Vehicle: ${vehicleStr || '—'} | Plate: ${vip.plate || '—'} | Contact: ${vip.contact_person || '—'}`,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      date: (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })(),
       time_in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       time_out: null,
       is_active: true,

@@ -64,7 +64,7 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     
-    // Fetch visitor logs
+    // Fetch visitor logs — same as Logs page: non-VIP only
     const { data: allLogs } = await supabase
       .from('visitor_logs')
       .select('*')
@@ -72,7 +72,9 @@ export default function Dashboard() {
 
     if (allLogs) {
       setLogs(allLogs);
-      setActiveLogs(allLogs.filter(L => L.is_active));
+      // Currently In-Campus: only today's active visitors
+      const todayActive = allLogs.filter(L => L.is_active && normalizeDate(L.date) === isoDate);
+      setActiveLogs(todayActive);
     }
 
     // Fetch guards data for analytics
@@ -146,6 +148,7 @@ export default function Dashboard() {
     };
   }, [logs, currentDate, isoDate]);
 
+  // Visitor Logs: show only today's entries (resets after 1 day)
   const recentLogs = useMemo(() => {
     return logs.filter(log => normalizeDate(log.date) === isoDate);
   }, [logs, isoDate]);

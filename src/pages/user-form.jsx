@@ -195,6 +195,14 @@ const validIdOptions = [
     ]}
 ];
 
+const getLocalISODate = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+};
+
 const UserForm = () => {
     const [formData, setFormData] = useState(() => {
         const saved = localStorage.getItem('visitrak_qr_form');
@@ -205,7 +213,7 @@ const UserForm = () => {
             destination: '',
             purpose: '',
             valid_id: '',
-            date: new Date().toISOString().split('T')[0]
+            date: getLocalISODate()
         };
     });
 
@@ -354,7 +362,7 @@ const UserForm = () => {
             destination: '',
             purpose: '',
             valid_id: '',
-            date: new Date().toISOString().split('T')[0]
+            date: getLocalISODate()
         });
         setIsCustomPurpose(false);
         setCustomPurposeText('');
