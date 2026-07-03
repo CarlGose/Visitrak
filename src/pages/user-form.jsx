@@ -334,7 +334,8 @@ const UserForm = () => {
             destination: formData.destination,
             purpose: formData.purpose,
             valid_id: formData.valid_id,
-            date: formData.date
+            date: formData.date,
+            type: 'visitor'
         });
 
         localStorage.setItem('visitrak_qr_form', JSON.stringify(formData));

@@ -448,6 +448,12 @@ function QrScanner({ onBack }) {
       try {
         const parsed = JSON.parse(raw);
 
+        if (parsed.type !== 'visitor') {
+          setScanMessage('WARNING: Invalid QR Code. Visitors only.');
+          setScanResult({ rawText: raw });
+          return;
+        }
+
         const dateToCheck = parsed.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const now = new Date();
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
