@@ -97,3 +97,31 @@ input {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Wesleyan University Philippines Background Watermark Logo */
+.wup-bg-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120vmin;
+  height: 120vmin;
+  max-width: 1100px;
+  max-height: 1100px;
+  background-image: url('/wuplogo.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15; /* Increased opacity to make it see-through but visible */
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  .wup-bg-watermark {
+    top: 50%; /* Centered again */
+    width: 170vmin;
+    height: 170vmin;
+    opacity: 0.22; /* Slightly higher opacity to stand out on mobile screens */
+  }
+}

@@ -514,6 +514,18 @@ function QrScanner({ onBack }) {
             .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true })
             .eq('id', existingActive.id);
 
+          // Delete the image from storage on Time Out
+          if (parsed.valid_id_url) {
+            try {
+              const filename = parsed.valid_id_url.split('/').pop();
+              if (filename) {
+                await supabase.storage.from('visitor_ids').remove([filename]);
+              }
+            } catch (err) {
+              console.error("Failed to delete ID image:", err);
+            }
+          }
+
           playSound('success');
           actionMsg = `TIME OUT SUCCESSFUL at ${timeString}`;
         } else {
@@ -678,6 +690,14 @@ function QrScanner({ onBack }) {
                       <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Valid ID:</span>
                       <span style={{ textAlign: 'right' }}>{scanResult.valid_id || '—'}</span>
                     </div>
+                    {scanResult.valid_id_url && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                        <span style={{ fontWeight: '600', color: '#555' }}>ID Picture (Verify & Keep at Gate):</span>
+                        <div style={{ textAlign: 'center', backgroundColor: '#fff', padding: '8px', borderRadius: '8px', border: '1px solid #ddd' }}>
+                          <img src={scanResult.valid_id_url} alt="Valid ID" style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain', borderRadius: '4px' }} />
+                        </div>
+                      </div>
+                    )}
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Date:</span>
                       <span style={{ textAlign: 'right' }}>{scanResult.date}</span>

@@ -150,49 +150,53 @@ const defaultPurposes = [
 ];
 
 const validIdOptions = [
-    { group: "Primary Valid IDs", ids: [
-        "Philippine National ID (PhilID / ePhilID)",
-        "Philippine Passport",
-        "Driver's License (including Student Permits)",
-        "UMID Card (Unified Multi-Purpose ID)",
-        "SSS ID (Social Security System)",
-        "GSIS ID / e-Card (Government Service Insurance System)",
-        "PRC ID (Professional Regulation Commission)",
-        "Postal ID (PVC Plastic Card)",
-        "Voter's ID / Digitized Voter's Certification",
-        "School ID (for current students)",
-        "Company ID / Government Office ID",
-        "OWWA ID (Overseas Workers Welfare Administration)",
-        "OFW ID / iDOLE Card",
-        "Seaman's Book (Seafarer's Identification and Record Book)",
-        "Alien Certificate of Registration (ACR I-Card)",
-        "Senior Citizen ID",
-        "PWD ID (Person with Disability)",
-        "Solo Parent ID",
-        "Integrated Bar of the Philippines (IBP) ID",
-        "Firearms License (License to Own and Possess Firearms)"
-    ]},
-    { group: "Secondary Valid IDs and Documents", ids: [
-        "TIN Card (Taxpayer Identification Number)",
-        "PhilHealth ID",
-        "Pag-IBIG Loyalty Card",
-        "NBI Clearance",
-        "Police Clearance / ID",
-        "Barangay Clearance / Certificate",
-        "Barangay ID",
-        "Cedula (Community Tax Certificate)",
-        "PSA Birth Certificate",
-        "PSA Marriage Contract",
-        "Transcript of Records (TOR)",
-        "School Form 137 / Permanent Record",
-        "Alumni ID",
-        "Postal ID (Paper-based/Old format)",
-        "Pantawid Pamilyang Pilipino Program (4Ps) ID",
-        "Government Service Record",
-        "City / Municipal / Local Health Card",
-        "Credit Card with photo",
-        "Bank Account Passbook / ATM Card"
-    ]}
+    {
+        group: "Primary Valid IDs", ids: [
+            "Philippine National ID (PhilID / ePhilID)",
+            "Philippine Passport",
+            "Driver's License (including Student Permits)",
+            "UMID Card (Unified Multi-Purpose ID)",
+            "SSS ID (Social Security System)",
+            "GSIS ID / e-Card (Government Service Insurance System)",
+            "PRC ID (Professional Regulation Commission)",
+            "Postal ID (PVC Plastic Card)",
+            "Voter's ID / Digitized Voter's Certification",
+            "School ID (for current students)",
+            "Company ID / Government Office ID",
+            "OWWA ID (Overseas Workers Welfare Administration)",
+            "OFW ID / iDOLE Card",
+            "Seaman's Book (Seafarer's Identification and Record Book)",
+            "Alien Certificate of Registration (ACR I-Card)",
+            "Senior Citizen ID",
+            "PWD ID (Person with Disability)",
+            "Solo Parent ID",
+            "Integrated Bar of the Philippines (IBP) ID",
+            "Firearms License (License to Own and Possess Firearms)"
+        ]
+    },
+    {
+        group: "Secondary Valid IDs and Documents", ids: [
+            "TIN Card (Taxpayer Identification Number)",
+            "PhilHealth ID",
+            "Pag-IBIG Loyalty Card",
+            "NBI Clearance",
+            "Police Clearance / ID",
+            "Barangay Clearance / Certificate",
+            "Barangay ID",
+            "Cedula (Community Tax Certificate)",
+            "PSA Birth Certificate",
+            "PSA Marriage Contract",
+            "Transcript of Records (TOR)",
+            "School Form 137 / Permanent Record",
+            "Alumni ID",
+            "Postal ID (Paper-based/Old format)",
+            "Pantawid Pamilyang Pilipino Program (4Ps) ID",
+            "Government Service Record",
+            "City / Municipal / Local Health Card",
+            "Credit Card with photo",
+            "Bank Account Passbook / ATM Card"
+        ]
+    }
 ];
 
 const getLocalISODate = () => {
@@ -223,6 +227,11 @@ const UserForm = () => {
     const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
     const [timeLeft, setTimeLeft] = useState(600);
     const [isExpired, setIsExpired] = useState(false);
+
+    // Image Capture State
+    const [idImageFile, setIdImageFile] = useState(null);
+    const [idImagePreview, setIdImagePreview] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Custom Dropdown State
     const [destOpen, setDestOpen] = useState(false);
@@ -287,7 +296,7 @@ const UserForm = () => {
         const checkExpiration = () => {
             const elapsed = Math.floor((Date.now() - qrParsed.generatedAt) / 1000);
             const remaining = 600 - elapsed;
-            
+
             if (remaining <= 0) {
                 setTimeLeft(0);
                 setIsExpired(true);
@@ -368,30 +377,93 @@ const UserForm = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const compressImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    if (img.width > MAX_WIDTH) {
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                    } else {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => {
+                        resolve(blob);
+                    }, 'image/jpeg', 0.7);
+                };
+            };
+        });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.valid_id) {
             alert('Please select a Valid ID type.');
             return;
         }
-        // Stringify the form data to be encoded as a QR Code
-        const now = Date.now();
-        const qrData = JSON.stringify({
-            name: formData.name,
-            address: formData.address,
-            destination: formData.destination,
-            purpose: formData.purpose,
-            valid_id: formData.valid_id,
-            date: formData.date,
-            type: 'visitor',
-            generatedAt: now
-        });
+        if (!idImageFile) {
+            alert('Please take a picture of your Valid ID to leave at the gate.');
+            return;
+        }
+        setIsUploading(true);
 
-        localStorage.setItem('visitrak_qr_form', JSON.stringify(formData));
-        localStorage.setItem('visitrak_qr_value', qrData);
+        try {
+            // Compress Image
+            const compressedBlob = await compressImage(idImageFile);
+            const fileName = `${Date.now()}_${formData.name.replace(/\s+/g, '_')}.jpg`;
 
-        setQrValue(qrData);
-        setIsSubmitted(true);
+            // Upload to Supabase Storage
+            const { data, error } = await supabase.storage
+                .from('visitor_ids')
+                .upload(fileName, compressedBlob, {
+                    contentType: 'image/jpeg'
+                });
+
+            if (error) {
+                console.error("Upload Error:", error);
+                alert("Failed to upload ID picture. Please try again.");
+                setIsUploading(false);
+                return;
+            }
+
+            const { data: urlData } = supabase.storage.from('visitor_ids').getPublicUrl(fileName);
+            const valid_id_url = urlData.publicUrl;
+
+            // Stringify the form data to be encoded as a QR Code
+            const now = Date.now();
+            const qrData = JSON.stringify({
+                name: formData.name,
+                address: formData.address,
+                destination: formData.destination,
+                purpose: formData.purpose,
+                valid_id: formData.valid_id,
+                valid_id_url: valid_id_url,
+                date: formData.date,
+                type: 'visitor',
+                generatedAt: now
+            });
+
+            localStorage.setItem('visitrak_qr_form', JSON.stringify(formData));
+            localStorage.setItem('visitrak_qr_value', qrData);
+
+            setQrValue(qrData);
+            setIsSubmitted(true);
+        } catch (err) {
+            console.error("Submit Error:", err);
+            alert("An error occurred. Please try again.");
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleClear = () => {
@@ -422,6 +494,7 @@ const UserForm = () => {
     if (!isSubmitted && !hasAcceptedTerms) {
         return (
             <div className="form-page">
+                <div className="wup-bg-watermark"></div>
                 <div className="form-wrapper">
                     <div className="form-brand">
                         <img src="/wuplogo.png" alt="VisiTrack Logo" />
@@ -450,9 +523,9 @@ const UserForm = () => {
                                     Decline
                                 </button>
                             </Link>
-                            <button 
-                                type="button" 
-                                className="btn-submit" 
+                            <button
+                                type="button"
+                                className="btn-submit"
                                 style={{ flex: 1 }}
                                 onClick={() => setHasAcceptedTerms(true)}
                             >
@@ -469,6 +542,7 @@ const UserForm = () => {
     if (!isSubmitted && hasAcceptedTerms) {
         return (
             <div className="form-page">
+                <div className="wup-bg-watermark"></div>
                 <div className="form-wrapper">
                     <div className="form-brand">
                         <img src="/wuplogo.png" alt="VisiTrack Logo" />
@@ -495,6 +569,7 @@ const UserForm = () => {
 
                         <div className="form-field">
                             <label htmlFor="address">Address <span className="req">*</span></label>
+                            <p style={{ fontSize: '12px', margin: '0', color: "red" }}>* The address on your valid ID must match the address entered here.</p>
                             <input
                                 type="text"
                                 id="address"
@@ -664,6 +739,46 @@ const UserForm = () => {
                             )}
                         </div>
 
+                        {/* ID Picture Capture */}
+                        <div className="form-field">
+                            <label>Take Picture of ID <span className="req">*</span></label>
+                            <p style={{ fontSize: '12px', margin: '0 0 8px 0', color: "rgba(26,40,32,0.6)" }}>Capture your ID to leave at the gate. It will be verified by the guard.</p>
+                            <div className="id-capture-container">
+                                {idImagePreview ? (
+                                    <div className="id-image-preview">
+                                        <img src={idImagePreview} alt="ID Preview" />
+                                        <button type="button" className="btn-retake" onClick={() => { setIdImageFile(null); setIdImagePreview(null); }}>
+                                            Retake Picture
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="id-capture-label">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                            className="id-capture-input"
+                                            onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setIdImageFile(file);
+                                                    setIdImagePreview(URL.createObjectURL(file));
+                                                }
+                                            }}
+                                        />
+                                        <div className="id-capture-placeholder">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                                <path d="M20.4 14.5L16 10 4 20" />
+                                            </svg>
+                                            <span>Tap to open camera</span>
+                                        </div>
+                                    </label>
+                                )}
+                            </div>
+                        </div>
+
                         <div className="form-field date-field">
                             <label>Date of Visit</label>
                             <div className="date-display">
@@ -672,8 +787,8 @@ const UserForm = () => {
                         </div>
 
                         <div className="form-actions">
-                            <button type="submit" className="btn-submit">
-                                Generate Entry Pass
+                            <button type="submit" className="btn-submit" disabled={isUploading}>
+                                {isUploading ? 'Uploading...' : 'Generate Entry Pass'}
                             </button>
                         </div>
                     </form>
@@ -716,6 +831,7 @@ const UserForm = () => {
 
     return (
         <div className="form-page qr-result-page">
+            <div className="wup-bg-watermark"></div>
             <header className="gd-header vip-header-centered" style={{ backgroundColor: '#f5f2eb', borderBottom: '1px solid #ddd', width: '100%', position: 'absolute', top: 0, left: 0, padding: '12px 0' }}>
                 <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" style={{ margin: '0 auto', display: 'block', width: '44px', height: '44px' }} />
             </header>
