@@ -662,7 +662,7 @@ function QrScanner({ onBack }) {
                 background: '#f8f9fa',
                 borderRadius: '12px',
                 border: '1px solid #e9ecef',
-                wordBreak: 'break-all',
+                overflowWrap: 'break-word',
                 marginBottom: '2rem',
                 fontSize: '16px',
                 color: '#333'
@@ -671,24 +671,24 @@ function QrScanner({ onBack }) {
                 {scanResult.name ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
-                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Name:</span>
-                      <span style={{ textAlign: 'right' }}>{scanResult.name}</span>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem', flexShrink: 0 }}>Name:</span>
+                      <span style={{ textAlign: 'right', wordBreak: 'break-word' }}>{scanResult.name}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
-                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Address:</span>
-                      <span style={{ textAlign: 'right' }}>{scanResult.address}</span>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem', flexShrink: 0 }}>Address:</span>
+                      <span style={{ textAlign: 'right', wordBreak: 'break-word' }}>{scanResult.address}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
-                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Destination:</span>
-                      <span style={{ textAlign: 'right' }}>{scanResult.destination}</span>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem', flexShrink: 0 }}>Destination:</span>
+                      <span style={{ textAlign: 'right', wordBreak: 'break-word' }}>{scanResult.destination}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
-                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Purpose:</span>
-                      <span style={{ textAlign: 'right' }}>{scanResult.purpose}</span>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem', flexShrink: 0 }}>Purpose:</span>
+                      <span style={{ textAlign: 'right', wordBreak: 'break-word' }}>{scanResult.purpose}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
-                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Valid ID:</span>
-                      <span style={{ textAlign: 'right' }}>{scanResult.valid_id || '—'}</span>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem', flexShrink: 0 }}>Valid ID:</span>
+                      <span style={{ textAlign: 'right', wordBreak: 'break-word' }}>{scanResult.valid_id || '—'}</span>
                     </div>
                     {scanResult.valid_id_url && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
@@ -699,8 +699,8 @@ function QrScanner({ onBack }) {
                       </div>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem' }}>Date:</span>
-                      <span style={{ textAlign: 'right' }}>{scanResult.date}</span>
+                      <span style={{ fontWeight: '600', color: '#555', paddingRight: '1rem', flexShrink: 0 }}>Date:</span>
+                      <span style={{ textAlign: 'right', wordBreak: 'break-word' }}>{scanResult.date}</span>
                     </div>
                   </div>
                 ) : (
