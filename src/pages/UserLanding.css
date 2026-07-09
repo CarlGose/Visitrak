@@ -13,28 +13,28 @@
   content: '';
   position: fixed;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(90px);
   pointer-events: none;
   z-index: 0;
 }
 
 .ul-page::before {
-  width: 520px; height: 520px;
-  background: radial-gradient(circle, rgba(107, 143, 126, 0.22) 0%, transparent 70%);
-  top: -120px; left: -120px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(107, 143, 126, 0.45) 0%, transparent 70%);
+  top: -100px; left: -100px;
   animation: ulBlobDrift 10s ease-in-out infinite alternate;
 }
 
 .ul-page::after {
-  width: 440px; height: 440px;
-  background: radial-gradient(circle, rgba(201, 162, 39, 0.18) 0%, transparent 70%);
-  bottom: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.35) 0%, transparent 70%);
+  bottom: -50px; right: -50px;
   animation: ulBlobDrift 13s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes ulBlobDrift {
   from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(40px, 30px) scale(1.08); }
+  to   { transform: translate(60px, 40px) scale(1.1); }
 }
 
 /* Header */
@@ -43,11 +43,13 @@
   z-index: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
-  padding: 24px 32px;
+  padding: 0 0 24px 0;
   background: transparent;
   border: none;
   box-shadow: none;
+  width: 100%;
 }
 
 .ul-logo {
@@ -64,7 +66,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  flex: 1;
   margin: 0;
 }
 
@@ -105,29 +106,29 @@
 /* Glassmorphism Card */
 .ul-card {
   width: 100%;
-  max-width: 440px;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  border-radius: 28px;
+  max-width: 460px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32px;
   padding: 56px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  animation: ulFadeSlideUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation: ulFadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes ulFadeSlideUp {
-  from { opacity: 0; transform: translateY(36px); }
+  from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .ul-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 28px 56px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.95);
-  transform: translateY(-2px);
+  box-shadow: 0 14px 45px rgba(31, 38, 135, 0.18), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-4px);
 }
 
 .ul-welcome {
@@ -150,25 +151,82 @@
 
 /* Button */
 .ul-visit-btn {
-  background: linear-gradient(135deg, #6b8f7e 0%, #4e7264 100%);
+  background: linear-gradient(135deg, #4a6b3a 0%, #2d3e2e 100%);
   color: #ffffff;
   border: none;
-  border-radius: 14px;
-  padding: 16px 40px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  border-radius: 16px;
+  padding: 16px 48px;
+  font-size: 1.15rem;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(78, 114, 100, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(45, 62, 46, 0.4);
   display: flex;
   align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .ul-visit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(78, 114, 100, 0.55);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(45, 62, 46, 0.5);
+  background: linear-gradient(135deg, #577d44 0%, #3a4f3b 100%);
 }
 
 .ul-visit-btn:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ul-header {
+    padding: 0 0 16px 0;
+  }
+  .ul-logo {
+    width: 36px; height: 36px;
+  }
+  .ul-brand-name {
+    font-size: 1.5rem;
+  }
+  .ul-main {
+    padding: 16px;
+  }
+  .ul-card {
+    padding: 40px 24px;
+    border-radius: 24px;
+  }
+  .ul-welcome {
+    font-size: 2.2rem;
+  }
+  .ul-subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+  }
+  .ul-visit-btn {
+    padding: 14px 32px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ul-header {
+    padding: 0 0 12px 0;
+  }
+  .ul-logo {
+    width: 32px; height: 32px;
+  }
+  .ul-brand-name {
+    font-size: 1.3rem;
+  }
+  .ul-card {
+    padding: 32px 20px;
+    border-radius: 20px;
+  }
+  .ul-welcome {
+    font-size: 1.8rem;
+  }
+  .ul-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
 }

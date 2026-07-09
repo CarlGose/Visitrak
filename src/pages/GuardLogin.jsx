@@ -137,7 +137,7 @@ export default function GuardLogin() {
         </form>
 
         <p className="guard-login-guard-link-text">
-          <Link to="/" className="guard-login-guard-link">← Back to Portal Selection</Link>
+          <Link to="/staff" className="guard-login-guard-link">← Back to Staff Portal</Link>
         </p>
       </div>
     </div>

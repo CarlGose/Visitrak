@@ -220,6 +220,9 @@ const UserForm = () => {
     const [qrValue, setQrValue] = useState(() => localStorage.getItem('visitrak_qr_value') || '');
     const [isSubmitted, setIsSubmitted] = useState(() => !!localStorage.getItem('visitrak_qr_value'));
     const [isInside, setIsInside] = useState(false);
+    const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(600);
+    const [isExpired, setIsExpired] = useState(false);
 
     // Custom Dropdown State
     const [destOpen, setDestOpen] = useState(false);
@@ -274,6 +277,42 @@ const UserForm = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        if (!isSubmitted || isInside) return;
+
+        const qrParsed = localStorage.getItem('visitrak_qr_value') ? JSON.parse(localStorage.getItem('visitrak_qr_value')) : null;
+        if (!qrParsed || !qrParsed.generatedAt) return;
+
+        const checkExpiration = () => {
+            const elapsed = Math.floor((Date.now() - qrParsed.generatedAt) / 1000);
+            const remaining = 600 - elapsed;
+            
+            if (remaining <= 0) {
+                setTimeLeft(0);
+                setIsExpired(true);
+                return true;
+            } else {
+                setTimeLeft(remaining);
+                return false;
+            }
+        };
+
+        if (checkExpiration()) return;
+
+        const interval = setInterval(() => {
+            if (checkExpiration()) clearInterval(interval);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isSubmitted, isInside]);
+
+    const formatTime = (seconds) => {
+        if (seconds <= 0) return "0:00";
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
 
     // Hook to check status on load and subscribe to real-time changes
     useEffect(() => {
@@ -336,6 +375,7 @@ const UserForm = () => {
             return;
         }
         // Stringify the form data to be encoded as a QR Code
+        const now = Date.now();
         const qrData = JSON.stringify({
             name: formData.name,
             address: formData.address,
@@ -343,7 +383,8 @@ const UserForm = () => {
             purpose: formData.purpose,
             valid_id: formData.valid_id,
             date: formData.date,
-            type: 'visitor'
+            type: 'visitor',
+            generatedAt: now
         });
 
         localStorage.setItem('visitrak_qr_form', JSON.stringify(formData));
@@ -356,6 +397,7 @@ const UserForm = () => {
     const handleClear = () => {
         localStorage.removeItem('visitrak_qr_form');
         localStorage.removeItem('visitrak_qr_value');
+        localStorage.removeItem('visitrak_qr_expiration');
         setFormData({
             name: '',
             address: '',
@@ -369,14 +411,62 @@ const UserForm = () => {
         setQrValue('');
         setIsInside(false);
         setIsSubmitted(false);
+        setHasAcceptedTerms(false);
+        setIsExpired(false);
     };
 
     const handleBack = () => {
         handleClear();
     };
 
+    if (!isSubmitted && !hasAcceptedTerms) {
+        return (
+            <div className="form-page">
+                <div className="form-wrapper">
+                    <div className="form-brand">
+                        <img src="/wuplogo.png" alt="VisiTrack Logo" />
+                        <span>VisiTrack</span>
+                    </div>
+
+                    <div className="form-card terms-card">
+                        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                            <h2 className="form-title">Terms and Conditions</h2>
+                            <p className="form-subtitle">Data Privacy Consent</p>
+                        </div>
+                        <div style={{ fontSize: '0.95rem', color: 'rgba(26, 40, 32, 0.8)', lineHeight: '1.6', marginBottom: '25px', maxHeight: '300px', overflowY: 'auto', paddingRight: '10px' }}>
+                            <p style={{ marginBottom: '15px' }}>
+                                By proceeding, you agree to the collection and processing of your personal information, including your <strong>Name</strong>, <strong>Address</strong>, and the details from the <strong>Valid ID</strong> you provide.
+                            </p>
+                            <p style={{ marginBottom: '15px' }}>
+                                This information is strictly collected for security, access monitoring, and safety protocols within the campus/premises. Your data will be handled in accordance with the Data Privacy Act of 2012 (R.A. 10173).
+                            </p>
+                            <p>
+                                By clicking "I Agree", you give your consent to these terms.
+                            </p>
+                        </div>
+                        <div className="form-actions terms-actions">
+                            <Link to="/" style={{ flex: 1, textDecoration: 'none', display: 'flex' }}>
+                                <button type="button" className="btn-submit btn-secondary">
+                                    Decline
+                                </button>
+                            </Link>
+                            <button 
+                                type="button" 
+                                className="btn-submit" 
+                                style={{ flex: 1 }}
+                                onClick={() => setHasAcceptedTerms(true)}
+                            >
+                                I Agree
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // Form View
-    if (!isSubmitted) {
+    if (!isSubmitted && hasAcceptedTerms) {
         return (
             <div className="form-page">
                 <div className="form-wrapper">
@@ -386,7 +476,7 @@ const UserForm = () => {
                     </div>
 
                     <form className="form-card" onSubmit={handleSubmit}>
-                        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                        <div className="form-header-text">
                             <h2 className="form-title">Visitor Access Form</h2>
                             <p className="form-subtitle">Fill out the form below to generate your entry pass</p>
                         </div>
@@ -574,9 +664,9 @@ const UserForm = () => {
                             )}
                         </div>
 
-                        <div className="form-field">
+                        <div className="form-field date-field">
                             <label>Date of Visit</label>
-                            <div style={{ padding: '14px 16px', background: 'rgba(255, 255, 255, 0.4)', border: '2px solid rgba(107, 143, 126, 0.2)', borderRadius: '14px', fontSize: '1rem', color: 'rgba(26, 40, 32, 0.6)', fontFamily: 'Outfit', fontWeight: '600', userSelect: 'none' }}>
+                            <div className="date-display">
                                 {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                             </div>
                         </div>
@@ -588,8 +678,8 @@ const UserForm = () => {
                         </div>
                     </form>
 
-                    <p style={{ marginTop: '24px', fontSize: '0.9rem' }}>
-                        <Link to="/" style={{ color: 'var(--color-card)', fontWeight: '600', textDecoration: 'none' }}>
+                    <p className="back-link-container">
+                        <Link to="/" className="back-link">
                             ← Back to Home
                         </Link>
                     </p>
@@ -601,6 +691,28 @@ const UserForm = () => {
     const displayDate = new Date(formData.date).toLocaleDateString('en-US', {
         month: 'long', day: 'numeric', year: 'numeric'
     });
+
+    const downloadQR = () => {
+        const svg = document.getElementById("QRCode_SVG");
+        if (!svg) return;
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            const pngFile = canvas.toDataURL("image/png");
+            const downloadLink = document.createElement("a");
+            downloadLink.download = `VisiTrack_QR_${formData.name.replace(/\s+/g, '_')}.png`;
+            downloadLink.href = `${pngFile}`;
+            downloadLink.click();
+        };
+        img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
+    };
 
     return (
         <div className="form-page qr-result-page">
@@ -614,14 +726,42 @@ const UserForm = () => {
                 </div>
 
                 <div className="qr-pass-body">
-                    <div className="qr-code-box">
+                    {!isInside && (
+                        <div className="qr-timer-container" style={{ textAlign: 'center', marginBottom: '15px', color: '#d9534f', fontFamily: 'Outfit' }}>
+                            <span style={{ display: 'block', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '4px' }}>
+                                {isExpired ? 'QR Code Expired' : `Expires in: ${formatTime(timeLeft)}`}
+                            </span>
+                            <span style={{ fontSize: '0.95rem', opacity: 0.9 }}>
+                                {isExpired ? 'Please generate a new pass.' : 'Present to guard before timer ends'}
+                            </span>
+                        </div>
+                    )}
+                    {isInside && (
+                        <div className="qr-timer-container" style={{ textAlign: 'center', marginBottom: '15px', color: '#28a745', fontWeight: 'bold', fontSize: '1.2rem', fontFamily: 'Outfit' }}>
+                            Currently Timed In
+                        </div>
+                    )}
+                    <div className="qr-code-box" style={{ marginBottom: '15px', position: 'relative' }}>
                         <QRCode
+                            id="QRCode_SVG"
                             value={qrValue}
                             size={220}
                             bgColor="#ffffff"
-                            fgColor="#000000"
+                            fgColor={isExpired ? "#e0e0e0" : "#000000"}
                             level="Q"
+                            style={{ opacity: isExpired ? 0.3 : 1 }}
                         />
+                        {isExpired && (
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-15deg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d9534f', fontSize: '2.5rem', fontWeight: '900', letterSpacing: '4px', textShadow: '2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff', zIndex: 10, border: '6px solid #d9534f', borderRadius: '12px', padding: '10px', background: 'rgba(255,255,255,0.7)', pointerEvents: 'none' }}>
+                                EXPIRED
+                            </div>
+                        )}
+                    </div>
+                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                        <button onClick={downloadQR} disabled={isExpired} style={{ background: '#f0f0f0', border: '1px solid #ccc', padding: '8px 16px', borderRadius: '8px', cursor: isExpired ? 'not-allowed' : 'pointer', fontFamily: 'Outfit', fontWeight: '600', color: '#333', display: 'inline-flex', alignItems: 'center', gap: '8px', opacity: isExpired ? 0.5 : 1 }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download QR Code
+                        </button>
                     </div>
 
                     <div className="qr-instruction-alert">
@@ -677,16 +817,16 @@ const UserForm = () => {
                         <button
                             onClick={handleBack}
                             className="qr-finish-btn"
-                            disabled={isInside}
-                            style={isInside ? {
+                            disabled={isInside && !isExpired}
+                            style={isInside && !isExpired ? {
                                 opacity: 0.6,
                                 cursor: 'not-allowed',
                                 background: '#aaa',
                                 border: 'none',
                                 color: '#fff'
-                            } : {}}
+                            } : (isExpired ? { backgroundColor: '#d9534f', color: '#fff' } : {})}
                         >
-                            {isInside ? 'Currently Inside (Finish Disabled)' : 'Finish'}
+                            {isExpired ? 'Generate New Pass' : (isInside ? 'Currently Inside (Finish Disabled)' : 'Finish')}
                         </button>
                     </div>
                 </div>

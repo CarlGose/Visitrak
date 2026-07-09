@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PortalSelect from './pages/PortalSelect';
 import Login from './pages/Login';
@@ -30,14 +30,35 @@ function GuardRoute({ children }) {
   return children;
 }
 
+function TitleUpdater() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.startsWith('/guard') || path === '/dashboard' || path === '/logs' || path === '/vip-logs' || path === '/vip-queue' || path === '/archives' || path === '/manage' || path === '/login' || path === '/staff') {
+      document.title = 'Visitrack-WUP-Access';
+    } else if (path === '/fill-out' || path === '/') {
+      document.title = 'Visitrack-Welcome';
+    } else {
+      document.title = 'VisiTrack';
+    }
+  }, [location]);
+
+  return null;
+}
+
+
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <TitleUpdater />
         <Routes>
-          {/* ── Landing portal selection ── */}
-          <Route path="/" element={<PortalSelect />} />
-          <Route path="/user-landing" element={<UserLanding />} />
+          {/* ── User Gateway ── */}
+          <Route path="/" element={<UserLanding />} />
+
+          {/* ── Staff Portal Selection ── */}
+          <Route path="/staff" element={<PortalSelect />} />
 
           {/* ── Admin portal ── */}
           <Route path="/login" element={<Login />} />

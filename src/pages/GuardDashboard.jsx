@@ -308,7 +308,7 @@ function GuardLogs({ onBack }) {
       .select('*')
       .eq('is_vip', showVip)
       .order('id', { ascending: false });
-    
+
     if (!error && data) {
       setLogs(data);
     }
@@ -340,8 +340,8 @@ function GuardLogs({ onBack }) {
       <div className="gd-body">
         <div className="vip-back-row vip-back-row--responsive">
           <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1rem', padding: 0, margin: 0, border: 'none', background: 'none', cursor: 'pointer' }}>
-             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-             Back
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
           </button>
           <h2 className="gl-title">View Logs</h2>
           <span className="gl-date">{today}</span>
@@ -431,7 +431,7 @@ function QrScanner({ onBack }) {
         osc.start(ctx.currentTime + startTime);
         osc.stop(ctx.currentTime + startTime + duration);
       };
-      
+
       if (type === 'success') {
         playTone(523.25, 0, 0.1, 'sine');
         playTone(659.25, 0.1, 0.2, 'sine');
@@ -498,7 +498,7 @@ function QrScanner({ onBack }) {
           .from('visitor_logs')
           .select('*')
           .eq('name', parsed.name);
-          
+
         if (error) throw error;
 
         const existingActive = userLogs?.find(v => v.is_active);
@@ -513,10 +513,21 @@ function QrScanner({ onBack }) {
             .from('visitor_logs')
             .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true })
             .eq('id', existingActive.id);
-            
+
           playSound('success');
           actionMsg = `TIME OUT SUCCESSFUL at ${timeString}`;
         } else {
+          // Check for 10 minute expiration if timing in
+          if (parsed.generatedAt) {
+            const elapsedMinutes = (Date.now() - parsed.generatedAt) / (1000 * 60);
+            if (elapsedMinutes > 10) {
+              playSound('error');
+              setScanMessage('WARNING: QR Code Expired (exceeded 10 mins).');
+              setScanResult(parsed);
+              return;
+            }
+          }
+
           await supabase
             .from('visitor_logs')
             .insert([{
@@ -731,7 +742,7 @@ function VipQueueList({ onBack }) {
       name: vip.name,
       destination: vip.person_to_visit || vip.destination || 'VIP Visit',
       purpose: `VIP | Passengers: ${pCount} | Vehicle: ${vehicleStr || '—'} | Plate: ${vip.plate || '—'} | Contact: ${vip.contact_person || '—'}`,
-      date: (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })(),
+      date: (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })(),
       time_in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       time_out: null,
       is_active: true,
@@ -758,14 +769,14 @@ function VipQueueList({ onBack }) {
 
       <div className="vp-wrapper vip-queue-wrapper" style={{ maxWidth: '1400px', width: '95%', height: '90vh' }}>
         <div className="vp-form-card" style={{ padding: '40px', height: '100%', maxHeight: 'none', display: 'flex', flexDirection: 'column' }}>
-          
+
           <div className="vip-back-row vip-back-row--responsive vip-queue-header">
-             <button className="vp-back-link-btn vip-queue-back-btn" onClick={onBack}>
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-               Back
-             </button>
-             <h2 className="vp-form-title vip-queue-title">VIP Queues</h2>
-             <span className="vip-queue-date">{today}</span>
+            <button className="vp-back-link-btn vip-queue-back-btn" onClick={onBack}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              Back
+            </button>
+            <h2 className="vp-form-title vip-queue-title">VIP Queues</h2>
+            <span className="vip-queue-date">{today}</span>
           </div>
 
           <div style={{ overflowY: 'auto', flex: 1, paddingRight: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -775,7 +786,7 @@ function VipQueueList({ onBack }) {
               <p className="vp-form-sub" style={{ textAlign: 'center', margin: '40px 0' }}>No VIPs queued currently</p>
             ) : (
               queue.map(v => (
-                <div key={v.id} style={{ backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 6px 16px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
+                <div key={v.id} style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(24px) saturate(1.6)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', border: '1px solid rgba(255, 255, 255, 0.65)', borderTop: '1px solid rgba(255, 255, 255, 0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
                     <div>
                       <p style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', margin: '0 0 8px' }}>{v.name}</p>
@@ -867,21 +878,21 @@ function ActiveVisitorsScreen({ onBack }) {
       .eq('is_active', true)
       .eq('is_vip', showVip)
       .order('id', { ascending: false });
-    
+
     if (data) setActiveLogs(data);
     setLoading(false);
   };
 
   const handleManualTimeOut = async (log) => {
     if (!window.confirm(`Are you sure you want to manually time out ${log.name}?`)) return;
-    
+
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+
     const { error } = await supabase
       .from('visitor_logs')
       .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
       .eq('id', log.id);
-      
+
     if (!error) {
       fetchActiveLogs();
     } else {
@@ -895,7 +906,7 @@ function ActiveVisitorsScreen({ onBack }) {
       .from('visitor_logs')
       .update({ id_claimed: nextStatus })
       .eq('id', log.id);
-      
+
     if (!error) {
       fetchActiveLogs();
     } else {
@@ -944,8 +955,8 @@ function ActiveVisitorsScreen({ onBack }) {
       <div className="gd-body">
         <div className="vip-back-row" style={{ alignItems: 'center' }}>
           <button className="vp-back-link-btn" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a2820', fontWeight: '700', fontSize: '1rem', padding: 0, margin: 0, border: 'none', background: 'none', cursor: 'pointer' }}>
-             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-             Back
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
           </button>
           <h2 className="gl-title">Active Visitors</h2>
           <span className="gl-date">{today}</span>
@@ -1038,7 +1049,7 @@ function ActiveVisitorsScreen({ onBack }) {
                         {v.id_claimed ? '✓ ID Claimed' : 'Claim ID'}
                       </button>
                     )}
-                    <button 
+                    <button
                       onClick={() => handleManualTimeOut(v)}
                       style={{ padding: '6px 14px', fontSize: '0.8rem', fontWeight: '800', border: '1px solid #ddd', backgroundColor: '#fff', borderRadius: '8px', cursor: 'pointer', color: '#555', transition: 'all 0.2s' }}
                       onMouseEnter={(e) => { e.target.style.backgroundColor = '#f1f3f5'; e.target.style.borderColor = '#ccc'; }}

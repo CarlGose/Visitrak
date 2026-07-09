@@ -115,7 +115,7 @@ export default function Login() {
         </form>
 
         <p className="login-guard-link-text">
-          <Link to="/" className="login-guard-link">← Back to Portal Selection</Link>
+          <Link to="/staff" className="login-guard-link">← Back to Staff Portal</Link>
         </p>
       </div>
     </div>

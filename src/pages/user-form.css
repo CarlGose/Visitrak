@@ -1,28 +1,33 @@
 .form-page {
   background: linear-gradient(135deg, #f2edd7 0%, #e8e0c4 50%, #f5f0e0 100%);
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100vh; /* fallback */
+  height: 100dvh; /* use dynamic viewport height for mobile */
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   font-family: 'Outfit', sans-serif;
   padding: 20px 20px 40px;
+  box-sizing: border-box;
 }
 
 .form-page::before, .form-page::after {
-  content: ''; position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+  content: ''; position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0;
 }
 .form-page::before {
-  width: 520px; height: 520px; background: radial-gradient(circle, rgba(107, 143, 126, 0.22) 0%, transparent 70%); top: -120px; left: -120px; animation: ufBlobDrift 10s ease-in-out infinite alternate;
+  width: 600px; height: 600px; background: radial-gradient(circle, rgba(107, 143, 126, 0.45) 0%, transparent 70%); top: -100px; left: -100px; animation: ufBlobDrift 10s ease-in-out infinite alternate;
 }
 .form-page::after {
-  width: 440px; height: 440px; background: radial-gradient(circle, rgba(201, 162, 39, 0.18) 0%, transparent 70%); bottom: -100px; right: -100px; animation: ufBlobDrift 13s ease-in-out infinite alternate-reverse;
+  width: 500px; height: 500px; background: radial-gradient(circle, rgba(201, 162, 39, 0.35) 0%, transparent 70%); bottom: -50px; right: -50px; animation: ufBlobDrift 13s ease-in-out infinite alternate-reverse;
 }
 @keyframes ufBlobDrift {
   from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(40px, 30px) scale(1.08); }
+  to   { transform: translate(60px, 40px) scale(1.1); }
 }
 
 .form-wrapper {
@@ -47,14 +52,16 @@
 }
 
 .form-card {
-  background: rgba(255, 255, 255, 0.65); border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: 28px; padding: 48px 40px; display: flex; flex-direction: column; gap: 24px;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32px; padding: 48px 40px; display: flex; flex-direction: column; gap: 24px;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .form-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 28px 56px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
+  box-shadow: 0 14px 45px rgba(31, 38, 135, 0.18), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
 }
 
 .form-title {
@@ -140,18 +147,60 @@
   transform: scale(0.99) translateX(4px);
 }
 
+.form-header-text {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.date-display {
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(107, 143, 126, 0.2);
+  border-radius: 14px;
+  font-size: 1rem;
+  color: rgba(26, 40, 32, 0.6);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  user-select: none;
+}
+.back-link-container {
+  margin-top: 24px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.back-link {
+  color: #2d3e2e;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .form-actions { margin-top: 12px; }
+.terms-actions { display: flex; gap: 10px; }
+.terms-card { padding: 40px; }
 
 .btn-submit {
   width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;
-  background: linear-gradient(135deg, #6b8f7e 0%, #4e7264 100%); color: #ffffff; border: none;
-  border-radius: 14px; padding: 16px; font-size: 1.15rem; font-weight: 800; cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 16px rgba(78, 114, 100, 0.4);
+  background: linear-gradient(135deg, #4a6b3a 0%, #2d3e2e 100%); color: #ffffff; border: none;
+  border-radius: 16px; padding: 16px; font-size: 1.15rem; font-weight: 800; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 6px 20px rgba(45, 62, 46, 0.4);
+  text-transform: uppercase; letter-spacing: 0.5px;
 }
 .btn-submit:hover {
-  transform: translateY(-2px); box-shadow: 0 8px 28px rgba(78, 114, 100, 0.55);
+  transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 30px rgba(45, 62, 46, 0.5);
+  background: linear-gradient(135deg, #577d44 0%, #3a4f3b 100%);
 }
-.btn-submit:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(78, 114, 100, 0.4); }
+.btn-submit:active { transform: translateY(0) scale(0.98); }
+
+.btn-secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+  color: #1a2820;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  color: #1a2820;
+}
 
 /* ─── Ticket Pass View Styles (Blue Border Layout) ─── */
 
@@ -166,8 +215,8 @@
   background-color: #ffffff;
   border: 1px solid #1fa3e5;
   border-radius: 20px;
-  overflow: hidden;
-  margin: 0 auto;
+  overflow: visible;
+  margin: 0 auto 40px auto;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -179,6 +228,7 @@
   padding: 16px;
   text-align: center;
   border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-radius: 18px 18px 0 0;
 }
 
 .qr-pass-header h2 {
@@ -330,7 +380,85 @@
 }
 
 /* ─── Responsive Adjustments ─── */
+@media (max-width: 768px) {
+  .form-page {
+    padding: 16px 16px 32px;
+  }
+  .form-page.qr-result-page {
+    padding-top: 100px;
+  }
+  .form-card {
+    padding: 32px 24px;
+    border-radius: 24px;
+  }
+  .terms-card {
+    padding: 32px 24px;
+  }
+  .form-title {
+    font-size: 1.8rem;
+  }
+  .btn-submit {
+    padding: 14px;
+    font-size: 1.05rem;
+  }
+}
+
 @media (max-width: 480px) {
+  .form-page {
+    padding: 8px 12px 16px;
+  }
+  .form-page.qr-result-page {
+    padding-top: 80px;
+  }
+  .form-brand {
+    margin-bottom: 12px;
+  }
+  .form-brand img {
+    width: 32px; height: 32px;
+  }
+  .form-brand span {
+    font-size: 1.4rem;
+  }
+  .form-card {
+    padding: 16px 16px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+  .form-header-text {
+    margin-bottom: 4px;
+  }
+  .form-title {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+  }
+  .form-subtitle {
+    font-size: 0.8rem;
+  }
+  .form-field {
+    gap: 4px;
+  }
+  .form-field label {
+    font-size: 0.85rem;
+  }
+  .form-field input, .form-field select, .custom-select, .date-display {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    border-radius: 12px;
+  }
+  .form-actions {
+    margin-top: 8px;
+  }
+  .btn-submit {
+    padding: 12px;
+    font-size: 1.05rem;
+    border-radius: 14px;
+  }
+  .back-link-container {
+    margin-top: 16px;
+  }
+  .terms-card {
+    padding: 24px 16px;
+  }
   .qr-pass-card {
     border-radius: 16px;
     border-width: 1px;
@@ -341,5 +469,12 @@
   .qr-detail-label {
     width: 95px;
     font-size: 0.95rem;
+  }
+  .terms-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .terms-actions .btn-submit {
+    width: 100%;
   }
 }
