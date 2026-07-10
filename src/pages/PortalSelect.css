@@ -82,8 +82,8 @@
 }
 
 .ps-logo {
-  width: 72px;
-  height: 72px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
   border-radius: 50%;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
@@ -108,7 +108,7 @@
 
 .ps-brand-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.8rem;
+  font-size: 3.8rem;
   font-weight: 800;
   background: linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%);
   -webkit-background-clip: text;
@@ -120,7 +120,7 @@
 }
 
 .ps-brand-tagline {
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-style: italic;
   color: #666;
   margin: 4px 0 0;
@@ -129,7 +129,7 @@
 /* ── Prompt text ── */
 .ps-prompt {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   color: #555;
   margin: -10px 0 0;
   font-weight: 500;
@@ -241,9 +241,9 @@
 
 /* ── Card icon (frosted pill) ── */
 .ps-card-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   background: color-mix(in srgb, var(--accent-light) 70%, white);
   display: flex;
   align-items: center;
@@ -261,8 +261,8 @@
 }
 
 .ps-card-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   color: var(--accent);
   transition: color 0.25s ease;
 }
@@ -283,14 +283,14 @@
 
 .ps-card-label {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.55rem;
+  font-weight: 800;
   color: #1a1a1a;
   line-height: 1.2;
 }
 
 .ps-card-desc {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   color: #777;
   font-weight: 400;
   line-height: 1.4;
@@ -330,12 +330,12 @@
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .ps-brand-name {
-    font-size: 1.9rem;
+    font-size: 2.6rem;
   }
 
   .ps-logo {
-    width: 56px;
-    height: 56px;
+    width: 68px;
+    height: 68px;
   }
 
   .ps-card {
@@ -343,7 +343,7 @@
   }
 
   .ps-card-label {
-    font-size: 1rem;
+    font-size: 1.25rem;
   }
 
   .ps-brand {

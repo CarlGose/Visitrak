@@ -11,9 +11,13 @@ export default function UserLanding() {
       <div className="wup-bg-watermark"></div>
       <main className="ul-main">
         <div className="ul-card">
-          <header className="ul-header">
-            <img src="/wuplogo.png" alt="University Logo" className="ul-logo" />
-            <h1 className="ul-brand-name">VisiTrack</h1>
+          <header className="ul-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '24px' }}>
+            <img src="/wuplogo.png" alt="WUP Logo" style={{ width: '60px', height: '60px', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))' }} />
+            <div style={{ textAlign: 'center' }}>
+              <h1 className="ul-brand-name" style={{ margin: 0, fontSize: '2.3rem', lineHeight: '1.1' }}>VisiTrack</h1>
+              <p style={{ margin: '4px 0 0', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>Handle visitors without worries</p>
+            </div>
+            <img src="/visitrak-badge.png" alt="VisiTrack Badge" style={{ width: '60px', height: '60px', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))' }} />
           </header>
 
           <h2 className="ul-welcome">Welcome</h2>

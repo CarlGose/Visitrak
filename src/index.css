@@ -9,6 +9,7 @@
 }
 
 :root {
+  --sidebar-width: 200px;
   --color-bg: #e8e4d9;
   --color-bg-light: #f0ece0;
   --color-card: #6b8f7e;
@@ -36,6 +37,10 @@
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.18);
   --transition: all 0.2s ease;
+}
+
+body.sidebar-collapsed {
+  --sidebar-width: 68px;
 }
 
 html,
@@ -125,3 +130,391 @@ input {
     opacity: 0.22; /* Slightly higher opacity to stand out on mobile screens */
   }
 }
+
+/* ==========================================
+   GLOBAL DARK MODE THEME TOKENS
+   ========================================== */
+body.dark-mode {
+  --color-bg: #0b0f0c;
+  --color-bg-light: #121814;
+  --color-card: #2e4339;
+  --color-card-dark: #22332a;
+  --color-header: #141b17;
+  --color-header-border: rgba(255, 255, 255, 0.08);
+  --color-gold: #e5b83b;
+  --color-gold-hover: #f2c74e;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-white: #181f1b;
+  --color-input-bg: #1f2722;
+  --color-table-header: #1a231e;
+  --color-table-border: rgba(255, 255, 255, 0.06);
+  --color-table-row-alt: #101613;
+  --color-blue-card: rgba(59, 130, 246, 0.15);
+  --color-yellow-card: rgba(245, 158, 11, 0.15);
+  --color-green-card-border: #3d5a49;
+  --color-active: #34d399;
+}
+
+/* Smooth color transitions for interactive and structural elements */
+body, 
+.dashboard-page, 
+.logs-page, 
+.manage-page, 
+.stat-card, 
+.table-container, 
+.active-guard-section, 
+.active-guard-card, 
+.dashboard-logs-section, 
+.logs-container,
+.search-bar,
+.logs-table-wrapper,
+.export-btn,
+.manage-card,
+.guard-row,
+.modal-content,
+.sidebar-brand-container {
+  transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ==========================================
+   DASHBOARD PAGE - DARK MODE OVERRIDES
+   ========================================== */
+body.dark-mode .dashboard-page,
+body.dark-mode .vip-queue-page {
+  background: linear-gradient(135deg, #090d0a 0%, #0f1411 50%, #121a15 100%) !important;
+}
+
+body.dark-mode .dashboard-page::before {
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.08) 0%, transparent 70%) !important;
+}
+
+body.dark-mode .dashboard-page::after {
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.06) 0%, transparent 70%) !important;
+}
+
+body.dark-mode .dashboard-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .dashboard-header h1 {
+  color: #fff !important;
+}
+
+body.dark-mode .dashboard-header p {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .stat-card {
+  background: linear-gradient(135deg, rgba(24, 31, 27, 0.8) 0%, rgba(18, 24, 20, 0.5) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-mode .stat-card.blue {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.4) 100%) !important;
+  border-left: 4px solid #3b82f6 !important;
+}
+
+body.dark-mode .stat-card.yellow {
+  background: linear-gradient(135deg, rgba(69, 39, 0, 0.25) 0%, rgba(41, 20, 0, 0.15) 100%) !important;
+  border-left: 4px solid #eab308 !important;
+}
+
+body.dark-mode .stat-card.blue h3 { color: #60a5fa !important; }
+body.dark-mode .stat-card.yellow h3 { color: #f59e0b !important; }
+body.dark-mode .stat-card h3 { color: #9ca3af !important; }
+body.dark-mode .stat-value { color: #ffffff !important; }
+body.dark-mode .stat-date { color: #9ca3af !important; }
+
+body.dark-mode .table-container,
+body.dark-mode .active-guard-section,
+body.dark-mode .dashboard-logs-section {
+  background: linear-gradient(135deg, rgba(24, 31, 27, 0.85) 0%, rgba(18, 24, 20, 0.55) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode .table-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .vip-header {
+  background: linear-gradient(90deg, #2e1065 0%, #1e1b4b 100%) !important;
+  color: #c084fc !important;
+  border-bottom: 1.5px solid rgba(192, 132, 252, 0.15) !important;
+}
+
+body.dark-mode .active-guard-card {
+  background: linear-gradient(135deg, rgba(20, 48, 30, 0.3) 0%, rgba(12, 34, 20, 0.2) 100%) !important;
+  border: 1.5px solid rgba(52, 211, 153, 0.1) !important;
+}
+
+body.dark-mode .active-guard-name {
+  color: #fff !important;
+}
+
+body.dark-mode .active-guard-id {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .active-guard-empty {
+  color: #6b7280 !important;
+}
+
+body.dark-mode .logs-date-indicator {
+  background: #161d19 !important;
+  border-left: 3px solid #34d399 !important;
+}
+
+body.dark-mode .logs-today {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .logs-date {
+  color: #fff !important;
+}
+
+body.dark-mode .logs-title-area h2 {
+  color: #fff !important;
+}
+
+body.dark-mode .view-all-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+body.dark-mode .view-all-btn:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+  border-color: #10b981 !important;
+  color: #000 !important;
+}
+
+body.dark-mode .data-table th {
+  background-color: #161d19 !important;
+  color: #9ca3af !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .data-table td {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode .data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ==========================================
+   LOGS PAGES (LOGS / VIP LOGS / VIP QUEUE) - DARK MODE OVERRIDES
+   ========================================== */
+body.dark-mode .logs-page {
+  background: linear-gradient(135deg, #090d0a 0%, #0f1411 50%, #121a15 100%) !important;
+}
+
+body.dark-mode .logs-container {
+  background-color: var(--color-white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 4px solid var(--color-active) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .logs-page-title {
+  color: #fff !important;
+}
+
+body.dark-mode .search-bar {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: #161d19 !important;
+}
+
+body.dark-mode .search-bar input {
+  color: #fff !important;
+}
+
+body.dark-mode .selected-date-text {
+  background-color: #161d19 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .calendar-btn {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .logs-header-section {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .logs-table-wrapper {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .logs-data-table th {
+  background-color: #161d19 !important;
+  color: #9ca3af !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .logs-data-table td {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .logs-data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-mode .logs-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .export-btn {
+  background-color: #161d19 !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .export-btn:hover {
+  background-color: #1a231e !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .export-dropdown {
+  background-color: #121814 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .export-dropdown button {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .export-dropdown button:hover {
+  background-color: #1a231e !important;
+  color: #fff !important;
+}
+
+body.dark-mode .export-dropdown button:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .logs-notice-banner {
+  background-color: rgba(251, 191, 36, 0.08) !important;
+  border: 1px solid rgba(251, 191, 36, 0.2) !important;
+  color: #fbbf24 !important;
+}
+
+body.dark-mode .logs-notice-banner svg {
+  color: #fbbf24 !important;
+}
+
+/* ==========================================
+   MANAGE PAGE - DARK MODE OVERRIDES
+   ========================================== */
+body.dark-mode .manage-content h1 {
+  color: #fff !important;
+}
+
+body.dark-mode .manage-card-header h2 {
+  color: #fff !important;
+}
+
+body.dark-mode .guard-row {
+  background-color: #161d19 !important;
+}
+
+body.dark-mode .guard-name {
+  color: #fff !important;
+}
+
+body.dark-mode .guard-number {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .edit-icon-btn {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .delete-icon-btn {
+  color: #ef4444 !important;
+}
+
+body.dark-mode .modal-content {
+  background-color: #121814 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.dark-mode .modal-title {
+  color: #34d399 !important;
+}
+
+body.dark-mode .form-group label {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .form-group input {
+  background-color: #161d19 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .form-group input:focus {
+  border-color: #34d399 !important;
+}
+
+/* ==========================================
+   ARCHIVES PAGE - DARK MODE OVERRIDES
+   ========================================== */
+body.dark-mode .archives-title {
+  color: #fff !important;
+}
+
+body.dark-mode .archives-toggle-bar {
+  background-color: #161d19 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .archives-toggle-btn {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .archives-toggle-btn:hover {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .archives-toggle-btn.active {
+  background-color: #1f2722 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #34d399 !important;
+}
+
+body.dark-mode .archives-info-text {
+  color: #cbd5e1 !important;
+}
+
+/* ==========================================
+   MOBILE & RESPONSIVE LAYOUT OVERRIDES
+   ========================================== */
+@media (max-width: 768px) {
+  .logs-page,
+  .manage-page {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  .dashboard-content,
+  .logs-content,
+  .manage-content {
+    padding-top: 72px !important;
+  }
+  
+  .logs-table-wrapper {
+    overflow-x: auto !important;
+  }
+}

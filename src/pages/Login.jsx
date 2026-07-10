@@ -9,6 +9,7 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showDevModal, setShowDevModal] = useState(false);
   const { login, user, restoreSession } = useAuth();
   const navigate = useNavigate();
 
@@ -108,6 +109,10 @@ export default function Login() {
             </button>
           </div>
 
+          <div className="forgot-password-text" onClick={() => setShowDevModal(true)}>
+            Forgot Password?
+          </div>
+
           {/* Divider */}
           <div className="login-divider">
             <span /><p>or</p><span />
@@ -118,6 +123,48 @@ export default function Login() {
           <Link to="/staff" className="login-guard-link">← Back to Staff Portal</Link>
         </p>
       </div>
+
+      {showDevModal && (
+        <div className="dev-modal-overlay" onClick={() => setShowDevModal(false)}>
+          <div className="dev-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="dev-modal-close" onClick={() => setShowDevModal(false)}>&times;</button>
+            <h2 className="dev-modal-title">Contact IT / Developers</h2>
+            <p className="dev-modal-desc">To protect system security, passwords cannot be reset here. Please contact one of the developers below.</p>
+
+            <div className="dev-list">
+              <div className="dev-card">
+                <img src="/wuplogo.png" alt="Dev 1" className="dev-avatar" />
+                <div className="dev-info">
+                  <h3 className="dev-name">Carl James Gose</h3>
+                  <p className="dev-role">Lead Developer/Frontend Developer/Backend Developer</p>
+                  <p className="dev-contact">✉️ cjgose2000@gmail.com</p>
+                  <p className="dev-contact">📞 0993 481 7042 (Viber)</p>
+                </div>
+              </div>
+
+              <div className="dev-card">
+                <img src="/wuplogo.png" alt="Dev 2" className="dev-avatar" />
+                <div className="dev-info">
+                  <h3 className="dev-name">Khurstian Shane Estares</h3>
+                  <p className="dev-role">Frontend Developer/Backend Developer/Database Admin</p>
+                  <p className="dev-contact">✉️ dev2@school.edu.ph</p>
+                  <p className="dev-contact">📞 0998 765 4321</p>
+                </div>
+              </div>
+
+              <div className="dev-card">
+                <img src="/wuplogo.png" alt="Dev 3" className="dev-avatar" />
+                <div className="dev-info">
+                  <h3 className="dev-name">Angelo Abel Cruz</h3>
+                  <p className="dev-role">Frontend Developer/Backend Developer</p>
+                  <p className="dev-contact">✉️ dev3@school.edu.ph</p>
+                  <p className="dev-contact">📞 0955 111 2222</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

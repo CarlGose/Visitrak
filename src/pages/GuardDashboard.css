@@ -67,6 +67,19 @@
   z-index: 10;
 }
 
+.gd-brand-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 .gd-header-logo {
   width: 40px;
   height: 40px;
@@ -982,8 +995,23 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 40px 20px;
+  padding: 85px 20px 40px 20px;
   font-family: 'Outfit', sans-serif;
+}
+
+.vip-header-centered {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  z-index: 50;
+}
+
+.vip-header-centered + .gd-body {
+  padding-top: 80px;
 }
 
 .vp-page-override::before,
@@ -1249,4 +1277,230 @@
 
 .vp-back-link-btn:hover {
   color: rgba(30, 40, 35, 0.85);
+}
+
+/* ── Theme Toggle Button (Header) ── */
+.gd-header-theme-toggle {
+  background: transparent;
+  border: 1px solid #b0a990;
+  cursor: pointer;
+  padding: 6px;
+  color: #555;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+  height: 36px;
+  width: 36px;
+}
+
+.gd-header-theme-toggle:hover {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================
+   GUARD DASHBOARD - DARK MODE OVERRIDES
+   ========================================== */
+body.dark-mode .gd-page,
+body.dark-mode .vip-page-override,
+body.dark-mode .vp-page-override {
+  background: linear-gradient(160deg, #0b0f0c 0%, #121814 40%, #101613 100%) !important;
+}
+
+body.dark-mode .gd-page::before {
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, transparent 70%) !important;
+}
+
+body.dark-mode .gd-page::after {
+  background: radial-gradient(circle, rgba(229, 184, 59, 0.1) 0%, transparent 70%) !important;
+}
+
+body.dark-mode .gd-header {
+  background: rgba(20, 27, 23, 0.6) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .gd-brand-container {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .gd-header-brand,
+body.dark-mode .gd-title,
+body.dark-mode .vip-form-title,
+body.dark-mode .vp-brand-name,
+body.dark-mode .vp-form-title,
+body.dark-mode .vip-queue-title {
+  background: linear-gradient(135deg, #a7f3d0 0%, #34d399 40%, #fbbf24 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+body.dark-mode .gd-header-logout,
+body.dark-mode .gd-header-theme-toggle {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #9ca3af !important;
+}
+
+body.dark-mode .gd-header-logout:hover,
+body.dark-mode .gd-header-theme-toggle:hover {
+  border-color: #fff !important;
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .gd-header-logout:hover {
+  color: #f87171 !important;
+  border-color: #f87171 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+body.dark-mode .gd-profile-card,
+body.dark-mode .gd-menu-btn,
+body.dark-mode .gd-visitor-row,
+body.dark-mode .gl-row,
+body.dark-mode .vp-form-card,
+body.dark-mode .vip-form-card,
+body.dark-mode .active-screen-card,
+body.dark-mode .active-stats-card {
+  background: rgba(20, 27, 23, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-mode .gd-menu-btn {
+  transition: all 0.3s ease !important;
+}
+
+body.dark-mode .gd-menu-btn:hover {
+  background: rgba(30, 41, 34, 0.9) !important;
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--accent) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 4px 16px color-mix(in srgb, var(--accent) 25%, transparent) !important;
+}
+
+body.dark-mode .gd-profile-row,
+body.dark-mode .gd-menu-btn,
+body.dark-mode .gd-visitor-name,
+body.dark-mode .gl-name,
+body.dark-mode .active-card-name,
+body.dark-mode .vp-tagline,
+body.dark-mode .vp-form-sub,
+body.dark-mode .gl-title {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode .gd-label {
+  color: #34d399 !important;
+}
+
+body.dark-mode .gd-avatar {
+  background-color: #22332a !important;
+  color: #34d399 !important;
+}
+
+body.dark-mode .gd-visitor-sub,
+body.dark-mode .gd-visitor-date,
+body.dark-mode .gd-visitor-dest,
+body.dark-mode .gl-sub,
+body.dark-mode .gl-rdate,
+body.dark-mode .gl-rdest,
+body.dark-mode .active-card-detail,
+body.dark-mode .active-card-dest,
+body.dark-mode .active-card-time {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .gd-time-out,
+body.dark-mode .gl-timeout {
+  color: #34d399 !important;
+}
+
+body.dark-mode .vip-field label,
+body.dark-mode .vp-field label {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode .vip-field input,
+body.dark-mode .vip-field select,
+body.dark-mode .vp-field input,
+body.dark-mode .gl-search-input,
+body.dark-mode .gl-date-input,
+body.dark-mode .active-screen-search {
+  background-color: #1a231e !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .vip-field input:focus,
+body.dark-mode .vip-field select:focus,
+body.dark-mode .vp-field input:focus,
+body.dark-mode .gl-search-input:focus,
+body.dark-mode .gl-date-input:focus,
+body.dark-mode .active-screen-search:focus {
+  box-shadow: 0 0 0 3px rgba(229, 184, 59, 0.3) !important;
+}
+
+body.dark-mode .gl-toggle-container,
+body.dark-mode .active-tabs-container {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .gl-toggle-btn,
+body.dark-mode .active-tab-btn {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .gl-toggle-btn.active,
+body.dark-mode .active-tab-btn.active {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #34d399 !important;
+}
+
+body.dark-mode .gd-back-btn-icon svg stroke,
+body.dark-mode .vp-back-link-btn svg stroke {
+  stroke: #fff !important;
+}
+
+body.dark-mode .gd-back-btn-icon,
+body.dark-mode .vp-back-link-btn,
+body.dark-mode .gl-date,
+body.dark-mode .vip-queue-date {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .gd-back-btn-icon:hover,
+body.dark-mode .vp-back-link-btn:hover {
+  color: #fff !important;
+}
+
+body.dark-mode .qr-scanner-wrapper svg path,
+body.dark-mode .qr-scanner-wrapper svg rect,
+body.dark-mode .qr-scanner-wrapper svg polyline,
+body.dark-mode .qr-scanner-wrapper svg line {
+  stroke: #34d399 !important;
+}
+
+body.dark-mode .vp-add-btn,
+body.dark-mode .vip-add-btn {
+  background-color: #e5b83b !important;
+  color: #1a1a1a !important;
+}
+
+body.dark-mode .vp-add-btn:hover,
+body.dark-mode .vip-add-btn:hover {
+  background-color: #f2c74e !important;
+}
+
+body.dark-mode .vip-queue-header {
+  background-color: transparent !important;
 }

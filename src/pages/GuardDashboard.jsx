@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { supabase } from '../supabaseClient';
+import { Sun, Moon } from 'lucide-react';
 import './GuardDashboard.css';
 
 // Icons
@@ -72,11 +73,31 @@ export default function GuardDashboard() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null); // null=menu , 'vip'=VIP form, 'logs'=logs
 
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
   const todayStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Sync theme to document body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
 
   const handleLogout = () => {
     logout();
     navigate('/guard/login');
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
   };
 
   if (activeSection === 'vip') return <VipForm onBack={() => setActiveSection(null)} />;
@@ -89,12 +110,26 @@ export default function GuardDashboard() {
     <div className="gd-page">
       {/* ── Header ── */}
       <header className="gd-header">
-        <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
-        <span className="gd-header-brand">VisiTrack</span>
-        <button id="guard-logout-btn" className="gd-header-logout" onClick={handleLogout}>
-          <PowerIcon />
-          <span>Log out</span>
-        </button>
+        <div className="gd-brand-container">
+          <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
+          <span className="gd-header-brand">VisiTrack</span>
+        </div>
+        
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button 
+            className="gd-header-theme-toggle" 
+            onClick={toggleDarkMode}
+            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle theme"
+          >
+            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          
+          <button id="guard-logout-btn" className="gd-header-logout" onClick={handleLogout}>
+            <PowerIcon />
+            <span>Log out</span>
+          </button>
+        </div>
       </header>
 
       <div className="gd-body">
@@ -195,6 +230,9 @@ function VipForm({ onBack }) {
 
   return (
     <div className="vp-page-override">
+      <header className="gd-header vip-header-centered">
+        <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" />
+      </header>
       <div className="vp-wrapper">
         <form className="vp-form-card" onSubmit={handleAdd}>
           <div className="vp-brand">
@@ -333,9 +371,8 @@ function GuardLogs({ onBack }) {
 
   return (
     <div className="gd-page">
-      <header className="gd-header">
-        <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
-        <span className="gd-header-brand">VisiTrack</span>
+      <header className="gd-header vip-header-centered">
+        <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" />
       </header>
       <div className="gd-body">
         <div className="vip-back-row vip-back-row--responsive">
@@ -631,6 +668,12 @@ function QrScanner({ onBack }) {
           </button>
         </div>
         <div className="vip-form-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="vp-brand" style={{ marginBottom: '4px' }}>
+            <img src="/wuplogo.png" alt="VisiTrack Logo" className="vp-logo" />
+            <span className="vp-brand-name">VisiTrack</span>
+          </div>
+          <p className="vp-tagline" style={{ marginBottom: '24px' }}>Handle visitors without worries</p>
+          
           <h2 className="vip-form-title">SCAN QR</h2>
 
           {!scanResult ? (
@@ -781,11 +824,9 @@ function VipQueueList({ onBack }) {
 
   return (
     <div className="vp-page-override">
-      {/* Branding top left */}
-      <div style={{ position: 'absolute', top: '24px', left: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <img src="/wuplogo.png" alt="VisiTrack Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-        <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', background: 'linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>VisiTrack</span>
-      </div>
+      <header className="gd-header vip-header-centered">
+        <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" />
+      </header>
 
       <div className="vp-wrapper vip-queue-wrapper" style={{ maxWidth: '1400px', width: '95%', height: '90vh' }}>
         <div className="vp-form-card" style={{ padding: '40px', height: '100%', maxHeight: 'none', display: 'flex', flexDirection: 'column' }}>
@@ -968,9 +1009,8 @@ function ActiveVisitorsScreen({ onBack }) {
 
   return (
     <div className="gd-page">
-      <header className="gd-header">
-        <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
-        <span className="gd-header-brand">VisiTrack</span>
+      <header className="gd-header vip-header-centered">
+        <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" />
       </header>
       <div className="gd-body">
         <div className="vip-back-row" style={{ alignItems: 'center' }}>
