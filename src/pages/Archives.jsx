@@ -230,8 +230,8 @@ export default function Archives() {
     XLSX.utils.book_append_sheet(wb, ws, "Archived Logs");
 
     const category = showVip ? 'VIPLogs' : 'VisitorLogs';
-    const filename = exportType === 'day' 
-      ? `VisiTrack_Archived_${category}_${exportDayValue}.xlsx` 
+    const filename = exportType === 'day'
+      ? `VisiTrack_Archived_${category}_${exportDayValue}.xlsx`
       : `VisiTrack_Archived_${category}_${exportMonthValue || 'All'}.xlsx`;
 
     XLSX.writeFile(wb, filename);
@@ -296,13 +296,13 @@ export default function Archives() {
 
           <div className="archives-toggle-bar">
             <div className="archives-toggle-buttons">
-              <button 
+              <button
                 className={`archives-toggle-btn ${!showVip ? 'active' : ''}`}
                 onClick={() => { setShowVip(false); setSearchTerm(''); setSelectedDate(''); }}
               >
                 Regular Archives
               </button>
-              <button 
+              <button
                 className={`archives-toggle-btn ${showVip ? 'active' : ''}`}
                 onClick={() => { setShowVip(true); setSearchTerm(''); setSelectedDate(''); }}
               >
@@ -374,17 +374,17 @@ export default function Archives() {
                           <td>{log.destination}</td>
                           <td>{log.purpose}</td>
                           <td>
-                             {log.valid_id ? (
-                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                 {log.valid_id}
-                                 {log.id_claimed && (
-                                   <span style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                                     Claimed
-                                   </span>
-                                 )}
-                               </div>
-                             ) : '—'}
-                           </td>
+                            {log.valid_id ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {log.valid_id}
+                                {log.id_claimed && (
+                                  <span style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                                    Claimed
+                                  </span>
+                                )}
+                              </div>
+                            ) : '—'}
+                          </td>
                         </>
                       )}
                     </tr>

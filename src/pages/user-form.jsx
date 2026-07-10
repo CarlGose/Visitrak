@@ -556,6 +556,7 @@ const UserForm = () => {
                         </div>
                         <div className="form-field">
                             <label htmlFor="name">Full Name <span className="req">*</span></label>
+                            <p style={{ fontSize: '12px', margin: '0', color: "red" }}>* The name on your valid ID must match the name entered here.</p>
                             <input
                                 type="text"
                                 id="name"
@@ -766,6 +767,7 @@ const UserForm = () => {
                                                 }
                                             }}
                                         />
+                                        <div className="id-frame-guide"><div className="corners"></div></div>
                                         <div className="id-capture-placeholder">
                                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -773,6 +775,7 @@ const UserForm = () => {
                                                 <path d="M20.4 14.5L16 10 4 20" />
                                             </svg>
                                             <span>Tap to open camera</span>
+                                            <span style={{ fontSize: '0.8rem', opacity: 0.8, marginTop: '-4px' }}>Please fit your ID within the frame</span>
                                         </div>
                                     </label>
                                 )}

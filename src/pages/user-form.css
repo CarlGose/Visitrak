@@ -397,15 +397,70 @@
     align-items: center;
     border: 2px dashed rgba(26, 40, 32, 0.2);
     border-radius: 12px;
-    padding: 30px;
+    padding: 50px 30px;
     cursor: pointer;
     background: rgba(26, 40, 32, 0.02);
     transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .id-capture-label:hover {
     background: rgba(26, 40, 32, 0.04);
     border-color: rgba(26, 40, 32, 0.4);
+}
+
+.id-frame-guide {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    pointer-events: none;
+}
+
+.id-frame-guide::before,
+.id-frame-guide::after,
+.id-frame-guide .corners::before,
+.id-frame-guide .corners::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: #4a6b3a;
+    border-style: solid;
+}
+
+/* Top Left */
+.id-frame-guide::before {
+    top: 0;
+    left: 0;
+    border-width: 4px 0 0 4px;
+    border-top-left-radius: 6px;
+}
+
+/* Top Right */
+.id-frame-guide::after {
+    top: 0;
+    right: 0;
+    border-width: 4px 4px 0 0;
+    border-top-right-radius: 6px;
+}
+
+/* Bottom Left */
+.id-frame-guide .corners::before {
+    bottom: 0;
+    left: 0;
+    border-width: 0 0 4px 4px;
+    border-bottom-left-radius: 6px;
+}
+
+/* Bottom Right */
+.id-frame-guide .corners::after {
+    bottom: 0;
+    right: 0;
+    border-width: 0 4px 4px 0;
+    border-bottom-right-radius: 6px;
 }
 
 .id-capture-input {
