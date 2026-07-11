@@ -225,12 +225,12 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  opacity: 0.15;
+  opacity: 0.35;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .stat-card:hover .card-icon {
-  opacity: 0.3;
+  opacity: 0.6;
   transform: scale(1.1);
 }
 
