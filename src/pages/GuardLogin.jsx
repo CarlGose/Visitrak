@@ -98,7 +98,7 @@ export default function GuardLogin() {
               <option value="" disabled>Select your gate</option>
               <option value="Main Gate">Main Gate</option>
               <option value="South Gate">South Gate</option>
-              <option value="Elementary Gate  ">Elementary Gate</option>
+              <option value="Elementary Gate">Elementary Gate</option>
               <option value="Gate 6 Admin">Gate 6 Admin</option>
             </select>
           </div>

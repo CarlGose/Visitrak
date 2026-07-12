@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../supabaseClient';
 
 const AuthContext = createContext(null);
 
@@ -30,7 +30,15 @@ function clearSession() {
 function loadSession() {
   // Priority 1: Current tab session ALWAYS wins (ensures tab isolation)
   const tabSession = sessionStorage.getItem(SESSION_KEY);
-  if (tabSession) return JSON.parse(tabSession);
+  if (tabSession) {
+    const parsed = JSON.parse(tabSession);
+    if (parsed.role === 'guard' && parsed.loginTime && (Date.now() - parsed.loginTime > 6 * 60 * 60 * 1000)) {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(GUARD_LOCAL_KEY);
+      return null;
+    }
+    return parsed;
+  }
 
   // Priority 2: New tab opened. Check localStorage intelligent fallback
   const isGuardRoute = window.location.pathname.startsWith('/guard');
@@ -38,8 +46,13 @@ function loadSession() {
   if (isGuardRoute) {
     const savedGuard = localStorage.getItem(GUARD_LOCAL_KEY);
     if (savedGuard) {
+      const parsed = JSON.parse(savedGuard);
+      if (parsed.loginTime && (Date.now() - parsed.loginTime > 6 * 60 * 60 * 1000)) {
+        localStorage.removeItem(GUARD_LOCAL_KEY);
+        return null;
+      }
       sessionStorage.setItem(SESSION_KEY, savedGuard); // Restore to this tab
-      return JSON.parse(savedGuard);
+      return parsed;
     }
   } else {
     // Treat as admin/general pathway
@@ -90,9 +103,11 @@ export function AuthProvider({ children }) {
           // Patch the session so future calls have dbId
           const updated = { ...user, dbId: data.id };
           setUser(updated);
-          const tabSession = sessionStorage.getItem('visitrak_guard_session') ||
-                             sessionStorage.getItem('visitrak_session');
-          if (tabSession) sessionStorage.setItem('visitrak_session', JSON.stringify(updated));
+          const tabSession = sessionStorage.getItem(SESSION_KEY);
+          if (tabSession) sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+          
+          const localGuard = localStorage.getItem(GUARD_LOCAL_KEY);
+          if (localGuard) localStorage.setItem(GUARD_LOCAL_KEY, JSON.stringify(updated));
         }
       }
 
@@ -106,11 +121,18 @@ export function AuthProvider({ children }) {
       // Mark offline when this tab/browser is closed
       const markOffline = () => {
         if (dbId) {
-          navigator.sendBeacon
-            ? navigator.sendBeacon(
-                `https://fdkuxllybkmstpsjyumk.supabase.co/rest/v1/guards?id=eq.${dbId}`,
-              )
-            : null;
+          try {
+            fetch(`${supabaseUrl}/rest/v1/guards?id=eq.${dbId}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabaseAnonKey,
+                'Authorization': `Bearer ${supabaseAnonKey}`
+              },
+              body: JSON.stringify({ is_online: false, gate: null }),
+              keepalive: true
+            }).catch(() => {}); // ignore fetch errors on unload
+          } catch (e) {}
           // Fallback: synchronous XHR (works in some browsers on unload)
           supabase.from('guards').update({ is_online: false, gate: null }).eq('id', dbId);
         }
@@ -169,6 +191,7 @@ export function AuthProvider({ children }) {
         role: 'guard',
         photo: data.photo || null,
         gate: gate || null,
+        loginTime: Date.now(),
       };
       setUser(userData);
       saveSession(userData, remember, 'guard');
@@ -209,8 +232,13 @@ export function AuthProvider({ children }) {
     if (role === 'guard') {
       const savedGuard = localStorage.getItem(GUARD_LOCAL_KEY);
       if (savedGuard) {
+        const parsed = JSON.parse(savedGuard);
+        if (parsed.loginTime && (Date.now() - parsed.loginTime > 6 * 60 * 60 * 1000)) {
+          localStorage.removeItem(GUARD_LOCAL_KEY);
+          return;
+        }
         sessionStorage.setItem(SESSION_KEY, savedGuard);
-        setUser(JSON.parse(savedGuard));
+        setUser(parsed);
       }
     } else if (role === 'admin') {
       const savedAdmin = localStorage.getItem(ADMIN_LOCAL_KEY);
@@ -220,6 +248,24 @@ export function AuthProvider({ children }) {
       }
     }
   };
+
+  // Handle auto-logout for guard after 6 hours
+  useEffect(() => {
+    if (user && user.role === 'guard' && user.loginTime) {
+      const timeElapsed = Date.now() - user.loginTime;
+      const sixHours = 6 * 60 * 60 * 1000;
+      const timeRemaining = sixHours - timeElapsed;
+
+      if (timeRemaining <= 0) {
+        logout();
+      } else {
+        const timer = setTimeout(() => {
+          logout();
+        }, timeRemaining);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, login, guardLogin, logout, restoreSession }}>
