@@ -29,11 +29,7 @@ export default function Manage() {
 
     if (uploadError) throw new Error('Photo upload failed: ' + uploadError.message);
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('guard-photos')
-      .getPublicUrl(filename);
-
-    return publicUrl;
+    return filename;
   };
 
   // ── Generate next guard ID in YYYY-NNNN format ──
@@ -66,7 +62,15 @@ export default function Manage() {
       .from('guards')
       .select('*')
       .order('id', { ascending: true });
-    if (!error && data) setGuards(data);
+    if (!error && data) {
+      const guardsWithUrls = await Promise.all(data.map(async (guard) => {
+        if (!guard.photo) return guard;
+        const filename = guard.photo.split('/').pop();
+        const { data: urlData } = await supabase.storage.from('guard-photos').createSignedUrl(filename, 3600);
+        return { ...guard, displayPhoto: urlData?.signedUrl || guard.photo };
+      }));
+      setGuards(guardsWithUrls);
+    }
     setLoading(false);
   };
 
@@ -130,7 +134,7 @@ export default function Manage() {
 
   const openEditModal = (guard) => {
     setModalType('edit');
-    setCurrentGuard({ ...guard });
+    setCurrentGuard({ ...guard, photo: guard.displayPhoto || guard.photo });
     setIsModalOpen(true);
   };
 
@@ -144,10 +148,11 @@ export default function Manage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // If photo is a new data URL (from file/camera), upload to Storage first
-      let photoUrl = currentGuard.photo || null;
-      if (photoUrl && photoUrl.startsWith('data:')) {
-        photoUrl = await uploadPhoto(photoUrl, currentGuard.guard_id);
+      let photoToSave = undefined;
+      if (currentGuard.photo === null) {
+        photoToSave = null;
+      } else if (currentGuard.photo && currentGuard.photo.startsWith('data:')) {
+        photoToSave = await uploadPhoto(currentGuard.photo, currentGuard.guard_id);
       }
 
       if (modalType === 'add') {
@@ -155,15 +160,17 @@ export default function Manage() {
           name: currentGuard.name,
           guard_id: currentGuard.guard_id,
           password: currentGuard.password,
-          photo: photoUrl,
+          photo: photoToSave !== undefined ? photoToSave : null,
         }]);
         if (error) throw new Error(error.message);
       } else {
         const updateData = {
           name: currentGuard.name,
           guard_id: currentGuard.guard_id,
-          photo: photoUrl,
         };
+        if (photoToSave !== undefined) {
+          updateData.photo = photoToSave;
+        }
         // Only update password if one was entered
         if (currentGuard.password) updateData.password = currentGuard.password;
 
@@ -209,8 +216,8 @@ export default function Manage() {
               <div key={guard.id} className="guard-row">
                 <div className="guard-info">
                   <div className="guard-avatar">
-                    {guard.photo ? (
-                      <img src={guard.photo} alt={guard.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                    {guard.displayPhoto || guard.photo ? (
+                      <img src={guard.displayPhoto || guard.photo} alt={guard.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                     ) : (
                       <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />

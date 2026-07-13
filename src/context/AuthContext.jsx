@@ -184,12 +184,19 @@ export function AuthProvider({ children }) {
         .update({ last_login: todayISO, is_online: true, gate: gate || null })
         .eq('id', data.id);
 
+      let photoSignedUrl = null;
+      if (data.photo) {
+        const filename = data.photo.split('/').pop();
+        const { data: urlData } = await supabase.storage.from('guard-photos').createSignedUrl(filename, 43200); // 12 hours
+        photoSignedUrl = urlData?.signedUrl || data.photo;
+      }
+
       const userData = {
         name: data.name,
         guardId: data.guard_id,
         dbId: data.id,
         role: 'guard',
-        photo: data.photo || null,
+        photo: photoSignedUrl,
         gate: gate || null,
         loginTime: Date.now(),
       };

@@ -436,8 +436,17 @@ const UserForm = () => {
                 return;
             }
 
-            const { data: urlData } = supabase.storage.from('visitor_ids').getPublicUrl(fileName);
-            const valid_id_url = urlData.publicUrl;
+            // Generate a signed URL that expires in 1 hour (3600 seconds)
+            const { data: urlData, error: urlError } = await supabase.storage.from('visitor_ids').createSignedUrl(fileName, 3600);
+
+            if (urlError) {
+                console.error("Signed URL Error:", urlError);
+                alert("Failed to generate secure ID link. Please try again.");
+                setIsUploading(false);
+                return;
+            }
+
+            const valid_id_url = urlData.signedUrl;
 
             // Stringify the form data to be encoded as a QR Code
             const now = Date.now();
