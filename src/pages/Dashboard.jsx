@@ -87,7 +87,15 @@ export default function Dashboard() {
 
       // Live online guards — used for both the stat card and the guard list
       const onlineGuards = allGuards.filter(g => g.is_online);
-      setActiveGuards(onlineGuards);
+      
+      const onlineGuardsWithUrls = await Promise.all(onlineGuards.map(async (guard) => {
+        if (!guard.photo) return guard;
+        const filename = guard.photo.split('/').pop();
+        const { data: urlData } = await supabase.storage.from('guard-photos').createSignedUrl(filename, 3600);
+        return { ...guard, photoUrl: urlData?.signedUrl || guard.photo };
+      }));
+
+      setActiveGuards(onlineGuardsWithUrls);
 
       // "Active Guards Today" mirrors the live online count
       setActiveGuardsToday(onlineGuards.length);
@@ -240,8 +248,8 @@ export default function Dashboard() {
               {activeGuards.map((guard) => (
                 <div key={guard.id} className="active-guard-card">
                   <div className="active-guard-avatar">
-                    {guard.photo ? (
-                      <img src={guard.photo} alt={guard.name} className="active-guard-photo" />
+                    {guard.photoUrl || guard.photo ? (
+                      <img src={guard.photoUrl || guard.photo} alt={guard.name} className="active-guard-photo" />
                     ) : (
                       <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" style={{ color: '#6b8f7e' }}>
                         <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z" />
