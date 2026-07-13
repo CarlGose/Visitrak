@@ -355,16 +355,27 @@ body.dark-mode .logs-table-wrapper {
 body.dark-mode .logs-data-table th {
   background-color: #161d19 !important;
   color: #9ca3af !important;
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 body.dark-mode .logs-data-table td {
   color: #cbd5e1 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode .logs-data-table th:last-child,
+body.dark-mode .logs-data-table td:last-child {
+  border-right: none !important;
+}
+
+body.dark-mode .logs-data-table tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02) !important;
 }
 
 body.dark-mode .logs-data-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 body.dark-mode .logs-footer {

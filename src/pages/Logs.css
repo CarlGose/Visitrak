@@ -187,7 +187,8 @@
   padding: 10px 14px;
   text-align: left;
   font-size: 0.85rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
   white-space: nowrap;
 }
 
@@ -197,7 +198,7 @@
 }
 
 .logs-data-table th {
-  background-color: #f8fafc;
+  background-color: #f1f5f9;
   font-weight: 700;
   color: #4b5563;
   text-transform: uppercase;
@@ -206,6 +207,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 2px solid #d1d5db;
 }
 
 .logs-data-table tr:last-child td {
@@ -216,8 +218,12 @@
   transition: background-color 0.2s ease;
 }
 
-.logs-data-table tbody tr:hover {
+.logs-data-table tbody tr:nth-child(even) {
   background-color: #f8fafc;
+}
+
+.logs-data-table tbody tr:hover {
+  background-color: #eef2f7;
 }
 
 .logs-data-table td {
