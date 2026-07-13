@@ -22,7 +22,11 @@ import './Header.css';
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState(user?.name || 'Admin');
+  const getDisplayName = (name) => {
+    if (name === 'Admin_OIC Guard' || name === 'Admin_OIC') return 'Guard_OIC_Admin1';
+    return name || 'Admin';
+  };
+  const [adminName, setAdminName] = useState(getDisplayName(user?.name));
   
   // Dark mode state
   const [darkMode, setDarkMode] = useState(() => {
@@ -48,12 +52,7 @@ export default function Header() {
           .single();
 
         if (data && data.name) {
-          // Temporarily override the name as requested
-          if (data.name === 'Admin_OIC Guard' || data.name === 'Admin_OIC') {
-            setAdminName('Guard_OIC_Admin1');
-          } else {
-            setAdminName(data.name);
-          }
+          setAdminName(getDisplayName(data.name));
         }
       };
       fetchAdminProfile();

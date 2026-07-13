@@ -22,19 +22,23 @@
 }
 
 .logs-container {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f1f3f5;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
   flex: 1;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .logs-container:hover {
-  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+  box-shadow: 0 16px 48px rgba(31, 38, 135, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.95);
 }
 
 .logs-header-section {
@@ -215,15 +219,16 @@
 }
 
 .logs-data-table tbody tr {
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .logs-data-table tbody tr:nth-child(even) {
-  background-color: #f8fafc;
+  background-color: rgba(248, 250, 252, 0.6);
 }
 
 .logs-data-table tbody tr:hover {
-  background-color: #eef2f7;
+  background-color: #f1f5f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .logs-data-table td {

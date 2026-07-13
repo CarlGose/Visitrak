@@ -26,13 +26,22 @@
 }
 
 .manage-card {
-  background-color: var(--color-white);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
   padding: 32px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
   flex: 1;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.manage-card:hover {
+  box-shadow: 0 16px 48px rgba(31, 38, 135, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
 }
 
 .manage-card-header {
@@ -75,9 +84,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #e0e0e0;
-  border-radius: 8px;
+  background-color: rgba(224, 224, 224, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
   padding: 12px 16px;
+  transition: all 0.25s ease;
+}
+
+.guard-row:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateX(4px);
 }
 
 .guard-info {
