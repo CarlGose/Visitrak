@@ -42,7 +42,7 @@ export default function Logs() {
       .from('visitor_logs')
       .select('*')
       .eq('is_vip', false)
-      .order('logs_id', { ascending: false });
+      .order('id', { ascending: false });
 
     if (!error && data) {
       setLogs(data);
@@ -311,7 +311,7 @@ export default function Logs() {
                   </tr>
                 ) : sortedLogs.length > 0 ? (
                   sortedLogs.map((log) => (
-                    <tr key={`log-${log.logs_id}`}>
+                    <tr key={`log-${log.id}`}>
                       <td>{formatDateDisplay(log.date)}</td>
                       <td>{log.time_in}</td>
                       <td>{log.gate_in || '—'}</td>

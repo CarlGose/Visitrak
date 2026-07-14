@@ -345,7 +345,7 @@ function GuardLogs({ onBack }) {
       .from('visitor_logs')
       .select('*')
       .eq('is_vip', showVip)
-      .order('logs_id', { ascending: false });
+      .order('id', { ascending: false });
 
     if (!error && data) {
       setLogs(data);
@@ -416,7 +416,7 @@ function GuardLogs({ onBack }) {
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No {showVip ? 'VIP' : 'visitor'} logs found</p>
           ) : (
             filteredLogs.map(v => (
-              <div key={v.logs_id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+              <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
                   <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>
@@ -549,7 +549,7 @@ function QrScanner({ onBack }) {
           await supabase
             .from('visitor_logs')
             .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true })
-            .eq('logs_id', existingActive.logs_id);
+            .eq('id', existingActive.id);
 
           // Delete the image from storage on Time Out
           if (parsed.valid_id_url) {
@@ -784,7 +784,7 @@ function VipQueueList({ onBack }) {
 
   const fetchQueue = async () => {
     setLoading(true);
-    const { data } = await supabase.from('vip_queue').select('*').order('vip_id', { ascending: false });
+    const { data } = await supabase.from('vip_queue').select('*').order('id', { ascending: false });
     if (data) setQueue(data);
     setLoading(false);
   };
@@ -798,7 +798,7 @@ function VipQueueList({ onBack }) {
     const vehicleStr = vip.car_model ? `${vip.car_model}${vip.car_color ? ` (${vip.car_color})` : ''}` : '';
 
     // Delete from queue
-    await supabase.from('vip_queue').delete().eq('vip_id', vip.vip_id);
+    await supabase.from('vip_queue').delete().eq('id', vip.id);
 
     // Insert to visitor_logs
     await supabase.from('visitor_logs').insert([{
@@ -818,7 +818,7 @@ function VipQueueList({ onBack }) {
 
   const handleCancel = async (id) => {
     if (!window.confirm("Are you sure you want to remove this VIP from the queue?")) return;
-    await supabase.from('vip_queue').delete().eq('vip_id', id);
+    await supabase.from('vip_queue').delete().eq('id', id);
     fetchQueue();
   };
 
@@ -847,7 +847,7 @@ function VipQueueList({ onBack }) {
               <p className="vp-form-sub" style={{ textAlign: 'center', margin: '40px 0' }}>No VIPs queued currently</p>
             ) : (
               queue.map(v => (
-                <div key={v.vip_id} style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(24px) saturate(1.6)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', border: '1px solid rgba(255, 255, 255, 0.65)', borderTop: '1px solid rgba(255, 255, 255, 0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
+                <div key={v.id} style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(24px) saturate(1.6)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', border: '1px solid rgba(255, 255, 255, 0.65)', borderTop: '1px solid rgba(255, 255, 255, 0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
                     <div>
                       <p style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', margin: '0 0 8px' }}>{v.name}</p>
@@ -856,8 +856,8 @@ function VipQueueList({ onBack }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 6px' }}>
                         <span style={{ fontSize: '1rem', color: '#444' }}><strong>Passengers:</strong></span>
                         <select
-                          value={passengerCounts[v.vip_id] || v.passengers_count || 1}
-                          onChange={(e) => handlePassengerCountChange(v.vip_id, parseInt(e.target.value, 10))}
+                          value={passengerCounts[v.id] || v.passengers_count || 1}
+                          onChange={(e) => handlePassengerCountChange(v.id, parseInt(e.target.value, 10))}
                           style={{
                             padding: '6px 12px',
                             borderRadius: '8px',
@@ -900,7 +900,7 @@ function VipQueueList({ onBack }) {
                       ✓ Mark Arrived
                     </button>
                     <button
-                      onClick={() => handleCancel(v.vip_id)}
+                      onClick={() => handleCancel(v.id)}
                       style={{ flex: 1, padding: '14px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', fontSize: '1.05rem' }}>
                       ✕ Cancel
                     </button>
@@ -938,7 +938,7 @@ function ActiveVisitorsScreen({ onBack }) {
       .select('*')
       .eq('is_active', true)
       .eq('is_vip', showVip)
-      .order('logs_id', { ascending: false });
+      .order('id', { ascending: false });
 
     if (data) setActiveLogs(data);
     setLoading(false);
@@ -952,7 +952,7 @@ function ActiveVisitorsScreen({ onBack }) {
     const { error } = await supabase
       .from('visitor_logs')
       .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
-      .eq('logs_id', log.logs_id);
+      .eq('id', log.id);
 
     if (!error) {
       fetchActiveLogs();
@@ -966,7 +966,7 @@ function ActiveVisitorsScreen({ onBack }) {
     const { error } = await supabase
       .from('visitor_logs')
       .update({ id_claimed: nextStatus })
-      .eq('logs_id', log.logs_id);
+      .eq('id', log.id);
 
     if (!error) {
       fetchActiveLogs();
@@ -1060,7 +1060,7 @@ function ActiveVisitorsScreen({ onBack }) {
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No active {showVip ? 'VIPs' : 'visitors'} found</p>
           ) : (
             filteredLogs.map(v => (
-              <div key={v.logs_id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+              <div key={v.id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
                   <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>

@@ -22,7 +22,7 @@ export default function Archives() {
     const { data, error } = await supabase
       .from('visitor_logs')
       .select('*')
-      .order('logs_id', { ascending: false });
+      .order('id', { ascending: false });
 
     if (!error && data) {
       setLogs(data);
@@ -349,7 +349,7 @@ export default function Archives() {
                   </tr>
                 ) : filteredArchivedLogs.length > 0 ? (
                   filteredArchivedLogs.map((log) => (
-                    <tr key={`arch-${log.logs_id}`}>
+                    <tr key={`arch-${log.id}`}>
                       {showVip ? (
                         <>
                           <td>{formatDateDisplay(log.date)}</td>

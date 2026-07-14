@@ -333,7 +333,7 @@ const UserForm = () => {
                 .select('*')
                 .eq('name', formData.name)
                 .eq('date', formData.date)
-                .order('logs_id', { ascending: false })
+                .order('id', { ascending: false })
                 .limit(1);
 
             if (data && data.length > 0) {
