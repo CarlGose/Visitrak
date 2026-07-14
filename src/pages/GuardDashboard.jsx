@@ -797,11 +797,22 @@ function VipQueueList({ onBack }) {
 
   React.useEffect(() => {
     fetchQueue();
+    
+    const channel = supabase
+      .channel('vip-queue-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vip_queue' },
+        () => { fetchQueue(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const fetchQueue = async () => {
     setLoading(true);
-    const { data } = await supabase.from('vip_queue').select('*').order('logs_id', { ascending: false });
+    const { data } = await supabase.from('vip_queue').select('*').order('vip_id', { ascending: false });
     if (data) setQueue(data);
     setLoading(false);
   };
