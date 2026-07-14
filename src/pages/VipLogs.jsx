@@ -148,7 +148,13 @@ export default function VipLogs() {
     const parseTime = (timeStr) => {
       if (!timeStr) return 0;
       const parts = timeStr.trim().split(' ');
-      if (parts.length < 2) return 0;
+      if (parts.length < 2) {
+        const tParts = timeStr.split(':');
+        if (tParts.length >= 2) {
+          return parseInt(tParts[0], 10) * 60 + parseInt(tParts[1], 10);
+        }
+        return 0;
+      }
       let [time, modifier] = parts;
       let [hours, minutes] = time.split(':');
       hours = parseInt(hours, 10);
