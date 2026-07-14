@@ -22,7 +22,7 @@ export default function Archives() {
     const { data, error } = await supabase
       .from('visitor_logs')
       .select('*')
-      .order('id', { ascending: false });
+      .order('logs_id', { ascending: false });
 
     if (!error && data) {
       setLogs(data);

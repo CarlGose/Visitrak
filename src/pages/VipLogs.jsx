@@ -83,7 +83,7 @@ export default function VipLogs() {
       .from('visitor_logs')
       .select('*')
       .eq('is_vip', true)
-      .order('id', { ascending: false });
+      .order('logs_id', { ascending: false });
 
     if (!error && data) {
       setLogs(data);
@@ -380,7 +380,7 @@ export default function VipLogs() {
                   sortedVipLogs.map((log) => {
                     const vipInfo = parseVipPurpose(log.purpose);
                     return (
-                      <tr key={`vip-${log.id}`}>
+                      <tr key={`vip-${log.logs_id}`}>
                         <td>{formatDateDisplay(log.date)}</td>
                         <td>{log.time_in}</td>
                         <td>{log.time_out || 'Active'}</td>

@@ -345,7 +345,7 @@ function GuardLogs({ onBack }) {
       .from('visitor_logs')
       .select('*')
       .eq('is_vip', showVip)
-      .order('id', { ascending: false });
+      .order('logs_id', { ascending: false });
 
     if (!error && data) {
       setLogs(data);
@@ -416,7 +416,7 @@ function GuardLogs({ onBack }) {
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No {showVip ? 'VIP' : 'visitor'} logs found</p>
           ) : (
             filteredLogs.map(v => (
-              <div key={v.id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+              <div key={v.logs_id} className="gl-row" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
                   <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>
@@ -481,22 +481,34 @@ function QrScanner({ onBack }) {
 
   React.useEffect(() => {
     let timeoutId;
-    if (scanMessage && scanResult && scanMessage.includes('WARNING')) {
-      const speakWarning = () => {
+    if (scanMessage && scanResult) {
+      const speakAlert = () => {
         if (!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance("Warning. User logged twice. Access denied.");
+        
+        let textToSpeak = scanMessage;
+        // Strip out timestamps or clean up text for speech
+        if (textToSpeak.includes('TIME IN SUCCESSFUL')) textToSpeak = 'Time in successful.';
+        if (textToSpeak.includes('TIME OUT SUCCESSFUL')) textToSpeak = 'Time out successful.';
+        if (textToSpeak.includes('ALREADY LOGGED TODAY')) textToSpeak = 'Warning. User already logged today. Access denied.';
+
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
         const voices = window.speechSynthesis.getVoices();
         const femaleVoice = voices.find(v => v.name.toLowerCase().match(/(female|zira|samantha|victoria|luciana|karen)/));
         if (femaleVoice) utterance.voice = femaleVoice;
-        utterance.pitch = 1.3;
+        utterance.pitch = scanMessage.includes('WARNING') ? 1.3 : 1.0;
         utterance.rate = 0.95;
-        utterance.onend = () => {
-          timeoutId = setTimeout(speakWarning, 1200);
-        };
+        
+        // Only loop warnings
+        if (scanMessage.includes('WARNING')) {
+          utterance.onend = () => {
+            timeoutId = setTimeout(speakAlert, 1200);
+          };
+        }
+        
         window.speechSynthesis.speak(utterance);
       };
-      speakWarning();
+      speakAlert();
     }
     return () => {
       clearTimeout(timeoutId);
@@ -546,10 +558,12 @@ function QrScanner({ onBack }) {
           playSound('error');
           actionMsg = 'WARNING: VISITOR ALREADY LOGGED TODAY!';
         } else if (existingActive) {
-          await supabase
+          const { error: updateErr } = await supabase
             .from('visitor_logs')
             .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true })
-            .eq('id', existingActive.id);
+            .eq('logs_id', existingActive.logs_id);
+            
+          if (updateErr) throw updateErr;
 
           // Delete the image from storage on Time Out
           if (parsed.valid_id_url) {
@@ -577,7 +591,7 @@ function QrScanner({ onBack }) {
             }
           }
 
-          await supabase
+          const { error: insertErr } = await supabase
             .from('visitor_logs')
             .insert([{
               name: parsed.name,
@@ -590,8 +604,11 @@ function QrScanner({ onBack }) {
               address: parsed.address || '',
               is_vip: false,
               gate_in: user?.gate || null,
-              valid_id: parsed.valid_id || ''
+              valid_id: parsed.valid_id || '',
+              logged_by_guard_id: user?.dbId || null
             }]);
+            
+          if (insertErr) throw insertErr;
           playSound('success');
           actionMsg = `TIME IN SUCCESSFUL at ${timeString}`;
         }
@@ -600,7 +617,7 @@ function QrScanner({ onBack }) {
       } catch (e) {
         playSound('error');
         setScanResult({ rawText: raw });
-        setScanMessage('Invalid QR Code');
+        setScanMessage(`ERROR: ${e.message || 'Invalid QR Code'}`);
       }
     }
   };
@@ -784,7 +801,7 @@ function VipQueueList({ onBack }) {
 
   const fetchQueue = async () => {
     setLoading(true);
-    const { data } = await supabase.from('vip_queue').select('*').order('id', { ascending: false });
+    const { data } = await supabase.from('vip_queue').select('*').order('logs_id', { ascending: false });
     if (data) setQueue(data);
     setLoading(false);
   };
@@ -798,7 +815,7 @@ function VipQueueList({ onBack }) {
     const vehicleStr = vip.car_model ? `${vip.car_model}${vip.car_color ? ` (${vip.car_color})` : ''}` : '';
 
     // Delete from queue
-    await supabase.from('vip_queue').delete().eq('id', vip.id);
+    await supabase.from('vip_queue').delete().eq('vip_id', vip.vip_id);
 
     // Insert to visitor_logs
     await supabase.from('visitor_logs').insert([{
@@ -818,7 +835,7 @@ function VipQueueList({ onBack }) {
 
   const handleCancel = async (id) => {
     if (!window.confirm("Are you sure you want to remove this VIP from the queue?")) return;
-    await supabase.from('vip_queue').delete().eq('id', id);
+    await supabase.from('vip_queue').delete().eq('vip_id', id);
     fetchQueue();
   };
 
@@ -847,7 +864,7 @@ function VipQueueList({ onBack }) {
               <p className="vp-form-sub" style={{ textAlign: 'center', margin: '40px 0' }}>No VIPs queued currently</p>
             ) : (
               queue.map(v => (
-                <div key={v.id} style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(24px) saturate(1.6)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', border: '1px solid rgba(255, 255, 255, 0.65)', borderTop: '1px solid rgba(255, 255, 255, 0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
+                <div key={v.vip_id} style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(24px) saturate(1.6)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', border: '1px solid rgba(255, 255, 255, 0.65)', borderTop: '1px solid rgba(255, 255, 255, 0.85)', borderRadius: '16px', padding: '24px', borderLeft: '6px solid #dcb353', boxShadow: '0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7)', display: 'flex', flexDirection: 'column', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
                     <div>
                       <p style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a2820', margin: '0 0 8px' }}>{v.name}</p>
@@ -856,8 +873,8 @@ function VipQueueList({ onBack }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 6px' }}>
                         <span style={{ fontSize: '1rem', color: '#444' }}><strong>Passengers:</strong></span>
                         <select
-                          value={passengerCounts[v.id] || v.passengers_count || 1}
-                          onChange={(e) => handlePassengerCountChange(v.id, parseInt(e.target.value, 10))}
+                          value={passengerCounts[v.vip_id] || v.passengers_count || 1}
+                          onChange={(e) => handlePassengerCountChange(v.vip_id, parseInt(e.target.value, 10))}
                           style={{
                             padding: '6px 12px',
                             borderRadius: '8px',
@@ -900,7 +917,7 @@ function VipQueueList({ onBack }) {
                       ✓ Mark Arrived
                     </button>
                     <button
-                      onClick={() => handleCancel(v.id)}
+                      onClick={() => handleCancel(v.vip_id)}
                       style={{ flex: 1, padding: '14px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', fontSize: '1.05rem' }}>
                       ✕ Cancel
                     </button>
@@ -929,6 +946,17 @@ function ActiveVisitorsScreen({ onBack }) {
 
   React.useEffect(() => {
     fetchActiveLogs();
+    
+    const channel = supabase
+      .channel('active-visitors-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'visitor_logs' },
+        () => { fetchActiveLogs(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [showVip]);
 
   const fetchActiveLogs = async () => {
@@ -938,7 +966,7 @@ function ActiveVisitorsScreen({ onBack }) {
       .select('*')
       .eq('is_active', true)
       .eq('is_vip', showVip)
-      .order('id', { ascending: false });
+      .order('logs_id', { ascending: false });
 
     if (data) setActiveLogs(data);
     setLoading(false);
@@ -952,7 +980,7 @@ function ActiveVisitorsScreen({ onBack }) {
     const { error } = await supabase
       .from('visitor_logs')
       .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
-      .eq('id', log.id);
+      .eq('logs_id', log.logs_id);
 
     if (!error) {
       fetchActiveLogs();
@@ -966,7 +994,7 @@ function ActiveVisitorsScreen({ onBack }) {
     const { error } = await supabase
       .from('visitor_logs')
       .update({ id_claimed: nextStatus })
-      .eq('id', log.id);
+      .eq('logs_id', log.logs_id);
 
     if (!error) {
       fetchActiveLogs();
@@ -1060,7 +1088,7 @@ function ActiveVisitorsScreen({ onBack }) {
             <p className="gd-no-active" style={{ textAlign: 'center', marginTop: '2rem' }}>No active {showVip ? 'VIPs' : 'visitors'} found</p>
           ) : (
             filteredLogs.map(v => (
-              <div key={v.id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
+              <div key={v.logs_id} className="gl-row gl-row--active" style={showVip ? { borderLeftColor: '#fbc02d' } : {}}>
                 <div className="gl-left">
                   <p className="gl-name">{v.name}</p>
                   <p className="gl-sub"><strong>Time in:</strong> {v.time_in}{v.gate_in ? ` (${v.gate_in})` : ''}</p>
