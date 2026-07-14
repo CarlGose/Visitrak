@@ -25,7 +25,7 @@ export default function VipQueue() {
     const { data, error } = await supabase
       .from('vip_queue')
       .select('*')
-      .order('id', { ascending: false });
+      .order('vip_id', { ascending: false });
 
     if (!error && data) {
       setQueue(data);
@@ -91,7 +91,7 @@ export default function VipQueue() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this VIP from the queue?')) return;
-    await supabase.from('vip_queue').delete().eq('id', id);
+    await supabase.from('vip_queue').delete().eq('vip_id', id);
     fetchQueue();
   };
 
@@ -423,7 +423,7 @@ export default function VipQueue() {
                   </tr>
                 ) : filteredQueueLogs.length > 0 ? (
                   filteredQueueLogs.map((log) => (
-                    <tr key={`queue-${log.id}`}>
+                    <tr key={`queue-${log.vip_id}`}>
                       <td>{log.date}</td>
                       <td>{log.name}</td>
                       <td>{log.plate || '—'}</td>
@@ -435,7 +435,7 @@ export default function VipQueue() {
                       <td>{log.added_by}</td>
                       <td style={{ textAlign: 'center' }}>
                         <button
-                          onClick={() => handleDelete(log.id)}
+                          onClick={() => handleDelete(log.vip_id)}
                           title="Remove from queue"
                           style={{
                             padding: '5px 12px',

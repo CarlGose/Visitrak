@@ -68,7 +68,7 @@ export default function Dashboard() {
     const { data: allLogs } = await supabase
       .from('visitor_logs')
       .select('*')
-      .order('id', { ascending: false });
+      .order('logs_id', { ascending: false });
 
     if (allLogs) {
       setLogs(allLogs);
@@ -246,7 +246,7 @@ export default function Dashboard() {
           ) : (
             <div className="active-guard-list">
               {activeGuards.map((guard) => (
-                <div key={guard.id} className="active-guard-card">
+                <div key={guard.guard_id} className="active-guard-card">
                   <div className="active-guard-avatar">
                     {guard.photoUrl || guard.photo ? (
                       <img src={guard.photoUrl || guard.photo} alt={guard.name} className="active-guard-photo" />
@@ -259,7 +259,7 @@ export default function Dashboard() {
                   </div>
                   <div className="active-guard-info">
                     <span className="active-guard-name">{guard.name}</span>
-                    <span className="active-guard-id">{guard.guard_id}</span>
+                    <span className="active-guard-id">{guard.id_no}</span>
                   </div>
                   <div className="active-guard-gate">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -313,7 +313,7 @@ export default function Dashboard() {
                     ) : recentLogs.length === 0 ? (
                       <tr><td colSpan="6" style={{textAlign: 'center'}}>No visitors today</td></tr>
                     ) : recentLogs.map((log) => (
-                      <tr key={`log-${log.id}`}>
+                      <tr key={`log-${log.logs_id}`}>
                         <td>{formatDateDisplay(log.date)}</td>
                         <td>{log.time_in}</td>
                         <td className={log.time_out ? '' : 'time-out-active'}>
@@ -360,7 +360,7 @@ export default function Dashboard() {
                     ) : activeLogs.length === 0 ? (
                        <tr><td colSpan="5" style={{textAlign: 'center'}}>No one in campus</td></tr>
                     ) : activeLogs.map((visitor) => (
-                      <tr key={`incampus-log-${visitor.id}`}>
+                      <tr key={`incampus-log-${visitor.logs_id}`}>
                         <td>{formatDateDisplay(visitor.date)}</td>
                         <td>{visitor.name}</td>
                         <td>{visitor.destination}</td>

@@ -40,14 +40,14 @@ export default function Manage() {
     // Fetch all guards whose guard_id starts with the current year
     const { data } = await supabase
       .from('guards')
-      .select('guard_id')
-      .like('guard_id', `${prefix}%`)
-      .order('guard_id', { ascending: false })
+      .select('id_no')
+      .like('id_no', `${prefix}%`)
+      .order('id_no', { ascending: false })
       .limit(1);
 
     let nextNum = 1;
     if (data && data.length > 0) {
-      const lastId = data[0].guard_id; // e.g. "2026-0003"
+      const lastId = data[0].id_no; // e.g. "2026-0003"
       const lastNum = parseInt(lastId.split('-')[1], 10);
       if (!isNaN(lastNum)) nextNum = lastNum + 1;
     }
@@ -61,7 +61,7 @@ export default function Manage() {
     const { data, error } = await supabase
       .from('guards')
       .select('*')
-      .order('id', { ascending: true });
+      .order('id_no', { ascending: true });
     if (!error && data) {
       const guardsWithUrls = await Promise.all(data.map(async (guard) => {
         if (!guard.photo) return guard;
@@ -128,7 +128,7 @@ export default function Manage() {
   const openAddModal = async () => {
     setModalType('add');
     const nextId = await generateNextGuardId();
-    setCurrentGuard({ name: '', guard_id: nextId, password: '', photo: null });
+    setCurrentGuard({ name: '', id_no: nextId, password: '', photo: null });
     setIsModalOpen(true);
   };
 
@@ -158,7 +158,7 @@ export default function Manage() {
       if (modalType === 'add') {
         const { error } = await supabase.from('guards').insert([{
           name: currentGuard.name,
-          guard_id: currentGuard.guard_id,
+          id_no: currentGuard.id_no,
           password: currentGuard.password,
           photo: photoToSave !== undefined ? photoToSave : null,
         }]);
@@ -166,7 +166,7 @@ export default function Manage() {
       } else {
         const updateData = {
           name: currentGuard.name,
-          guard_id: currentGuard.guard_id,
+          id_no: currentGuard.id_no,
         };
         if (photoToSave !== undefined) {
           updateData.photo = photoToSave;
@@ -177,7 +177,7 @@ export default function Manage() {
         const { error } = await supabase
           .from('guards')
           .update(updateData)
-          .eq('id', currentGuard.id);
+          .eq('guard_id', currentGuard.guard_id);
         if (error) throw new Error(error.message);
       }
       closeModal();
@@ -191,7 +191,7 @@ export default function Manage() {
   // ── Delete ──
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this guard?')) return;
-    const { error } = await supabase.from('guards').delete().eq('id', id);
+    const { error } = await supabase.from('guards').delete().eq('guard_id', id);
     if (error) alert('Error deleting guard: ' + error.message);
   };
 
@@ -226,7 +226,7 @@ export default function Manage() {
                   </div>
                   <div className="guard-details">
                     <span className="guard-name">{guard.name}</span>
-                    <span className="guard-number">{guard.guard_id}</span>
+                    <span className="guard-number">{guard.id_no}</span>
                   </div>
                 </div>
                 <div className="guard-actions">
@@ -235,7 +235,7 @@ export default function Manage() {
                       <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                     </svg>
                   </button>
-                  <button className="icon-btn delete-icon-btn" onClick={() => handleDelete(guard.id)}>
+                  <button className="icon-btn delete-icon-btn" onClick={() => handleDelete(guard.guard_id)}>
                     <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                       <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                     </svg>
@@ -267,8 +267,8 @@ export default function Manage() {
                 <label>Guard ID</label>
                 <input
                   type="text"
-                  value={currentGuard?.guard_id || ''}
-                  onChange={(e) => setCurrentGuard({ ...currentGuard, guard_id: e.target.value })}
+                  value={currentGuard?.id_no || ''}
+                  onChange={(e) => setCurrentGuard({ ...currentGuard, id_no: e.target.value })}
                   required
                   readOnly={modalType === 'add'}
                   style={modalType === 'add' ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}

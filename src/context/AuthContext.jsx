@@ -95,13 +95,13 @@ export function AuthProvider({ children }) {
       if (!dbId && user.guardId) {
         const { data } = await supabase
           .from('guards')
-          .select('id')
-          .eq('guard_id', user.guardId)
+          .select('guard_id')
+          .eq('id_no', user.guardId)
           .single();
         if (data) {
-          dbId = data.id;
+          dbId = data.guard_id;
           // Patch the session so future calls have dbId
-          const updated = { ...user, dbId: data.id };
+          const updated = { ...user, dbId: data.guard_id };
           setUser(updated);
           const tabSession = sessionStorage.getItem(SESSION_KEY);
           if (tabSession) sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
@@ -115,14 +115,14 @@ export function AuthProvider({ children }) {
         await supabase
           .from('guards')
           .update({ is_online: true, gate: user.gate || null })
-          .eq('id', dbId);
+          .eq('guard_id', dbId);
       }
 
       // Mark offline when this tab/browser is closed
       const markOffline = () => {
         if (dbId) {
           try {
-            fetch(`${supabaseUrl}/rest/v1/guards?id=eq.${dbId}`, {
+            fetch(`${supabaseUrl}/rest/v1/guards?guard_id=eq.${dbId}`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export function AuthProvider({ children }) {
             }).catch(() => {}); // ignore fetch errors on unload
           } catch (e) {}
           // Fallback: synchronous XHR (works in some browsers on unload)
-          supabase.from('guards').update({ is_online: false, gate: null }).eq('id', dbId);
+          supabase.from('guards').update({ is_online: false, gate: null }).eq('guard_id', dbId);
         }
       };
       window.addEventListener('beforeunload', markOffline);
@@ -172,7 +172,7 @@ export function AuthProvider({ children }) {
       const { data, error } = await supabase
         .from('guards')
         .select('*')
-        .eq('guard_id', guardId)
+        .eq('id_no', guardId)
         .single();
 
       if (error || !data || data.password !== password) return false;
@@ -182,7 +182,7 @@ export function AuthProvider({ children }) {
       await supabase
         .from('guards')
         .update({ last_login: todayISO, is_online: true, gate: gate || null })
-        .eq('id', data.id);
+        .eq('guard_id', data.guard_id);
 
       let photoSignedUrl = null;
       if (data.photo) {
@@ -193,8 +193,8 @@ export function AuthProvider({ children }) {
 
       const userData = {
         name: data.name,
-        guardId: data.guard_id,
-        dbId: data.id,
+        guardId: data.id_no,
+        dbId: data.guard_id,
         role: 'guard',
         photo: photoSignedUrl,
         gate: gate || null,
@@ -219,7 +219,7 @@ export function AuthProvider({ children }) {
         await supabase
           .from('guards')
           .update({ is_online: false, gate: null })
-          .eq('id', dbId);
+          .eq('guard_id', dbId);
       } catch (err) {
         console.error('Guard logout update error:', err);
       }
