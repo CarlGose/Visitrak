@@ -560,7 +560,7 @@ function QrScanner({ onBack }) {
         } else if (existingActive) {
           const { error: updateErr } = await supabase
             .from('visitor_logs')
-            .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true })
+            .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, id_claimed: true, guard_out_id: user?.dbId || null })
             .eq('logs_id', existingActive.logs_id);
             
           if (updateErr) throw updateErr;
@@ -605,7 +605,8 @@ function QrScanner({ onBack }) {
               is_vip: false,
               gate_in: user?.gate || null,
               valid_id: parsed.valid_id || '',
-              logged_by_guard_id: user?.dbId || null
+              logged_by_guard_id: user?.dbId || null,
+              guard_in_id: user?.dbId || null
             }]);
             
           if (insertErr) throw insertErr;
@@ -838,7 +839,8 @@ function VipQueueList({ onBack }) {
       time_out: null,
       is_active: true,
       is_vip: true,
-      gate_in: user?.gate || null
+      gate_in: user?.gate || null,
+      guard_in_id: user?.dbId || null
     }]);
 
     fetchQueue();
@@ -990,7 +992,7 @@ function ActiveVisitorsScreen({ onBack }) {
 
     const { error } = await supabase
       .from('visitor_logs')
-      .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null })
+      .update({ time_out: timeString, is_active: false, gate_out: user?.gate || null, guard_out_id: user?.dbId || null })
       .eq('logs_id', log.logs_id);
 
     if (!error) {
