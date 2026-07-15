@@ -605,7 +605,6 @@ function QrScanner({ onBack }) {
               is_vip: false,
               gate_in: user?.gate || null,
               valid_id: parsed.valid_id || '',
-              logged_by_guard_id: user?.dbId || null,
               guard_in_id: user?.dbId || null
             }]);
             
