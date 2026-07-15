@@ -236,8 +236,12 @@ const UserForm = () => {
     // Custom Dropdown State
     const [destOpen, setDestOpen] = useState(false);
     const destRef = useRef(null);
+    const [destSearch, setDestSearch] = useState('');
+    
     const [purposeOpen, setPurposeOpen] = useState(false);
     const purposeRef = useRef(null);
+    const [purposeSearch, setPurposeSearch] = useState('');
+    
     const [idOpen, setIdOpen] = useState(false);
     const idRef = useRef(null);
     const [idSearch, setIdSearch] = useState('');
@@ -274,9 +278,11 @@ const UserForm = () => {
         const handleClickOutside = (event) => {
             if (destRef.current && !destRef.current.contains(event.target)) {
                 setDestOpen(false);
+                setDestSearch('');
             }
             if (purposeRef.current && !purposeRef.current.contains(event.target)) {
                 setPurposeOpen(false);
+                setPurposeSearch('');
             }
             if (idRef.current && !idRef.current.contains(event.target)) {
                 setIdOpen(false);
@@ -328,6 +334,10 @@ const UserForm = () => {
         if (!isSubmitted || !formData.name) return;
 
         const checkStatus = async () => {
+            const qrParsed = localStorage.getItem('visitrak_qr_value') ? JSON.parse(localStorage.getItem('visitrak_qr_value')) : null;
+            if (!qrParsed || !qrParsed.generatedAt) return;
+            const generatedTime = qrParsed.generatedAt;
+
             const { data } = await supabase
                 .from('visitor_logs')
                 .select('*')
@@ -338,6 +348,38 @@ const UserForm = () => {
 
             if (data && data.length > 0) {
                 const log = data[0];
+
+                const getLogTime = (dateStr, timeStr) => {
+                    try {
+                        const d = new Date(dateStr);
+                        if (!timeStr) return d.getTime();
+                        let hours = 0, minutes = 0;
+                        const parts = timeStr.trim().split(' ');
+                        if (parts.length === 2) {
+                            let [time, mod] = parts;
+                            let [h, m] = time.split(':');
+                            hours = parseInt(h, 10);
+                            minutes = parseInt(m, 10);
+                            if (hours === 12) hours = mod.toUpperCase() === 'AM' ? 0 : 12;
+                            else if (mod.toUpperCase() === 'PM') hours += 12;
+                        } else {
+                            let [h, m] = timeStr.split(':');
+                            hours = parseInt(h, 10);
+                            minutes = parseInt(m, 10);
+                        }
+                        d.setHours(hours, minutes, 0, 0);
+                        return d.getTime();
+                    } catch (e) {
+                        return 0;
+                    }
+                };
+
+                const logTime = getLogTime(log.date, log.time_in);
+                // If the log was created BEFORE the QR code (minus a 5-minute buffer to account for clock skew/manual entry), it's an OLD log. Ignore it.
+                if (logTime && logTime < (generatedTime - 300000)) {
+                    return;
+                }
+
                 if (log.is_active === false && log.time_out) {
                     handleClear(); // Already scanned out
                 } else if (log.is_active === true) {
@@ -355,6 +397,39 @@ const UserForm = () => {
 
                 // If it's a new or updated record for this visitor today
                 if (rowObj.name === formData.name) {
+                    const qrParsed = localStorage.getItem('visitrak_qr_value') ? JSON.parse(localStorage.getItem('visitrak_qr_value')) : null;
+                    if (!qrParsed || !qrParsed.generatedAt) return;
+                    
+                    const getLogTime = (dateStr, timeStr) => {
+                        try {
+                            const d = new Date(dateStr);
+                            if (!timeStr) return d.getTime();
+                            let hours = 0, minutes = 0;
+                            const parts = timeStr.trim().split(' ');
+                            if (parts.length === 2) {
+                                let [time, mod] = parts;
+                                let [h, m] = time.split(':');
+                                hours = parseInt(h, 10);
+                                minutes = parseInt(m, 10);
+                                if (hours === 12) hours = mod.toUpperCase() === 'AM' ? 0 : 12;
+                                else if (mod.toUpperCase() === 'PM') hours += 12;
+                            } else {
+                                let [h, m] = timeStr.split(':');
+                                hours = parseInt(h, 10);
+                                minutes = parseInt(m, 10);
+                            }
+                            d.setHours(hours, minutes, 0, 0);
+                            return d.getTime();
+                        } catch (e) {
+                            return 0;
+                        }
+                    };
+
+                    const logTime = getLogTime(rowObj.date, rowObj.time_in);
+                    if (logTime && logTime < (qrParsed.generatedAt - 300000)) {
+                        return; // Ignore old log events
+                    }
+
                     if (payload.eventType === 'INSERT' && rowObj.is_active === true) {
                         setIsInside(true); // They just timed in!
                     }
@@ -602,30 +677,58 @@ const UserForm = () => {
                             </div>
 
                             {destOpen && (
-                                <div className="custom-options">
-                                    {destGroups.map((group, idx) => (
-                                        <div key={idx}>
-                                            <div className="custom-optgroup">{group.label}</div>
-                                            {group.options.map((opt, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="custom-option"
-                                                    onClick={() => {
-                                                        setFormData(prev => ({
-                                                            ...prev,
-                                                            destination: opt.value,
-                                                            purpose: ''
-                                                        }));
-                                                        setIsCustomPurpose(false);
-                                                        setCustomPurposeText('');
-                                                        setDestOpen(false);
-                                                    }}
-                                                >
-                                                    {opt.label}
+                                <div className="custom-options id-dropdown-options">
+                                    <div className="id-search-box">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                        <input
+                                            type="text"
+                                            className="id-search-input"
+                                            placeholder="Search destination..."
+                                            value={destSearch}
+                                            onChange={(e) => setDestSearch(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="id-options-scroll">
+                                        {destGroups.map((group, idx) => {
+                                            const filtered = group.options.filter(opt =>
+                                                opt.label.toLowerCase().includes(destSearch.toLowerCase()) || 
+                                                opt.value.toLowerCase().includes(destSearch.toLowerCase())
+                                            );
+                                            if (filtered.length === 0) return null;
+                                            return (
+                                                <div key={idx}>
+                                                    <div className="custom-optgroup">{group.label}</div>
+                                                    {filtered.map((opt, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className={`custom-option ${formData.destination === opt.value ? 'selected' : ''}`}
+                                                            onClick={() => {
+                                                                setFormData(prev => ({
+                                                                    ...prev,
+                                                                    destination: opt.value,
+                                                                    purpose: ''
+                                                                }));
+                                                                setIsCustomPurpose(false);
+                                                                setCustomPurposeText('');
+                                                                setDestOpen(false);
+                                                                setDestSearch('');
+                                                            }}
+                                                        >
+                                                            {opt.label}
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    ))}
+                                            );
+                                        })}
+                                        {destGroups.every(g => g.options.filter(opt => opt.label.toLowerCase().includes(destSearch.toLowerCase()) || opt.value.toLowerCase().includes(destSearch.toLowerCase())).length === 0) && (
+                                            <div style={{ padding: '12px 16px', color: 'rgba(26,40,32,0.4)', fontSize: '0.9rem', textAlign: 'center' }}>No matching destination found</div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -646,25 +749,49 @@ const UserForm = () => {
                             </div>
 
                             {purposeOpen && formData.destination && (
-                                <div className="custom-options">
-                                    {(purposeOptions[formData.destination] || defaultPurposes).map((opt, i) => (
-                                        <div
-                                            key={i}
-                                            className="custom-option"
-                                            onClick={() => {
-                                                if (opt === "Other") {
-                                                    setIsCustomPurpose(true);
-                                                    setFormData(prev => ({ ...prev, purpose: customPurposeText }));
-                                                } else {
-                                                    setIsCustomPurpose(false);
-                                                    setFormData(prev => ({ ...prev, purpose: opt }));
-                                                }
-                                                setPurposeOpen(false);
-                                            }}
-                                        >
-                                            {opt}
-                                        </div>
-                                    ))}
+                                <div className="custom-options id-dropdown-options">
+                                    <div className="id-search-box">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                        <input
+                                            type="text"
+                                            className="id-search-input"
+                                            placeholder="Search purpose..."
+                                            value={purposeSearch}
+                                            onChange={(e) => setPurposeSearch(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="id-options-scroll">
+                                        {(purposeOptions[formData.destination] || defaultPurposes)
+                                            .filter(opt => opt.toLowerCase().includes(purposeSearch.toLowerCase()))
+                                            .map((opt, i) => (
+                                            <div
+                                                key={i}
+                                                className={`custom-option ${(!isCustomPurpose && formData.purpose === opt) ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    if (opt === "Other") {
+                                                        setIsCustomPurpose(true);
+                                                        setFormData(prev => ({ ...prev, purpose: customPurposeText }));
+                                                    } else {
+                                                        setIsCustomPurpose(false);
+                                                        setFormData(prev => ({ ...prev, purpose: opt }));
+                                                    }
+                                                    setPurposeOpen(false);
+                                                    setPurposeSearch('');
+                                                }}
+                                            >
+                                                {opt}
+                                            </div>
+                                        ))}
+                                        {(purposeOptions[formData.destination] || defaultPurposes)
+                                            .filter(opt => opt.toLowerCase().includes(purposeSearch.toLowerCase())).length === 0 && (
+                                            <div style={{ padding: '12px 16px', color: 'rgba(26,40,32,0.4)', fontSize: '0.9rem', textAlign: 'center' }}>No matching purpose found</div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>
