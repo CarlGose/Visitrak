@@ -32,7 +32,17 @@ function loadSession() {
   const tabSession = sessionStorage.getItem(SESSION_KEY);
   if (tabSession) {
     const parsed = JSON.parse(tabSession);
-    if (parsed.role === 'guard' && parsed.loginTime && (Date.now() - parsed.loginTime > 6 * 60 * 60 * 1000)) {
+    
+    let shouldLogout = false;
+    if (parsed.role === 'guard' && parsed.loginTime) {
+      const lastMidnight = new Date();
+      lastMidnight.setHours(0, 0, 0, 0);
+      if (Date.now() - parsed.loginTime > 24 * 60 * 60 * 1000 || parsed.loginTime < lastMidnight.getTime()) {
+        shouldLogout = true;
+      }
+    }
+
+    if (shouldLogout) {
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(GUARD_LOCAL_KEY);
       return null;
@@ -47,7 +57,17 @@ function loadSession() {
     const savedGuard = localStorage.getItem(GUARD_LOCAL_KEY);
     if (savedGuard) {
       const parsed = JSON.parse(savedGuard);
-      if (parsed.loginTime && (Date.now() - parsed.loginTime > 6 * 60 * 60 * 1000)) {
+      
+      let shouldLogout = false;
+      if (parsed.loginTime) {
+        const lastMidnight = new Date();
+        lastMidnight.setHours(0, 0, 0, 0);
+        if (Date.now() - parsed.loginTime > 24 * 60 * 60 * 1000 || parsed.loginTime < lastMidnight.getTime()) {
+          shouldLogout = true;
+        }
+      }
+
+      if (shouldLogout) {
         localStorage.removeItem(GUARD_LOCAL_KEY);
         return null;
       }
@@ -240,7 +260,17 @@ export function AuthProvider({ children }) {
       const savedGuard = localStorage.getItem(GUARD_LOCAL_KEY);
       if (savedGuard) {
         const parsed = JSON.parse(savedGuard);
-        if (parsed.loginTime && (Date.now() - parsed.loginTime > 6 * 60 * 60 * 1000)) {
+        
+        let shouldLogout = false;
+        if (parsed.loginTime) {
+          const lastMidnight = new Date();
+          lastMidnight.setHours(0, 0, 0, 0);
+          if (Date.now() - parsed.loginTime > 24 * 60 * 60 * 1000 || parsed.loginTime < lastMidnight.getTime()) {
+            shouldLogout = true;
+          }
+        }
+
+        if (shouldLogout) {
           localStorage.removeItem(GUARD_LOCAL_KEY);
           return;
         }
@@ -256,12 +286,18 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Handle auto-logout for guard after 6 hours
+  // Handle auto-logout for guard after 24 hours or at midnight
   useEffect(() => {
     if (user && user.role === 'guard' && user.loginTime) {
-      const timeElapsed = Date.now() - user.loginTime;
-      const sixHours = 6 * 60 * 60 * 1000;
-      const timeRemaining = sixHours - timeElapsed;
+      const now = new Date();
+      const timeElapsed = now.getTime() - user.loginTime;
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      
+      const midnight = new Date(now);
+      midnight.setHours(24, 0, 0, 0);
+      const timeToMidnight = midnight.getTime() - now.getTime();
+
+      const timeRemaining = Math.min(twentyFourHours - timeElapsed, timeToMidnight);
 
       if (timeRemaining <= 0) {
         logout();
