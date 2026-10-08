@@ -75,24 +75,33 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  position: relative;
 }
 
 .ps-brand > div {
   text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  z-index: 0;
 }
 
 .ps-logo {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
   border-radius: 50%;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
   animation: psFloat 4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
 .ps-logo--visitrak {
   animation: psFloatAlt 4s ease-in-out infinite;
-  zoom: 1.15;
+  width: 80px;
+  height: 80px;
   mix-blend-mode: multiply;
 }
 

@@ -11,18 +11,18 @@ export default function UserLanding() {
       <div className="wup-bg-watermark"></div>
       <main className="ul-main">
         <div className="ul-card">
-          <header className="ul-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '24px' }}>
-            <img src="/wuplogo.png" alt="WUP Logo" style={{ width: '60px', height: '60px', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))' }} />
-            <div style={{ textAlign: 'center' }}>
+          <header className="ul-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '24px', position: 'relative' }}>
+            <img src="/wuplogo.png" alt="WUP Logo" style={{ width: '110px', height: '110px', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))', position: 'relative', zIndex: 1 }} />
+            <div style={{ textAlign: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: '100%', zIndex: 0 }}>
               <h1 className="ul-brand-name" style={{ margin: 0, fontSize: '2.3rem', lineHeight: '1.1' }}>VisiTrack</h1>
               <p style={{ margin: '4px 0 0', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>Handle visitors without worries</p>
             </div>
-            <img src="/visitrak-badge.png" alt="VisiTrack Badge" style={{ width: '60px', height: '60px', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))' }} />
+            <img src="/visitrak-badge.png" alt="VisiTrack Badge" style={{ width: '80px', height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))', position: 'relative', zIndex: 1 }} />
           </header>
 
           <h2 className="ul-welcome">Welcome</h2>
           <p className="ul-subtitle">Make your visit hassle-free with VisiTrack</p>
-          
+
           <button className="ul-visit-btn" onClick={() => navigate('/fill-out')}>
             Proceed
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px' }}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>

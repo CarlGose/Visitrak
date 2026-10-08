@@ -18,7 +18,7 @@ export default function Dashboard() {
   const currentDate = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const monthYear = today.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   const todaysDateFormatted = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  
+
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
@@ -63,7 +63,7 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     setLoading(true);
-    
+
     // Fetch visitor logs — same as Logs page: non-VIP only
     const { data: allLogs } = await supabase
       .from('visitor_logs')
@@ -87,7 +87,7 @@ export default function Dashboard() {
 
       // Live online guards — used for both the stat card and the guard list
       const onlineGuards = allGuards.filter(g => g.is_online);
-      
+
       const onlineGuardsWithUrls = await Promise.all(onlineGuards.map(async (guard) => {
         if (!guard.photo) return guard;
         const filename = guard.photo.split('/').pop();
@@ -100,7 +100,7 @@ export default function Dashboard() {
       // "Active Guards Today" mirrors the live online count
       setActiveGuardsToday(onlineGuards.length);
     }
-    
+
     setLoading(false);
   };
 
@@ -127,7 +127,7 @@ export default function Dashboard() {
 
   const { totalVisitorsThisMonth, todaysVisitors } = useMemo(() => {
     if (!logs) return { totalVisitorsThisMonth: 0, todaysVisitors: 0 };
-    
+
     const currentMonth = today.getMonth(); // 0-indexed
     const currentYear = today.getFullYear();
 
@@ -227,7 +227,7 @@ export default function Dashboard() {
           <div className="active-guard-header">
             <div className="active-guard-title-area">
               <span className="live-badge" style={{ fontSize: '0.65rem' }}><span className="live-dot"></span>Live</span>
-              <h2 className="active-guard-title">Active Guards On Duty</h2>
+              <h2 className="active-guard-title">Guards On Duty</h2>
             </div>
             <span className="active-guard-count">
               {activeGuards.length} {activeGuards.length === 1 ? 'guard' : 'guards'} online
@@ -309,9 +309,9 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <tr><td colSpan="6" style={{textAlign: 'center'}}>Loading...</td></tr>
+                      <tr><td colSpan="6" style={{ textAlign: 'center' }}>Loading...</td></tr>
                     ) : recentLogs.length === 0 ? (
-                      <tr><td colSpan="6" style={{textAlign: 'center'}}>No visitors today</td></tr>
+                      <tr><td colSpan="6" style={{ textAlign: 'center' }}>No visitors today</td></tr>
                     ) : recentLogs.map((log) => (
                       <tr key={`log-${log.logs_id}`}>
                         <td>{formatDateDisplay(log.date)}</td>
@@ -356,9 +356,9 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {loading ? (
-                       <tr><td colSpan="5" style={{textAlign: 'center'}}>Loading...</td></tr>
+                      <tr><td colSpan="5" style={{ textAlign: 'center' }}>Loading...</td></tr>
                     ) : activeLogs.length === 0 ? (
-                       <tr><td colSpan="5" style={{textAlign: 'center'}}>No one in campus</td></tr>
+                      <tr><td colSpan="5" style={{ textAlign: 'center' }}>No one in campus</td></tr>
                     ) : activeLogs.map((visitor) => (
                       <tr key={`incampus-log-${visitor.logs_id}`}>
                         <td>{formatDateDisplay(visitor.date)}</td>
