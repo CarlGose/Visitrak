@@ -395,6 +395,53 @@
 }
 
 /* Responsiveness for help modal */
+@media (max-width: 360px) {
+  .ul-header {
+    padding: 0 0 10px 0;
+  }
+  .ul-logo {
+    width: 28px; height: 28px;
+  }
+  .ul-brand-name {
+    font-size: 1.1rem;
+  }
+  .ul-main {
+    padding: 10px;
+  }
+  .ul-card {
+    padding: 24px 14px;
+    border-radius: 16px;
+  }
+  .ul-welcome {
+    font-size: 1.5rem;
+  }
+  .ul-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+  }
+  .ul-visit-btn {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+  .ul-help-modal {
+    padding: 24px 14px;
+    border-radius: 16px;
+  }
+  .ul-help-modal h3 {
+    font-size: 1.2rem;
+  }
+  .ul-help-step-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  .ul-help-step-title {
+    font-size: 0.85rem;
+  }
+  .ul-help-step-desc {
+    font-size: 0.75rem;
+  }
+}
+
 @media (max-width: 768px) {
   .ul-header {
     padding: 0 0 16px 0;

@@ -527,18 +527,219 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 1200px) {
-  .dashboard-logs-row {
+
+/* ── Tiny phones (≤360px) ── */
+@media (max-width: 360px) {
+  .dashboard-page {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboard-content {
+    padding: 14px 10px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-brand {
+    align-self: flex-end;
+  }
+
+  .dashboard-brand-title {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-brand-badge {
+    width: 32px;
+    height: 32px;
+  }
+
+  .stat-card-row {
     flex-direction: column;
   }
-}
 
-@media (max-width: 1100px) {
+  .stat-card {
+    min-height: 100px;
+    padding: 16px 18px;
+    border-radius: 16px;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .stat-card h3 {
+    font-size: 0.72rem;
+  }
+
   .dashboard-top-section {
     flex-direction: column;
   }
+
+  .dashboard-logs-row {
+    flex-direction: column;
+  }
+
+  .dashboard-logs-section {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .logs-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .logs-title-area {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .logs-title-area h2 {
+    font-size: 1rem;
+  }
+
+  .table-container {
+    border-radius: 14px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 8px;
+    font-size: 0.72rem;
+  }
+
+  .active-guard-section {
+    padding: 14px 12px;
+    border-radius: 16px;
+  }
+
+  .active-guard-card {
+    min-width: 120px;
+    max-width: 120px;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .active-guard-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .active-guard-name {
+    font-size: 0.76rem;
+    max-width: 90px;
+  }
 }
 
+/* ── Small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .dashboard-page {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboard-content {
+    padding: 16px 12px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-brand {
+    align-self: flex-end;
+  }
+
+  .dashboard-brand-title {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-brand-badge {
+    width: 36px;
+    height: 36px;
+  }
+
+  .stat-card-row {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    min-height: 105px;
+    padding: 18px 20px;
+    border-radius: 18px;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .dashboard-top-section {
+    flex-direction: column;
+  }
+
+  .dashboard-logs-row {
+    flex-direction: column;
+  }
+
+  .dashboard-logs-section {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .logs-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .logs-title-area {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  .active-guard-section {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .active-guard-card {
+    min-width: 130px;
+    max-width: 130px;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+
+  .active-guard-avatar {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* ── Standard tablets (≤768px) ── */
 @media (max-width: 768px) {
   .dashboard-page {
     margin-left: 0;
@@ -561,6 +762,20 @@
 
   .dashboard-header h1 {
     font-size: 1.5rem;
+  }
+}
+
+/* ── Medium screens (≤1100px) ── */
+@media (max-width: 1100px) {
+  .dashboard-top-section {
+    flex-direction: column;
+  }
+}
+
+/* ── Large tablets (≤1200px) ── */
+@media (max-width: 1200px) {
+  .dashboard-logs-row {
+    flex-direction: column;
   }
 }
 

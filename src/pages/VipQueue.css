@@ -112,6 +112,33 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Responsive ── */
+
+@media (max-width: 360px) {
+  .vip-queue-page {
+    padding: 70px 8px 16px;
+  }
+  .vip-queue-top-nav {
+    padding: 16px 12px;
+  }
+  .vip-queue-card {
+    padding: 16px 12px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vip-queue-page {
+    padding: 80px 12px 18px;
+  }
+  .vip-queue-top-nav {
+    padding: 20px 16px;
+  }
+  .vip-queue-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+}
 
 @media (max-width: 768px) {
   .vip-queue-page {

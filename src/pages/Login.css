@@ -167,8 +167,10 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  background: #ffffff;
-  border: 1px solid rgba(201, 162, 39, 0.35);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-md, 28px);
   padding: 44px 40px 40px;
   display: flex;
@@ -210,7 +212,7 @@
   background-size: cover;
   background-position: center 32%;
   filter: saturate(1.15) contrast(1.05);
-  opacity: 0.22;
+  opacity: 0.15;
   animation: cardBgFloat 26s ease-in-out infinite alternate;
 }
 
@@ -225,9 +227,9 @@
   inset: 0;
   background: linear-gradient(
     165deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(253, 250, 243, 0.88) 45%,
-    rgba(246, 240, 226, 0.93) 100%
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(253, 250, 243, 0.2) 45%,
+    rgba(246, 240, 226, 0.3) 100%
   );
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -506,24 +508,44 @@
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .login-page { padding: 16px 10px; }
+  .login-brand-header { gap: 6px; margin-bottom: 16px; }
+  .login-brand-title { font-size: 1.4rem; }
+  .login-brand-logo--wup, .login-brand-logo--badge { width: 34px; height: 34px; }
+  .login-univ-tag { font-size: 0.45rem; letter-spacing: 0px; white-space: normal; text-align: center; line-height: 1.2; padding: 2px 4px; }
+  .login-welcome { font-size: 1.3rem; }
+  .login-card { padding: 20px 14px 20px; border-radius: 14px; }
+  .login-field input { padding: 10px 12px; font-size: 0.9rem; border-radius: 10px; }
+  .login-btn { width: 100%; padding: 10px 20px; font-size: 0.9rem; }
+  .login-actions { justify-content: stretch; }
+  .login-admin-badge { margin-bottom: 16px; font-size: 0.65rem; padding: 3px 10px; }
+  .login-brand-tagline { font-size: 0.65rem; margin-top: 2px; white-space: normal; text-align: center; line-height: 1.1; }
+}
+
 @media (max-width: 540px) {
-  .login-brand-name { font-size: 2.2rem; }
-  .login-logo { width: 44px; height: 44px; }
+  .login-brand-header { gap: 8px; margin-bottom: 20px; }
+  .login-brand-title { font-size: 2rem; }
+  .login-brand-logo--wup, .login-brand-logo--badge { width: 44px; height: 44px; }
+  .login-univ-tag { font-size: 0.55rem; letter-spacing: 0.5px; white-space: normal; text-align: center; line-height: 1.2; }
   .login-card { padding: 32px 24px 28px; border-radius: 20px; }
   .login-welcome { font-size: 1.8rem; }
-  .login-tagline { margin-bottom: 28px; }
+  .login-brand-tagline { font-size: 0.75rem; margin-top: 4px; white-space: normal; text-align: center; }
 }
 
 @media (max-width: 400px) {
-  .login-page { padding: 24px 16px; }
-  .login-brand-name { font-size: 1.9rem; }
-  .login-welcome { font-size: 1.6rem; }
-  .login-logo { width: 40px; height: 40px; }
-  .login-card { padding: 24px 20px 24px; border-radius: 16px; }
+  .login-page { padding: 24px 12px; }
+  .login-brand-header { gap: 8px; margin-bottom: 18px; }
+  .login-brand-title { font-size: 1.7rem; }
+  .login-welcome { font-size: 1.5rem; }
+  .login-brand-logo--wup, .login-brand-logo--badge { width: 38px; height: 38px; }
+  .login-univ-tag { font-size: 0.48rem; letter-spacing: 0.2px; padding: 2px 6px; }
+  .login-card { padding: 24px 16px 24px; border-radius: 16px; }
   .login-field input { padding: 12px 14px; font-size: 0.95rem; }
   .login-btn { width: 100%; padding: 12px 24px; }
   .login-actions { justify-content: stretch; }
   .login-admin-badge { margin-bottom: 20px; font-size: 0.7rem; padding: 4px 12px; }
+  .login-brand-tagline { font-size: 0.7rem; }
 }
 
 /* ── Developer Contact Modal (Claymorphic Modal) ────────── */

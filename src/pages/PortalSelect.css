@@ -242,11 +242,11 @@
   width: 100%;
   max-width: 580px;
   padding: 38px 36px 32px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   border-radius: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow:
     0 24px 60px rgba(7, 20, 14, 0.35),
     0 4px 16px rgba(0, 0, 0, 0.08),
@@ -417,8 +417,10 @@
   text-align: left;
   position: relative;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(220, 215, 200, 0.65);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   border-left: 6px solid var(--accent);
   border-radius: 22px;
   box-shadow:
@@ -648,6 +650,64 @@
 }
 
 /* ── Responsive Adjustments ──────────────────────────────── */
+@media (max-width: 360px) {
+  .ps-page {
+    padding: 12px 8px 24px;
+  }
+
+  .ps-inner {
+    padding: 20px 14px 18px;
+    border-radius: 22px;
+    gap: 14px;
+  }
+
+  .ps-logo--wup,
+  .ps-logo--visitrak {
+    width: 42px;
+    height: 42px;
+  }
+
+  .ps-brand-name {
+    font-size: 1.8rem;
+  }
+
+  .ps-brand-tagline {
+    font-size: 0.75rem;
+  }
+
+  .ps-card {
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .ps-card-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ps-card-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ps-card-label {
+    font-size: 1rem;
+  }
+
+  .ps-card-desc {
+    font-size: 0.78rem;
+  }
+
+  .ps-card-arrow {
+    display: none;
+  }
+
+  .ps-footer-text {
+    font-size: 0.72rem;
+  }
+}
+
 @media (max-width: 620px) {
   .ps-page {
     padding: 20px 14px 36px;
