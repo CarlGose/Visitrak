@@ -42,18 +42,32 @@ export default function GuardLogin() {
 
         {/* Card */}
         <form className="guard-login-card" onSubmit={handleSubmit}>
-
-          {/* Branding Inside Card */}
-          <div className="guard-login-brand" style={{ marginBottom: '8px', justifyContent: 'center' }}>
-            <img src="/wuplogo.png" alt="VisiTrack Logo" className="guard-login-logo" style={{ width: '56px', height: '56px' }} />
-            <span className="guard-login-brand-name">VisiTrack</span>
+          {/* Background Inside Container */}
+          <div className="guard-card-bg-wrap" aria-hidden="true">
+            <div className="guard-card-bg-img" />
+            <div className="guard-card-bg-overlay" />
+            <div className="guard-card-bg-shimmer" />
           </div>
-          <p className="guard-login-tagline" style={{ textAlign: 'center', marginBottom: '32px' }}>Handle visitors without worries</p>
+
+          {/* Branding Header with Dual Logos */}
+          <div className="guard-brand-header">
+            <img src="/wuplogo.png" alt="WUP Logo" className="guard-brand-logo guard-brand-logo--wup" />
+            <div className="guard-brand-text">
+              <span className="guard-univ-tag">WESLEYAN UNIVERSITY-PHILIPPINES</span>
+              <h1 className="guard-brand-title">VisiTrack</h1>
+              <p className="guard-brand-tagline">Campus Security & Visitor Management System</p>
+            </div>
+            <img src="/visitrak-badge.png" alt="VisiTrack Badge" className="guard-brand-logo guard-brand-logo--badge" />
+          </div>
 
           {/* Heading */}
           <div className="guard-login-card-heading">
+            <div className="guard-badge-pill">
+              <span className="guard-badge-dot" />
+              <span>Gate & Guard Terminal</span>
+            </div>
             <h1 className="guard-login-welcome">Guard Access</h1>
-            <p className="guard-login-sub">Sign in to your guard terminal</p>
+            <p className="guard-login-sub">Sign in to your security terminal</p>
           </div>
 
           {/* ID Field */}

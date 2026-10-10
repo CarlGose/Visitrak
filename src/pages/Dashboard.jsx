@@ -170,6 +170,10 @@ export default function Dashboard() {
             <h1>Dashboard <span className="live-badge"><span className="live-dot"></span>Live</span></h1>
             <p>Monitor and manage campus visitors</p>
           </div>
+          <div className="dashboard-brand">
+            <h2 className="dashboard-brand-title">VisiTrack</h2>
+            <img src="/visitrak-badge.png" alt="VisiTrack Badge" className="dashboard-brand-badge" />
+          </div>
         </div>
 
         {/* TOP SECTION: stat cards (left) + VIP Logs big table (right) */}
@@ -338,7 +342,7 @@ export default function Dashboard() {
                   <span className="logs-today">Today</span>
                   <span className="logs-date">{todaysDateFormatted}</span>
                 </div>
-                <h2>Currently In-Campus</h2>
+                <h2>Entry Status</h2>
               </div>
             </div>
 

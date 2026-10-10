@@ -199,7 +199,7 @@ export default function Manage() {
     <div className="manage-page">
       <Header />
       <main className="manage-content">
-        <h1>Manage Guards</h1>
+        <h1>Deploy Guards</h1>
 
         <div className="manage-card">
           <div className="manage-card-header">

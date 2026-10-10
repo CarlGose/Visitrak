@@ -133,6 +133,35 @@
   margin: 0;
 }
 
+/* ── Dashboard Brand ── */
+.dashboard-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.dashboard-brand-title {
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin: 0;
+  background: linear-gradient(135deg, #13422e 0%, #1e6d49 38%, #c99014 78%, #8f650b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.dashboard-brand-badge {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+}
+
 /* ── Top Section: Stats + VIP ── */
 .dashboard-top-section {
   display: flex;

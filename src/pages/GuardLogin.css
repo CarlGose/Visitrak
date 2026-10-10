@@ -77,59 +77,176 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Branding ────────────────────────────────────────────── */
-.guard-login-brand {
+/* ── Branding Header with Dual Logos ──────────────────────── */
+.guard-brand-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 6px;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.guard-login-logo {
-  width: 56px;
-  height: 56px;
+.guard-brand-logo {
   object-fit: contain;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
 
-.guard-login-brand-name {
-  font-size: 2.8rem;
+.guard-brand-logo--wup {
+  width: 54px;
+  height: 54px;
+  animation: logoFloatLeft 5s ease-in-out infinite;
+}
+
+.guard-brand-logo--badge {
+  width: 54px;
+  height: 54px;
+  animation: logoFloatRight 5s ease-in-out infinite;
+}
+
+@keyframes logoFloatLeft {
+  0%, 100% { transform: translateY(0) scale(1.4); }
+  50% { transform: translateY(-4px) scale(1.4); }
+}
+
+@keyframes logoFloatRight {
+  0%, 100% { transform: translateY(-4px); }
+  50% { transform: translateY(0); }
+}
+
+.guard-brand-text {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.guard-univ-tag {
+  font-family: 'Cinzel', serif, var(--font-main);
+  font-size: 0.62rem;
+  letter-spacing: 1.8px;
+  font-weight: 700;
+  color: #c99014;
+  background: rgba(201, 144, 20, 0.08);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 144, 20, 0.25);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.guard-brand-title {
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 2.5rem;
   font-weight: 900;
-  letter-spacing: -1.5px;
-  background: linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin: 0;
+  background: linear-gradient(135deg, #13422e 0%, #1e6d49 38%, #c99014 78%, #8f650b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
-.guard-login-tagline {
-  font-size: 0.95rem;
-  font-weight: 400;
-  font-style: italic;
-  color: var(--color-text-muted, #7a756b);
-  margin-bottom: 36px;
-  letter-spacing: 0.04em;
+.guard-brand-tagline {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #556358;
+  margin: 2px 0 0;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
 }
 
-/* ── Card (Claymorphism Surface) ─────────────────────────── */
+/* ── Card (Claymorphism Surface with bg.jpg Backdrop) ───── */
 .guard-login-card {
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  background: var(--clay-surface-raised, #faf8f4);
-  border: none;
+  background: #ffffff;
+  border: 1px solid rgba(201, 144, 20, 0.35);
   border-radius: var(--radius-md, 28px);
   padding: 44px 40px 40px;
   display: flex;
   flex-direction: column;
   gap: 0;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    0 24px 60px rgba(18, 42, 28, 0.18),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.95);
   transition: var(--transition, all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1));
 }
 
 .guard-login-card:hover {
-  box-shadow: var(--shadow-xl);
+  box-shadow:
+    0 30px 70px rgba(18, 42, 28, 0.24),
+    0 0 24px rgba(201, 144, 20, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 1);
   transform: translateY(-3px);
+}
+
+/* Card Background Wrapper */
+.guard-card-bg-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.guard-card-bg-img {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  background-image: url('/bg.jpg');
+  background-size: cover;
+  background-position: center 32%;
+  filter: saturate(1.15) contrast(1.05);
+  opacity: 0.22;
+  animation: cardBgFloat 26s ease-in-out infinite alternate;
+}
+
+@keyframes cardBgFloat {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.06) translate(-1.5%, -1%); }
+  100% { transform: scale(1.03) translate(1%, 0.8%); }
+}
+
+.guard-card-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(253, 250, 243, 0.88) 45%,
+    rgba(246, 240, 226, 0.93) 100%
+  );
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.guard-card-bg-shimmer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 12%,
+    rgba(201, 144, 20, 0.12) 0%,
+    transparent 60%
+  );
+}
+
+/* Ensure all interactive children render above the background */
+.guard-login-card > *:not(.guard-card-bg-wrap) {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Card Heading ────────────────────────────────────────── */
@@ -137,22 +254,52 @@
   margin-bottom: 28px;
 }
 
+.guard-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px;
+  background: rgba(201, 144, 20, 0.08);
+  border: 1px solid rgba(201, 144, 20, 0.25);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #c99014;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.guard-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c99014;
+  box-shadow: 0 0 6px rgba(201, 144, 20, 0.6);
+}
+
 .guard-login-welcome {
-  font-size: 2.2rem;
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 2.35rem;
   font-weight: 900;
-  color: var(--color-text, #2d2a24);
-  letter-spacing: -1px;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
   margin: 0 0 6px;
+  background: linear-gradient(135deg, #13422e 0%, #1e6d49 42%, #c99014 82%, #8f650b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
 .guard-login-sub {
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--color-text-muted, #7a756b);
+  color: #556358;
   margin: 0;
 }
 
-/* ── Fields (Clay Inset Inputs & Select) ─────────────────── */
+/* ── Fields (Tactile Inputs & Select) ─────────────────────── */
 .guard-login-field {
   display: flex;
   flex-direction: column;
@@ -163,34 +310,41 @@
 .guard-login-field label {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--color-text-muted, #7a756b);
+  color: #1e3828;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .guard-login-field input,
 .guard-login-field select {
-  background: var(--clay-bg, #f0ebe3);
-  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(210, 202, 185, 0.75);
   border-radius: var(--radius-sm, 16px);
   padding: 16px 20px;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--color-text, #2d2a24);
+  color: #1a2c20;
   font-family: var(--font-main, 'Outfit', sans-serif);
-  box-shadow: var(--shadow-inset);
-  transition: var(--transition, all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1));
+  box-shadow:
+    inset 2px 2px 4px rgba(166, 158, 140, 0.18),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.95),
+    0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   outline: none;
 }
 
 .guard-login-field input::placeholder {
-  color: var(--color-text-muted, #7a756b);
-  opacity: 0.6;
+  color: #839187;
+  opacity: 0.7;
 }
 
 .guard-login-field input:focus,
 .guard-login-field select:focus {
-  box-shadow: var(--shadow-pressed), 0 0 0 2px rgba(107, 143, 126, 0.5);
+  background: #ffffff;
+  border-color: #c99014;
+  box-shadow:
+    0 0 0 3px rgba(201, 144, 20, 0.2),
+    inset 1px 1px 2px rgba(166, 158, 140, 0.1);
 }
 
 .guard-login-select-wrapper {
@@ -224,7 +378,7 @@
   font-weight: 600;
   color: #dc2626;
   background: #fef2f2;
-  border: none;
+  border: 1px solid rgba(220, 38, 38, 0.2);
   border-radius: var(--radius-sm, 16px);
   padding: 14px 18px;
   text-align: center;
@@ -241,31 +395,29 @@
 .guard-login-btn {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #6b8f7e 0%, #4e7264 100%);
+  background: linear-gradient(135deg, #c99014 0%, #a4720a 100%);
   color: #ffffff;
   font-family: var(--font-main, 'Outfit', sans-serif);
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 15px 44px;
   border-radius: var(--radius-sm, 16px);
-  border: none;
+  border: 1px solid rgba(255, 235, 170, 0.4);
   cursor: pointer;
-  transition: var(--transition, all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1));
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    6px 6px 14px rgba(78, 114, 100, 0.35),
-    -4px -4px 10px rgba(255, 255, 255, 0.8),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.4),
-    inset -1px -1px 3px rgba(0, 0, 0, 0.15);
+    0 8px 20px rgba(201, 144, 20, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .guard-login-btn:hover:not(:disabled) {
   transform: translateY(-3px) scale(1.02);
+  background: linear-gradient(135deg, #dc9e18 0%, #b8800c 100%);
   box-shadow:
-    8px 8px 20px rgba(78, 114, 100, 0.45),
-    -6px -6px 14px rgba(255, 255, 255, 0.9),
-    inset 3px 3px 6px rgba(255, 255, 255, 0.5),
-    inset -2px -2px 4px rgba(0, 0, 0, 0.2);
+    0 12px 28px rgba(201, 144, 20, 0.45),
+    0 0 16px rgba(27, 99, 72, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
 }
 
 .guard-login-btn:active:not(:disabled) {

@@ -177,10 +177,10 @@ export default function Header() {
               to="/manage" 
               className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
               onClick={() => setIsMobileOpen(false)}
-              title="Manage"
+              title="Deploy Guards"
             >
               <Shield size={20} />
-              <span className="sidebar-text">Manage</span>
+              <span className="sidebar-text">Deploy Guards</span>
             </NavLink>
           </nav>
         </div>

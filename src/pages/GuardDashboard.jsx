@@ -111,8 +111,9 @@ export default function GuardDashboard() {
       {/* ── Header ── */}
       <header className="gd-header">
         <div className="gd-brand-container">
-          <img src="/wuplogo.png" alt="VisiTrack" className="gd-header-logo" />
+          <img src="/wuplogo.png" alt="WUP Logo" className="gd-header-logo gd-header-logo--wup" />
           <span className="gd-header-brand">VisiTrack</span>
+          <img src="/visitrak-badge.png" alt="VisiTrack Badge" className="gd-header-logo gd-header-logo--badge" />
         </div>
         
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>

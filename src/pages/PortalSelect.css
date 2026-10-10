@@ -1,67 +1,190 @@
-/* ── Page shell ── */
+/* ============================================================
+   VisiTrack – Staff Portal Selection
+   University Campus Background & Animated Glassmorphic Experience
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Cinzel:wght@600;700&display=swap');
+
+/* ── Page Root ──────────────────────────────────────────── */
 .ps-page {
-  flex: 1;
+  min-height: 100vh;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--clay-bg);
-  font-family: var(--font-main);
-  position: relative;
-  overflow: hidden;
-  padding: 24px 16px;
-}
-
-/* ── Decorative blobs ── */
-.ps-bg-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
-  animation: blobFloat 12s ease-in-out infinite alternate;
-}
-
-.ps-bg-blob--1 {
-  width: 520px;
-  height: 520px;
-  background: radial-gradient(circle, #6b8f7e 0%, transparent 70%);
-  top: -160px;
-  left: -140px;
-}
-
-.ps-bg-blob--2 {
-  width: 440px;
-  height: 440px;
-  background: radial-gradient(circle, #c9a227 0%, transparent 70%);
-  bottom: -140px;
-  right: -120px;
-  animation-delay: -6s;
-}
-
-@keyframes blobFloat {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(30px, 20px) scale(1.06); }
-}
-
-/* ── Content wrapper ── */
-.ps-inner {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
-  width: 100%;
-  max-width: 520px;
-  animation: psSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  justify-content: center;
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 32px 20px 48px;
+  box-sizing: border-box;
 }
 
-@keyframes psSlideUp {
+/* ── Animated Background Layers ──────────────────────────── */
+.ps-bg-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Background image with slow cinematic Ken Burns pan & zoom */
+.ps-bg-image {
+  position: absolute;
+  top: -6%;
+  left: -6%;
+  width: 112%;
+  height: 112%;
+  background-image: url('/bg.jpg');
+  background-size: cover;
+  background-position: center 38%;
+  background-repeat: no-repeat;
+  filter: saturate(1.15) contrast(1.05) brightness(0.95);
+  animation: psBgKenBurns 32s ease-in-out infinite alternate;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+@keyframes psBgKenBurns {
+  0% {
+    transform: scale(1) translate(0%, 0%);
+  }
+  50% {
+    transform: scale(1.08) translate(-1.8%, -1.2%);
+  }
+  100% {
+    transform: scale(1.04) translate(1.2%, 1%);
+  }
+}
+
+/* Deep emerald and warm golden university atmosphere overlay */
+.ps-bg-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    140deg,
+    rgba(14, 38, 26, 0.76) 0%,
+    rgba(22, 48, 34, 0.62) 35%,
+    rgba(40, 34, 12, 0.65) 70%,
+    rgba(16, 32, 22, 0.82) 100%
+  );
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  animation: psOverlayPulse 14s ease-in-out infinite alternate;
+}
+
+@keyframes psOverlayPulse {
+  0% { opacity: 0.94; }
+  100% { opacity: 1; }
+}
+
+/* Radial vignette to focus center card */
+.ps-bg-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 45%,
+    transparent 35%,
+    rgba(10, 24, 16, 0.5) 75%,
+    rgba(6, 16, 10, 0.82) 100%
+  );
+}
+
+/* Ambient glowing orbs */
+.ps-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(85px);
+  pointer-events: none;
+  opacity: 0.45;
+  mix-blend-mode: screen;
+}
+
+.ps-orb--1 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(46, 139, 87, 0.8) 0%, rgba(30, 90, 60, 0) 70%);
+  top: -80px;
+  left: -80px;
+  animation: psOrbDrift1 18s ease-in-out infinite alternate;
+}
+
+.ps-orb--2 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(230, 180, 40, 0.75) 0%, rgba(200, 140, 20, 0) 70%);
+  bottom: -60px;
+  right: -60px;
+  animation: psOrbDrift2 22s ease-in-out infinite alternate;
+}
+
+.ps-orb--3 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(72, 187, 120, 0.6) 0%, transparent 70%);
+  top: 45%;
+  left: 65%;
+  animation: psOrbDrift3 25s ease-in-out infinite alternate;
+}
+
+@keyframes psOrbDrift1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(60px, 40px) scale(1.15); }
+}
+
+@keyframes psOrbDrift2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-50px, -45px) scale(1.18); }
+}
+
+@keyframes psOrbDrift3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-40px, 30px) scale(1.22); }
+}
+
+/* Diagonal subtle light shimmer */
+.ps-light-shimmer {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 42%,
+    rgba(255, 235, 170, 0.08) 50%,
+    transparent 58%
+  );
+  animation: psShimmerPass 16s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes psShimmerPass {
+  0% { transform: translateY(-30%) rotate(0deg); }
+  100% { transform: translateY(30%) rotate(0deg); }
+}
+
+/* ── Top Status Bar ──────────────────────────────────────── */
+.ps-nav-bar {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 580px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  animation: psFadeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes psFadeDown {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(-16px);
   }
   to {
     opacity: 1;
@@ -69,82 +192,212 @@
   }
 }
 
-/* ── Branding ── */
+.ps-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(14, 34, 24, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 999px;
+  color: #f7eecf;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.ps-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: psDotPulse 2s infinite;
+}
+
+@keyframes psDotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* ── Main Content Card Container ─────────────────────────── */
+.ps-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 580px;
+  padding: 38px 36px 32px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 24px 60px rgba(7, 20, 14, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 4px rgba(180, 160, 120, 0.15);
+  animation: psCardEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes psCardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── University & Brand Header ───────────────────────────── */
+.ps-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .ps-brand {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 16px;
   position: relative;
 }
 
-.ps-brand > div {
+.ps-brand-text {
+  flex: 1;
   text-align: center;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
-.ps-logo {
-  width: 110px;
-  height: 110px;
-  object-fit: contain;
-  border-radius: 50%;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
-  animation: psFloat 4s ease-in-out infinite;
-  position: relative;
-  z-index: 1;
-}
-
-.ps-logo--visitrak {
-  animation: psFloatAlt 4s ease-in-out infinite;
-  width: 80px;
-  height: 80px;
-  mix-blend-mode: multiply;
-}
-
-@keyframes psFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-
-@keyframes psFloatAlt {
-  0%, 100% { transform: translateY(-6px); }
-  50%      { transform: translateY(0); }
+.ps-univ-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #1b6348;
+  background: rgba(27, 99, 72, 0.08);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 99, 72, 0.2);
+  margin-bottom: 4px;
 }
 
 .ps-brand-name {
-  font-family: var(--font-main);
-  font-size: 3.8rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #2d3e2e 0%, #4a6b3a 40%, #c9a227 100%);
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 3.4rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin: 0;
+  background: linear-gradient(135deg, #13422e 0%, #1d6e49 35%, #b38515 75%, #8f650b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -0.5px;
-  margin: 0;
-  line-height: 1.1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
 }
 
 .ps-brand-tagline {
-  font-size: 1.15rem;
-  font-style: italic;
-  color: var(--color-text-muted);
-  margin: 4px 0 0;
-}
-
-/* ── Prompt text ── */
-.ps-prompt {
-  font-family: var(--font-main);
-  font-size: 1.35rem;
-  color: var(--color-text-muted);
-  margin: -10px 0 0;
+  font-size: 0.95rem;
   font-weight: 500;
+  color: #5c685f;
+  margin: 3px 0 0;
+  letter-spacing: 0.1px;
 }
 
-/* ── Cards container ── */
+/* Brand Logos with gentle levitation */
+.ps-logo {
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.16));
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.ps-logo--wup {
+  width: 78px;
+  height: 78px;
+  animation: psLogoHoverLeft 5s ease-in-out infinite;
+}
+
+.ps-logo--visitrak {
+  width: 78px;
+  height: 78px;
+  animation: psLogoHoverRight 5s ease-in-out infinite;
+}
+
+@keyframes psLogoHoverLeft {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1.4);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1.5deg) scale(1.4);
+  }
+}
+
+@keyframes psLogoHoverRight {
+  0%, 100% {
+    transform: translateY(-5px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* ── Prompt Divider ───────────────────────────────────────── */
+.ps-prompt-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 16px;
+  margin: 2px 0 4px;
+}
+
+.ps-prompt-divider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 162, 39, 0.45) 50%,
+    transparent 100%
+  );
+}
+
+.ps-prompt {
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #2e4d3a;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ── Portal Cards Container ──────────────────────────────── */
 .ps-cards {
   display: flex;
   flex-direction: column;
@@ -153,45 +406,36 @@
 }
 
 /* ══════════════════════════════════════════════
-   ── Claymorphism Portal Cards ──
-   Puffy, inflated surfaces with inner highlight
-   and outer drop shadows for a tactile feel
+   ── Claymorphism + Glass Portal Card ──
    ══════════════════════════════════════════════ */
 .ps-card {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 22px 26px;
+  gap: 20px;
+  padding: 22px 24px;
   cursor: pointer;
   text-align: left;
   position: relative;
   overflow: hidden;
-
-  /* ── Clay surface ── */
-  background: var(--clay-surface-raised);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-
-  /* ── Clay border: subtle accent left stripe + soft top glow ── */
-  border: none;
-  border-left: 5px solid var(--accent);
-  border-radius: var(--radius-md);
-
-  /* ── Claymorphism shadow: outer drop + inner highlight ── */
-  box-shadow: var(--shadow-md);
-
-  /* ── Transitions ── */
-  transition: var(--transition);
-
-  /* ── Entrance animation ── */
-  animation: psCardIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  background: #ffffff;
+  border: 1px solid rgba(220, 215, 200, 0.65);
+  border-left: 6px solid var(--accent);
+  border-radius: 22px;
+  box-shadow:
+    0 10px 24px rgba(18, 42, 28, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(200, 190, 170, 0.12);
+  transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: psCardItemIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   animation-delay: var(--delay, 0s);
+  outline: none;
 }
 
-@keyframes psCardIn {
+@keyframes psCardItemIn {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.97);
+    transform: translateY(20px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -199,160 +443,272 @@
   }
 }
 
-/* ── Soft inner highlight sweep on hover ── */
+/* Subtle holographic sweep light on hover */
 .ps-card::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: -120%;
   width: 100%;
   height: 100%;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.5) 45%,
+    rgba(255, 255, 255, 0.7) 50%,
     transparent 100%
   );
-  transition: left 0.55s ease;
-  z-index: 0;
+  transition: left 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 2;
   pointer-events: none;
-  border-radius: inherit;
 }
 
-/* ── Hover state: puffed up, elevated clay ── */
+/* Hover elevation & glow */
 .ps-card:hover {
-  transform: translateY(-5px) scale(1.015);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px) scale(1.012);
+  border-color: rgba(200, 180, 140, 0.8);
+  box-shadow:
+    0 20px 38px var(--glow-color),
+    0 6px 14px rgba(0, 0, 0, 0.08),
+    inset 0 2px 3px rgba(255, 255, 255, 1);
 }
 
 .ps-card:hover::before {
-  left: 100%;
+  left: 120%;
 }
 
-/* ── Active / pressed state: pushed into clay surface ── */
 .ps-card:active {
-  transform: translateY(-1px) scale(0.995);
-  box-shadow: var(--shadow-pressed);
+  transform: translateY(-1px) scale(0.99);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   transition-duration: 0.08s;
 }
 
-/* ── Card icon (puffy clay pill) ── */
+/* Card Icon Box */
+.ps-card-icon-container {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
 .ps-card-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-sm);
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
   background: var(--accent-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow:
-    4px 4px 8px rgba(166, 158, 140, 0.2),
-    -3px -3px 6px rgba(255, 255, 255, 0.7),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.5),
-    inset -1px -1px 2px rgba(166, 158, 140, 0.1);
-}
-
-.ps-card:hover .ps-card-icon {
-  background-color: var(--accent);
-  box-shadow:
-    4px 4px 12px color-mix(in srgb, var(--accent) 35%, transparent),
-    -3px -3px 8px rgba(255, 255, 255, 0.5),
-    inset 2px 2px 5px rgba(255, 255, 255, 0.4),
-    inset -1px -1px 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    0 4px 10px rgba(0, 0, 0, 0.06),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .ps-card-icon svg {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   color: var(--accent);
-  transition: color 0.25s ease;
+  transition: all 0.3s ease;
+}
+
+.ps-card:hover .ps-card-icon {
+  background: var(--accent);
+  transform: scale(1.06) rotate(-3deg);
+  box-shadow: 0 8px 18px var(--glow-color);
 }
 
 .ps-card:hover .ps-card-icon svg {
   color: #ffffff;
+  transform: scale(1.05);
 }
 
-/* ── Card text ── */
+/* Card Text Content */
 .ps-card-text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   flex: 1;
   position: relative;
   z-index: 1;
+  min-width: 0;
+}
+
+.ps-card-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .ps-card-label {
-  font-family: var(--font-main);
-  font-size: 1.55rem;
+  font-family: var(--font-main, 'Outfit', sans-serif);
+  font-size: 1.45rem;
   font-weight: 800;
-  color: var(--color-text);
+  color: #1a2c20;
   line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+.ps-card-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .ps-card-desc {
-  font-size: 1.05rem;
-  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  color: #556259;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
-/* ── Arrow ── */
+/* Card Action Arrow */
 .ps-card-arrow {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--accent);
   position: relative;
   z-index: 1;
-  opacity: 0.4;
-  transform: translateX(-4px);
-  transition: opacity 0.25s, transform 0.25s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ps-card-arrow svg {
-  width: 100%;
-  height: 100%;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
 }
 
 .ps-card:hover .ps-card-arrow {
-  opacity: 1;
-  transform: translateX(0);
+  background: var(--accent);
+  color: #ffffff;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px var(--glow-color);
 }
 
-/* ── Footer ── */
+.ps-card:hover .ps-card-arrow svg {
+  transform: translateX(2px);
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
 .ps-footer {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  text-align: center;
-  margin-top: -8px;
-  opacity: 0.65;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
 }
 
-/* ── Responsive ── */
-@media (max-width: 480px) {
+.ps-footer-crest {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 60%;
+  margin-bottom: 2px;
+}
+
+.ps-crest-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.5), transparent);
+}
+
+.ps-crest-star {
+  color: #c99014;
+  font-size: 0.75rem;
+}
+
+.ps-footer-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #2d4837;
+  text-align: center;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.ps-footer-subtext {
+  font-size: 0.72rem;
+  color: #728077;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Responsive Adjustments ──────────────────────────────── */
+@media (max-width: 620px) {
+  .ps-page {
+    padding: 20px 14px 36px;
+  }
+
+  .ps-inner {
+    padding: 28px 20px 24px;
+    border-radius: 28px;
+    gap: 20px;
+  }
+
+  .ps-nav-bar {
+    margin-bottom: 14px;
+  }
+
+  .ps-brand {
+    gap: 10px;
+  }
+
+  .ps-logo--wup {
+    width: 58px;
+    height: 58px;
+  }
+
+  .ps-logo--visitrak {
+    width: 58px;
+    height: 58px;
+  }
+
   .ps-brand-name {
     font-size: 2.6rem;
   }
 
-  .ps-logo {
-    width: 68px;
-    height: 68px;
+  .ps-brand-tagline {
+    font-size: 0.85rem;
   }
 
   .ps-card {
     padding: 16px 18px;
+    gap: 14px;
+  }
+
+  .ps-card-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ps-card-icon svg {
+    width: 24px;
+    height: 24px;
   }
 
   .ps-card-label {
     font-size: 1.25rem;
   }
 
-  .ps-brand {
-    gap: 10px;
+  .ps-card-desc {
+    font-size: 0.84rem;
+  }
+
+  .ps-card-arrow {
+    display: none;
   }
 }

@@ -41,18 +41,32 @@ export default function Login() {
 
         {/* Card */}
         <form className="login-card" onSubmit={handleSubmit}>
-
-          {/* Branding Inside Card */}
-          <div className="login-brand" style={{ marginBottom: '8px', justifyContent: 'center' }}>
-            <img src="/wuplogo.png" alt="VisiTrack Logo" className="login-logo" style={{ width: '56px', height: '56px' }} />
-            <span className="login-brand-name">VisiTrack</span>
+          {/* Background Inside Container */}
+          <div className="login-card-bg-wrap" aria-hidden="true">
+            <div className="login-card-bg-img" />
+            <div className="login-card-bg-overlay" />
+            <div className="login-card-bg-shimmer" />
           </div>
-          <p className="login-tagline" style={{ textAlign: 'center', marginBottom: '32px' }}>Handle visitors without worries</p>
+
+          {/* Branding Header with Dual Logos */}
+          <div className="login-brand-header">
+            <img src="/wuplogo.png" alt="WUP Logo" className="login-brand-logo login-brand-logo--wup" />
+            <div className="login-brand-text">
+              <span className="login-univ-tag">WESLEYAN UNIVERSITY-PHILIPPINES</span>
+              <h1 className="login-brand-title">VisiTrack</h1>
+              <p className="login-brand-tagline">Campus Security & Visitor Management System</p>
+            </div>
+            <img src="/visitrak-badge.png" alt="VisiTrack Badge" className="login-brand-logo login-brand-logo--badge" />
+          </div>
 
           {/* Heading */}
           <div className="login-card-heading">
-            <h1 className="login-welcome">Welcome back</h1>
-            <p className="login-sub">Sign in to your admin account</p>
+            <div className="login-badge-pill">
+              <span className="login-badge-dot" />
+              <span>Campus Security Control</span>
+            </div>
+            <h1 className="login-welcome">Admin Portal</h1>
+            <p className="login-sub">Welcome back • Sign in to your admin account</p>
           </div>
 
           {/* ID Field */}
