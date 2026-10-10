@@ -578,7 +578,11 @@ const UserForm = () => {
     if (!isSubmitted && !hasAcceptedTerms) {
         return (
             <div className="form-page">
-                <div className="wup-bg-watermark"></div>
+                {/* Animated Background Layers */}
+                <div className="uf-bg-container">
+                    <div className="uf-bg-image"></div>
+                    <div className="uf-bg-overlay"></div>
+                </div>
                 <div className="form-wrapper">
                     <div className="form-brand">
                         <img src="/wuplogo.png" alt="VisiTrack Logo" />
@@ -626,7 +630,11 @@ const UserForm = () => {
     if (!isSubmitted && hasAcceptedTerms) {
         return (
             <div className="form-page">
-                <div className="wup-bg-watermark"></div>
+                {/* Animated Background Layers */}
+                <div className="uf-bg-container">
+                    <div className="uf-bg-image"></div>
+                    <div className="uf-bg-overlay"></div>
+                </div>
                 <div className="form-wrapper">
                     <div className="form-brand">
                         <img src="/wuplogo.png" alt="VisiTrack Logo" />
@@ -970,8 +978,12 @@ const UserForm = () => {
 
     return (
         <div className="form-page qr-result-page">
-            <div className="wup-bg-watermark"></div>
-            <header className="gd-header vip-header-centered" style={{ backgroundColor: '#f5f2eb', borderBottom: '1px solid #ddd', width: '100%', position: 'absolute', top: 0, left: 0, padding: '12px 0' }}>
+            {/* Animated Background Layers */}
+            <div className="uf-bg-container">
+                <div className="uf-bg-image"></div>
+                <div className="uf-bg-overlay"></div>
+            </div>
+            <header className="gd-header vip-header-centered" style={{ background: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', width: '100%', position: 'absolute', top: 0, left: 0, padding: '12px 0', zIndex: 10 }}>
                 <img src="/wuplogo.png" alt="VisiTrack Logo" className="gd-header-logo" style={{ margin: '0 auto', display: 'block', width: '44px', height: '44px' }} />
             </header>
 

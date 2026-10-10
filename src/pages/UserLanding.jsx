@@ -8,7 +8,11 @@ export default function UserLanding() {
 
   return (
     <div className="ul-page">
-      <div className="wup-bg-watermark"></div>
+      {/* Animated Background Layers */}
+      <div className="ul-bg-container">
+        <div className="ul-bg-image"></div>
+        <div className="ul-bg-overlay"></div>
+      </div>
       <main className="ul-main">
         <div className="ul-card">
           <header className="ul-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '24px', position: 'relative' }}>
